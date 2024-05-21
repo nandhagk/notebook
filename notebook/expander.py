@@ -63,7 +63,7 @@ class Expander:
 
                 result.extend(expanded)
                 if show_lineno:
-                    result.append(f'#line {lineno} "{src_path}"')
+                    result.append(f'#line {lineno + 1} "{src_path}"')
 
                 continue
 
