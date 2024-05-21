@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 from logging import ERROR, basicConfig, getLogger
 from pathlib import Path
+from string import ascii_lowercase
 
 import click
 
@@ -93,9 +94,7 @@ def run(q: str, release: bool, interactive: bool) -> None:
 @main.command()
 def generate() -> None:
     """Generate template."""
-    for i in range(15):
-        q = chr(ord("a") + i)
-
+    for q in ascii_lowercase:
         q_dir = Path.cwd() / "contest" / q
         Path.mkdir(q_dir, exist_ok=True)
 
