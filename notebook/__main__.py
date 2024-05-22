@@ -53,9 +53,9 @@ def main() -> None:
 
 @main.command()
 @click.argument("q")
-@click.option("-r", "--release", default=False, is_flag=True)
+@click.option("-d", "--debug", default=False, is_flag=True)
 @click.option("-i", "--interactive", default=False, is_flag=True)
-def run(q: str, release: bool, interactive: bool) -> None:
+def run(q: str, debug: bool, interactive: bool) -> None:
     """
     Runner.
 
@@ -67,7 +67,7 @@ def run(q: str, release: bool, interactive: bool) -> None:
     lib_paths = [Path.cwd()]
 
     expander = Expander(lib_paths)
-    dst_code = expander.expand(src_path, show_lineno=not release)
+    dst_code = expander.expand(src_path, show_lineno=debug)
 
     dst_path = (Path().cwd() / "contest" / "out").with_suffix(".cpp")
     dst_path.write_text(dst_code)
