@@ -1,6 +1,7 @@
 #ifndef LIB_SEGTREE_HPP
 #define LIB_SEGTREE_HPP 1
 
+#include <algorithm>
 #include <vector>
 #include <functional>
 #include <cassert>
@@ -24,10 +25,9 @@ public:
 	explicit segtree(const std::vector<S> &v): n{static_cast<int>(v.size())} {
 		size = std::bit_ceil(static_cast<unsigned int>(n));
 		log = std::countr_zero(static_cast<unsigned int>(size));
-
 		d = std::vector<S>(2 * size, e());
 
-		for (auto i = 0; i < n; ++i) d[size + i] = v[i];
+		std::copy(v.begin(), v.end(), d.begin() + size);
 		for (auto i = size - 1; i >= 1; --i) update(i);
 	}
 
@@ -47,7 +47,7 @@ public:
 	}
 
 	S prod(int l, int r) const {
-		assert(0 <= l && l <= r && r <= n);
+		assert(0 <= l && l < r && r <= n);
 
 		S sml = e(), smr = e();
 		l += size;
