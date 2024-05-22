@@ -7,10 +7,10 @@
 #include <cassert>
 
 template<class T, auto op>
-concept IsOp = std::is_convertible<decltype(op), std::function<T(T, T)>>::value;
+concept IsSparseTableOp = std::is_convertible<decltype(op), std::function<T(T, T)>>::value;
 
 template <class T, auto op>
-	requires IsOp<T, op>
+	requires IsSparseTableOp<T, op>
 struct SparseTable {
 public:
 	explicit SparseTable(const std::vector<T> &v):

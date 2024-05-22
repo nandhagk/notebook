@@ -7,16 +7,16 @@
 #include <cassert>
 
 template<class S, auto op>
-concept IsOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
+concept IsSegmentTreeOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
 
 template <class S, auto e>
-concept IsE = std::is_convertible<decltype(e), std::function<S()>>::value;
+concept IsSegmentTreeE = std::is_convertible<decltype(e), std::function<S()>>::value;
 
 template <class S, class F>
-concept IsF = std::is_convertible<F, std::function<bool(S)>>::value;
+concept IsSegmentTreeF = std::is_convertible<F, std::function<bool(S)>>::value;
 
 template <class S, auto op, auto e>
-	requires IsOp<S, op> && IsE<S, e>
+	requires IsSegmentTreeOp<S, op> && IsSegmentTreeE<S, e>
 struct SegmentTree {
 public:
 	explicit SegmentTree(const int n_): SegmentTree(std::vector<S>(n_, e())) {}
@@ -67,7 +67,8 @@ public:
 		return d[1];
 	}
 
-	template <class F> requires IsF<S, F>
+	template <class F>
+		requires IsSegmentTreeF<S, F>
 	int max_right(int l, F f) const {
 		assert(0 <= l && l <= n);
 		assert(f(e()));
@@ -98,7 +99,8 @@ public:
 		return n;
 	}
 
-	template <class F> requires IsF<S, F>
+	template <class F>
+		requires IsSegmentTreeF<S, F>
 	int min_left(int r, F f) const {
 		assert(0 <= r && r <= n);
 		assert(f(e()));
