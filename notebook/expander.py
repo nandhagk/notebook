@@ -51,6 +51,8 @@ class Expander:
         logger.info("include: %s", src_path)
 
         src_code = src_path.read_text()
+
+        result.append(f'#line {1} "{src_path}"')
         for lineno, line in enumerate(src_code.splitlines(), 1):
             if self.ignore(line):
                 continue

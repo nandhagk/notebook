@@ -13,6 +13,9 @@ concept IsOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
 template <class S, auto e>
 concept IsE = std::is_convertible<decltype(e), std::function<S()>>::value;
 
+template <class S, auto e, class F>
+concept IsF = IsE<S, e> && std::is_convertible<F, std::function<bool(S)>>::value;
+
 template <class S, auto op, auto e>
 	requires IsOp<S, op> && IsE<S, e>
 struct segtree {
@@ -62,7 +65,7 @@ public:
 
 	S all_prod() const { return d[1]; }
 
-	template <class F>
+	template <class F> requires IsF<S, e, F>
 	int max_right(int l, F f) const {
 		assert(0 <= l && l <= n);
 		assert(f(e()));
@@ -93,7 +96,7 @@ public:
 		return n;
 	}
 
-	template <class F>
+	template <class F> requires IsF<S, e, F>
 	int min_left(int r, F f) const {
 		assert(0 <= r && r <= n);
 		assert(f(e()));
