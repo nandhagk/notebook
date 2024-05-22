@@ -1,12 +1,10 @@
-#ifndef LIB_SEGTREE_HPP
-#define LIB_SEGTREE_HPP 1
+#ifndef LIB_SEGMENT_TREE_HPP
+#define LIB_SEGMENT_TREE_HPP 1
 
 #include <algorithm>
 #include <vector>
 #include <functional>
 #include <cassert>
-
-namespace lib {
 
 template<class S, auto op>
 concept IsOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
@@ -14,19 +12,21 @@ concept IsOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
 template <class S, auto e>
 concept IsE = std::is_convertible<decltype(e), std::function<S()>>::value;
 
-template <class S, auto e, class F>
-concept IsF = IsE<S, e> && std::is_convertible<F, std::function<bool(S)>>::value;
+template <class S, class F>
+concept IsF = std::is_convertible<F, std::function<bool(S)>>::value;
 
 template <class S, auto op, auto e>
 	requires IsOp<S, op> && IsE<S, e>
-struct segtree {
+struct SegmentTree {
 public:
-	explicit segtree(const int n_): segtree(std::vector<S>(n_, e())) {}
-	explicit segtree(const std::vector<S> &v): n{static_cast<int>(v.size())} {
-		size = std::bit_ceil(static_cast<unsigned int>(n));
-		log = std::countr_zero(static_cast<unsigned int>(size));
-		d = std::vector<S>(2 * size, e());
+	explicit SegmentTree(const int n_): SegmentTree(std::vector<S>(n_, e())) {}
 
+	explicit SegmentTree(const std::vector<S> &v):
+		n{static_cast<int>(v.size())},
+		size{std::bit_ceil(static_cast<unsigned int>(n))},
+		log{std::countr_zero(static_cast<unsigned int>(size))},
+		d(2 * size, e())
+	{
 		std::copy(v.begin(), v.end(), d.begin() + size);
 		for (auto i = size - 1; i >= 1; --i) update(i);
 	}
@@ -63,9 +63,11 @@ public:
 		return op(sml, smr);
 	}
 
-	S all_prod() const { return d[1]; }
+	S all_prod() const {
+		return d[1];
+	}
 
-	template <class F> requires IsF<S, e, F>
+	template <class F> requires IsF<S, F>
 	int max_right(int l, F f) const {
 		assert(0 <= l && l <= n);
 		assert(f(e()));
@@ -96,7 +98,7 @@ public:
 		return n;
 	}
 
-	template <class F> requires IsF<S, e, F>
+	template <class F> requires IsF<S, F>
 	int min_left(int r, F f) const {
 		assert(0 <= r && r <= n);
 		assert(f(e()));
@@ -132,9 +134,9 @@ private:
 	int n, size, log;
 	std::vector<S> d;
 
-	void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
+	void update(int k) {
+		d[k] = op(d[2 * k], d[2 * k + 1]);
+	}
 };
 
-} // namespace lib
-
-#endif // LIB_SEGTREE_HPP
+#endif // LIB_SEGMENT_TREE_HPP
