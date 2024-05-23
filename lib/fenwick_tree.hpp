@@ -9,8 +9,8 @@ struct FenwickTree {
 public:
 	explicit FenwickTree(const int n_) : FenwickTree(std::vector<T>(n_)) {}
 
-	explicit FenwickTree(const std::vector<T> &v) :
-		n{static_cast<int>(v.size())},
+	explicit FenwickTree(const std::vector<T> &v):
+		n(static_cast<int>(v.size())),
 		d(n)
 	{
 		for (auto i = 0; i < n; ++i) {

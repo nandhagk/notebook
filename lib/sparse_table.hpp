@@ -1,7 +1,6 @@
 #ifndef LIB_SPARSE_TABLE_HPP
 #define LIB_SPARSE_TABLE_HPP 1
 
-#include <algorithm>
 #include <vector>
 #include <functional>
 #include <cassert>
@@ -14,12 +13,12 @@ template <class T, auto op>
 struct SparseTable {
 public:
 	explicit SparseTable(const std::vector<T> &v):
-		n{static_cast<int>(v.size())},
-		log{std::bit_width(static_cast<unsigned int>(n))},
-		d(log, std::vector<T>(n))
+		n(static_cast<int>(v.size())),
+		log(std::bit_width(static_cast<unsigned int>(n))),
+		d(1, v)
 	{
-		std::copy(v.begin(), v.end(), d[0].begin());
 		for (auto i = 1; i < log; ++i) {
+			d.emplace_back(n - (1 << i) + 1);
 			for (auto j = 0; j + (1 << i) <= n; ++j) {
 				d[i][j] = op(d[i - 1][j], d[i - 1][j + (1 << (i - 1))]);
 			}

@@ -22,9 +22,9 @@ public:
 	explicit SegmentTree(const int n_): SegmentTree(std::vector<S>(n_, e())) {}
 
 	explicit SegmentTree(const std::vector<S> &v):
-		n{static_cast<int>(v.size())},
-		size{std::bit_ceil(static_cast<unsigned int>(n))},
-		log{std::countr_zero(static_cast<unsigned int>(size))},
+		n(static_cast<int>(v.size())),
+		size(std::bit_ceil(static_cast<unsigned int>(n))),
+		log(std::bit_width(static_cast<unsigned int>(n))),
 		d(2 * size, e())
 	{
 		std::copy(v.begin(), v.end(), d.begin() + size);
@@ -50,14 +50,9 @@ public:
 		assert(0 <= l && l < r && r <= n);
 
 		S sml = e(), smr = e();
-		l += size;
-		r += size;
-
-		while (l < r) {
+		for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
 			if (l & 1) sml = op(sml, d[l++]);
 			if (r & 1) smr = op(d[--r], smr);
-			l >>= 1;
-			r >>= 1;
 		}
 
 		return op(sml, smr);
