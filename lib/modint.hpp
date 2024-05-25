@@ -1,5 +1,5 @@
 #ifndef LIB_MODINT_HPP
-#define LIB_MODINT_HPP
+#define LIB_MODINT_HPP 1
 
 #include <iostream>
 #include <lib/type_traits.hpp>
@@ -26,10 +26,10 @@ constexpr i64 mul(i64 a, i64 b, i64 p) {
 }
 
 template<i64 P>
-struct MInt {
+struct ModInt {
 public:
-	constexpr MInt() : x(0) {}
-	constexpr MInt(i64 x) : x(norm(x % getMod())) {}
+	constexpr ModInt() : x(0) {}
+	constexpr ModInt(i64 x_) : x(norm(x_ % getMod())) {}
 
 	static i64 Mod;
 
@@ -61,21 +61,21 @@ public:
 		return x;
 	}
 
-	constexpr MInt operator-() const {
-		MInt res;
+	constexpr ModInt operator-() const {
+		ModInt res;
 		res.x = norm(getMod() - x);
 		return res;
 	}
 
-	constexpr MInt pow(i64 n) const {
+	constexpr ModInt pow(i64 n) const {
 		return power(*this, n);
 	}
 
-	constexpr MInt inv() const {
+	constexpr ModInt inv() const {
 		return power(*this, getMod() - 2);
 	}
 
-	constexpr MInt &operator*=(MInt rhs) & {
+	constexpr ModInt &operator*=(ModInt rhs) & {
 		if (getMod() < (1ULL << 31)) {
 			x = x * rhs.x % int(getMod());
 		} else {
@@ -85,64 +85,64 @@ public:
 		return *this;
 	}
 
-	constexpr MInt &operator+=(MInt rhs) & {
+	constexpr ModInt &operator+=(ModInt rhs) & {
 		x = norm(x + rhs.x);
 		return *this;
 	}
 
-	constexpr MInt &operator-=(MInt rhs) & {
+	constexpr ModInt &operator-=(ModInt rhs) & {
 		x = norm(x - rhs.x);
 		return *this;
 	}
 
-	constexpr MInt &operator/=(MInt rhs) & {
+	constexpr ModInt &operator/=(ModInt rhs) & {
 		return *this *= rhs.inv();
 	}
 
-	friend constexpr MInt operator*(MInt lhs, MInt rhs) {
-		MInt res = lhs;
+	friend constexpr ModInt operator*(ModInt lhs, ModInt rhs) {
+		ModInt res = lhs;
 		res *= rhs;
 		return res;
 	}
 
-	friend constexpr MInt operator+(MInt lhs, MInt rhs) {
-		MInt res = lhs;
+	friend constexpr ModInt operator+(ModInt lhs, ModInt rhs) {
+		ModInt res = lhs;
 		res += rhs;
 		return res;
 	}
 
-	friend constexpr MInt operator-(MInt lhs, MInt rhs) {
-		MInt res = lhs;
+	friend constexpr ModInt operator-(ModInt lhs, ModInt rhs) {
+		ModInt res = lhs;
 		res -= rhs;
 		return res;
 	}
 
-	friend constexpr MInt operator/(MInt lhs, MInt rhs) {
-		MInt res = lhs;
+	friend constexpr ModInt operator/(ModInt lhs, ModInt rhs) {
+		ModInt res = lhs;
 		res /= rhs;
 		return res;
 	}
 
-	friend constexpr std::istream &operator>>(std::istream &is, MInt &a) {
+	friend constexpr std::istream &operator>>(std::istream &is, ModInt &a) {
 		i64 v;
 		is >> v;
-		a = MInt(v);
+		a = ModInt(v);
 		return is;
 	}
 
-	friend constexpr std::ostream &operator<<(std::ostream &os, const MInt &a) {
+	friend constexpr std::ostream &operator<<(std::ostream &os, const ModInt &a) {
 		return os << a.val();
 	}
 
-	friend constexpr bool operator==(MInt lhs, MInt rhs) {
+	friend constexpr bool operator==(ModInt lhs, ModInt rhs) {
 		return lhs.val() == rhs.val();
 	}
 
-	friend constexpr bool operator!=(MInt lhs, MInt rhs) {
+	friend constexpr bool operator!=(ModInt lhs, ModInt rhs) {
 		return lhs.val() != rhs.val();
 	}
 
-	friend constexpr bool operator<(MInt lhs, MInt rhs) {
+	friend constexpr bool operator<(ModInt lhs, ModInt rhs) {
 		return lhs.val() < rhs.val();
 	}
 
@@ -150,6 +150,7 @@ private:
 	i64 x;
 };
 
-using DynamicMInt = MInt<-1>;
+using ModInt998244353 = ModInt<998'244'353>;
+using ModInt1000000007 = ModInt<1'000'000'007>;
 
 #endif // LIB_MODINT_HPP
