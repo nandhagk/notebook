@@ -24,8 +24,7 @@ CXX_FLAGS = [
 
 TEMPLATE = """
 #include <bits/stdc++.h>
-
-using i64 = long long;
+#include <lib/type_traits.hpp>
 
 auto solve() {
 }

@@ -1,5 +1,5 @@
 #ifndef LIB_HLD_CPP
-#define LIB_HLD_CPP
+#define LIB_HLD_CPP 1
 
 #include <vector>
 #include <cassert>

@@ -1,5 +1,5 @@
 #ifndef LIB_BINARY_LIFTING_HPP
-#define LIB_BINARY_LIFTING_HPP
+#define LIB_BINARY_LIFTING_HPP 1
 
 #include <vector>
 #include <cassert>
