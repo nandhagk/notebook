@@ -25,7 +25,7 @@ public:
 	explicit SegmentTree(const std::vector<S> &v):
 		n(static_cast<i32>(v.size())),
 		size(std::bit_ceil(static_cast<u32>(n))),
-		log(std::bit_width(static_cast<u32>(n))),
+		log(std::countr_zero(static_cast<u32>(size))),
 		d(2 * size, e())
 	{
 		std::copy(v.begin(), v.end(), d.begin() + size);
@@ -48,7 +48,7 @@ public:
 	}
 
 	S prod(i32 l, i32 r) const {
-		assert(0 <= l && l < r && r <= n);
+		assert(0 <= l && l <= r && r <= n);
 
 		S sml = e(), smr = e();
 		for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
