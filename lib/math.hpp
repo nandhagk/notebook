@@ -2,6 +2,8 @@
 #define LIB_MATH_HPP 1
 
 #include <utility>
+#include <vector>
+#include <cassert>
 #include <lib/prelude.hpp>
 
 constexpr i64 safe_mod(i64 x, i64 m) {
@@ -19,9 +21,9 @@ public:
 	}
 
 	u32 mul(u32 a, u32 b) const {
-		const auto z = static_cast<u64>(a) * b;
-		const auto x = static_cast<u64>((static_cast<u128>(z) * im) >> 64);
-		const auto y = x * m;
+		const u64 z = static_cast<u64>(a) * b;
+		const u64 x = static_cast<u64>((static_cast<u128>(z) * im) >> 64);
+		const u64 y = x * m;
 		return static_cast<u32>(z - y + (z < y ? m : 0));
 	}
 
@@ -33,7 +35,7 @@ private:
 constexpr i64 pow_mod(i64 x, i64 n, i32 m) {
 	if (m == 1) return 0;
 
-	const auto _m = static_cast<u32>(m);
+	const u32 _m = static_cast<u32>(m);
 	u64 r = 1;
 
 	for (u64 y = safe_mod(x, m); n; y = (y * y) % _m, n >>= 1) {
@@ -84,7 +86,7 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 		s -= t * u;
 		m0 -= m1 * u;
 
-		auto tmp = s;
+		i64 tmp = s;
 		s = t;
 		t = tmp;
 		tmp = m0;
@@ -95,6 +97,42 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 	if (m0 < 0) m0 += b / s;
 	return {s, m0};
 }
+
+std::pair<i64, i64> crt(const std::vector<i64>& r, const std::vector<i64>& m) {
+	assert(r.size() == m.size());
+
+	i32 n = static_cast<i32>(r.size());
+	i64 r0 = 0, m0 = 1;
+
+	for (i32 i = 0; i < n; i++) {
+		assert(1 <= m[i]);
+
+		i64 r1 = safe_mod(r[i], m[i]), m1 = m[i];
+		if (m0 < m1) {
+			std::swap(r0, r1);
+			std::swap(m0, m1);
+		}
+
+		if (m0 % m1 == 0) {
+			if (r0 % m1 != r1) return {0, 0};
+			continue;
+		}
+
+		auto [g, im] = inv_gcd(m0, m1);
+
+		i64 u1 = (m1 / g);
+		if ((r1 - r0) % g) return {0, 0};
+
+		i64 x = (r1 - r0) / g % u1 * im % u1;
+
+		r0 += x * m0;
+		m0 *= u1;
+		if (r0 < 0) r0 += m0;
+	}
+
+	return {r0, m0};
+}
+
 
 template <class T>
 using is_integral = typename std::is_integral<T>;

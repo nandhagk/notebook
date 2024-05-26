@@ -111,10 +111,10 @@ public:
 
 			return pow(umod() - 2);
 		} else {
-			auto eg = inv_gcd(v, m);
-			assert(eg.first == 1);
+			const auto &[f, s] = inv_gcd(v, m);
+			assert(f == 1);
 
-			return eg.second;
+			return s;
 		}
 	}
 
@@ -267,10 +267,10 @@ public:
 	}
 
 	ModInt inv() const {
-		auto eg = inv_gcd(v, mod());
-		assert(eg.first == 1);
+		const auto &[f, s] = inv_gcd(v, mod());
+		assert(f == 1);
 
-		return eg.second;
+		return s;
 	}
 
 	friend ModInt operator+(const ModInt& lhs, const ModInt& rhs) {

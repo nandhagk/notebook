@@ -14,9 +14,9 @@ public:
 		n(static_cast<i32>(v.size())),
 		d(n)
 	{
-		for (auto i = 0; i < n; ++i) {
+		for (i32 i = 0; i < n; ++i) {
 			d[i] += v[i];
-			if (const auto r = i | (i + 1); r < n) d[r] += d[i];
+			if (const i32 r = i | (i + 1); r < n) d[r] += d[i];
 		}
 	}
 

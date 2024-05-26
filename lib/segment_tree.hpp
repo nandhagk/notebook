@@ -29,7 +29,7 @@ public:
 		d(2 * size, e())
 	{
 		std::copy(v.begin(), v.end(), d.begin() + size);
-		for (auto i = size - 1; i >= 1; --i) update(i);
+		for (i32 i = size - 1; i >= 1; --i) update(i);
 	}
 
 	void set(i32 p, S x) {
@@ -38,7 +38,7 @@ public:
 		p += size;
 		d[p] = x;
 
-		for (auto i = 1; i <= log; i++) update(p >> i);
+		for (i32 i = 1; i <= log; i++) update(p >> i);
 	}
 
 	S get(i32 p) const {

@@ -33,7 +33,7 @@ public:
 		if (depth[u] < k) return -1;
 
 		while (u != -1) {
-			const auto s = start[u];
+			const i32 s = start[u];
 			if (depth[s] <= depth[u] - k) {
 				return tour[tin[u] - k];
 			}
@@ -64,32 +64,15 @@ public:
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
-	i32 jump(i32 u, i32 v, i32 k) const {
-		const auto du = depth[u];
-		const auto dv = depth[v];
-		const auto dx = depth[lca(u, v)];
-
-		const auto l = du - dx;
-		const auto r = dv - dx;
-
-		if (l + r < k) {
-			return -1;
-		} else if (k < l) {
-			return jump(u, k);
-		} else {
-			return jump(v, l + r - k);
-		}
-	}
-
 private:
 	i32 n;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
 	void dfs_sz(const Graph& g, i32 u) {
-		auto &x = best[u];
-		const auto t = par[u];
+		i32 &x = best[u];
+		const i32 t = par[u];
 
-		for (const auto v : g[u]) {
+		for (const i32 v : g[u]) {
 			if (v == t) continue;
 
 			par[v] = u;
@@ -108,15 +91,15 @@ private:
 		tour[time] = u;
 		tin[u] = time++;
 
-		const auto x = best[u];
-		const auto t = par[u];
+		const i32 x = best[u];
+		const i32 t = par[u];
 
 		if (x != -1) {
 			start[x] = start[u];
 			dfs_hld(g, x);
 		}
 
-		for (const auto v : g[u]) {
+		for (const i32 v : g[u]) {
 			if (v == t || v == x) continue;
 
 			start[v] = v;

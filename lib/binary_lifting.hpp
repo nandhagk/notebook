@@ -19,8 +19,8 @@ public:
 	{
 		dfs(g, root);
 
-		for (auto j = 1; j < log; ++j) {
-			for (auto i = 0; i < n; ++i) {
+		for (i32 j = 1; j < log; ++j) {
+			for (i32 i = 0; i < n; ++i) {
 				par[i][j] = par[par[i][j - 1]][j - 1];
 			}
 		}
@@ -37,7 +37,7 @@ public:
 
 		if (depth[u] < k) return -1;
 
-		for (auto i = log - 1; i >= 0; --i) {
+		for (i32 i = log - 1; i >= 0; --i) {
 			if ((k >> i) & 1) u = par[u][i];
 		}
 
@@ -50,7 +50,7 @@ public:
 		if (is_ancestor(u, v)) return u;
 		if (is_ancestor(v, u)) return v;
 
-		for (auto i = log - 1; i >= 0; --i) {
+		for (i32 i = log - 1; i >= 0; --i) {
 			if (!is_ancestor(par[v][i], u)) v = par[v][i];
 		}
 
@@ -63,23 +63,6 @@ public:
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
-	i32 jump(i32 u, i32 v, i32 k) const {
-		const auto du = depth[u];
-		const auto dv = depth[v];
-		const auto dx = depth[lca(u, v)];
-
-		const auto l = du - dx;
-		const auto r = dv - dx;
-
-		if (l + r < k) {
-			return -1;
-		} else if (k < l) {
-			return jump(u, k);
-		} else {
-			return jump(v, l + r - k);
-		}
-	}
-
 private:
 	const i32 n, log;
 	std::vector<i32> tin, tout, depth;
@@ -89,7 +72,7 @@ private:
 		static i32 time = 0;
 
 		tin[u] = time++;
-		for (const auto v : g[u]) {
+		for (const i32 v : g[u]) {
 			if (v == par[u][0]) continue;
 
 			par[v][0] = u;

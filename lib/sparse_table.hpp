@@ -18,9 +18,9 @@ public:
 		log(std::bit_width(static_cast<u32>(n))),
 		d(1, v)
 	{
-		for (auto i = 1; i < log; ++i) {
+		for (i32 i = 1; i < log; ++i) {
 			d.emplace_back(n - (1 << i) + 1);
-			for (auto j = 0; j + (1 << i) <= n; ++j) {
+			for (i32 j = 0; j + (1 << i) <= n; ++j) {
 				d[i][j] = op(d[i - 1][j], d[i - 1][j + (1 << (i - 1))]);
 			}
 		}
@@ -29,7 +29,7 @@ public:
 	T prod(i32 l, i32 r) const {
 		assert(0 <= l && l < r && r <= n);
 
-		const auto p = std::bit_width(static_cast<u32>(r - l)) - 1;
+		const i32 p = std::bit_width(static_cast<u32>(r - l)) - 1;
 		return op(d[p][l], d[p][r - (1 << p)]);
 	}
 

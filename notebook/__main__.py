@@ -17,7 +17,6 @@ CXX_FLAGS = [
     "-fsanitize=undefined",
     "-Wall",
     "-Wextra",
-    "-Wpedantic",
     "-Wshadow",
     "-Wconversion",
 ]
@@ -26,10 +25,10 @@ TEMPLATE = """
 #include <bits/stdc++.h>
 #include <lib/prelude.hpp>
 
-auto solve() {
+void solve() {
 }
 
-auto main() -> i32 {
+i32 main() {
         std::ios_base::sync_with_stdio(false);
         std::cin.tie(nullptr);
 
