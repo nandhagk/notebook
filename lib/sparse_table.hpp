@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <lib/prelude.hpp>
 
 template<class T, auto op>
 concept IsSparseTableOp = std::is_convertible<decltype(op), std::function<T(T, T)>>::value;
@@ -13,8 +14,8 @@ template <class T, auto op>
 struct SparseTable {
 public:
 	explicit SparseTable(const std::vector<T> &v):
-		n(static_cast<int>(v.size())),
-		log(std::bit_width(static_cast<unsigned int>(n))),
+		n(static_cast<i32>(v.size())),
+		log(std::bit_width(static_cast<u32>(n))),
 		d(1, v)
 	{
 		for (auto i = 1; i < log; ++i) {
@@ -25,15 +26,15 @@ public:
 		}
 	}
 
-	T prod(int l, int r) const {
+	T prod(i32 l, i32 r) const {
 		assert(0 <= l && l < r && r <= n);
 
-		const auto p = std::bit_width(static_cast<unsigned int>(r - l)) - 1;
+		const auto p = std::bit_width(static_cast<u32>(r - l)) - 1;
 		return op(d[p][l], d[p][r - (1 << p)]);
 	}
 
 private:
-	int n, log;
+	i32 n, log;
 	std::vector<std::vector<T>> d;
 };
 

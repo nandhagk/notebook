@@ -4,11 +4,11 @@
 auto solve() {
 }
 
-auto main() -> int {
+auto main() -> i32 {
         std::ios_base::sync_with_stdio(false);
         std::cin.tie(nullptr);
 
-        int t;
+        i32 t;
         std::cin >> t;
 
         while (t--) {

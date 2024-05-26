@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <lib/prelude.hpp>
 
 template<class S, auto op>
 concept IsSegmentTreeOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
@@ -19,19 +20,19 @@ template <class S, auto op, auto e>
 	requires IsSegmentTreeOp<S, op> && IsSegmentTreeE<S, e>
 struct SegmentTree {
 public:
-	explicit SegmentTree(const int n_): SegmentTree(std::vector<S>(n_, e())) {}
+	explicit SegmentTree(const i32 n_): SegmentTree(std::vector<S>(n_, e())) {}
 
 	explicit SegmentTree(const std::vector<S> &v):
-		n(static_cast<int>(v.size())),
-		size(std::bit_ceil(static_cast<unsigned int>(n))),
-		log(std::bit_width(static_cast<unsigned int>(n))),
+		n(static_cast<i32>(v.size())),
+		size(std::bit_ceil(static_cast<u32>(n))),
+		log(std::bit_width(static_cast<u32>(n))),
 		d(2 * size, e())
 	{
 		std::copy(v.begin(), v.end(), d.begin() + size);
 		for (auto i = size - 1; i >= 1; --i) update(i);
 	}
 
-	void set(int p, S x) {
+	void set(i32 p, S x) {
 		assert(0 <= p && p < n);
 
 		p += size;
@@ -40,13 +41,13 @@ public:
 		for (auto i = 1; i <= log; i++) update(p >> i);
 	}
 
-	S get(int p) const {
+	S get(i32 p) const {
 		assert(0 <= p && p < n);
 
 		return d[p + size];
 	}
 
-	S prod(int l, int r) const {
+	S prod(i32 l, i32 r) const {
 		assert(0 <= l && l < r && r <= n);
 
 		S sml = e(), smr = e();
@@ -64,7 +65,7 @@ public:
 
 	template <class F>
 		requires IsSegmentTreeF<S, F>
-	int max_right(int l, F f) const {
+	i32 max_right(i32 l, F f) const {
 		assert(0 <= l && l <= n);
 		assert(f(e()));
 
@@ -96,7 +97,7 @@ public:
 
 	template <class F>
 		requires IsSegmentTreeF<S, F>
-	int min_left(int r, F f) const {
+	i32 min_left(i32 r, F f) const {
 		assert(0 <= r && r <= n);
 		assert(f(e()));
 
@@ -128,10 +129,10 @@ public:
 	}
 
 private:
-	int n, size, log;
+	i32 n, size, log;
 	std::vector<S> d;
 
-	void update(int k) {
+	void update(i32 k) {
 		d[k] = op(d[2 * k], d[2 * k + 1]);
 	}
 };

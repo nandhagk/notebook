@@ -3,16 +3,17 @@
 
 #include <vector>
 #include <cassert>
+#include <lib/prelude.hpp>
 
 class BinaryLifting {
 public:
-	using Graph = std::vector<std::vector<int>>;
+	using Graph = std::vector<std::vector<i32>>;
 
 	explicit BinaryLifting(const Graph &g): BinaryLifting(g, 0) {}
 
-	BinaryLifting(const Graph &g, const int root):
-		n(static_cast<int>(g.size())),
-		log(std::bit_width(static_cast<unsigned int>(n))),
+	BinaryLifting(const Graph &g, const i32 root):
+		n(static_cast<i32>(g.size())),
+		log(std::bit_width(static_cast<u32>(n))),
 		tin(n), tout(n), depth(n),
 		par(n, std::vector(log, root))
 	{
@@ -25,13 +26,13 @@ public:
 		}
 	}
 
-	bool is_ancestor(int u, int v) const {
+	bool is_ancestor(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		return tin[u] <= tin[v] && tout[u] >= tout[v];
 	}
 
-	int jump(int u, int k) const {
+	i32 jump(i32 u, i32 k) const {
 		assert(0 <= u && u < n && 0 <= k);
 
 		if (depth[u] < k) return -1;
@@ -43,7 +44,7 @@ public:
 		return u;
 	}
 
-	int lca(int u, int v) const {
+	i32 lca(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		if (is_ancestor(u, v)) return u;
@@ -56,13 +57,13 @@ public:
 		return par[v][0];
 	}
 
-	int dist(int u, int v) const {
+	i32 dist(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
-	int jump(int u, int v, int k) const {
+	i32 jump(i32 u, i32 v, i32 k) const {
 		const auto du = depth[u];
 		const auto dv = depth[v];
 		const auto dx = depth[lca(u, v)];
@@ -80,12 +81,12 @@ public:
 	}
 
 private:
-	const int n, log;
-	std::vector<int> tin, tout, depth;
-	std::vector<std::vector<int>> par;
+	const i32 n, log;
+	std::vector<i32> tin, tout, depth;
+	std::vector<std::vector<i32>> par;
 
-	void dfs(const Graph& g, int u) {
-		static int time = 0;
+	void dfs(const Graph& g, i32 u) {
+		static i32 time = 0;
 
 		tin[u] = time++;
 		for (const auto v : g[u]) {

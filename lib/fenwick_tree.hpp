@@ -3,14 +3,15 @@
 
 #include <vector>
 #include <cassert>
+#include <lib/prelude.hpp>
 
 template<class T>
 struct FenwickTree {
 public:
-	explicit FenwickTree(const int n_) : FenwickTree(std::vector<T>(n_)) {}
+	explicit FenwickTree(const i32 n_) : FenwickTree(std::vector<T>(n_)) {}
 
 	explicit FenwickTree(const std::vector<T> &v):
-		n(static_cast<int>(v.size())),
+		n(static_cast<i32>(v.size())),
 		d(n)
 	{
 		for (auto i = 0; i < n; ++i) {
@@ -19,7 +20,7 @@ public:
 		}
 	}
 
-	void add(int p, T x) {
+	void add(i32 p, T x) {
 		assert(0 <= p && p < n);
 
 		++p;
@@ -29,7 +30,7 @@ public:
 		}
 	}
 
-	T sum(int r) const {
+	T sum(i32 r) const {
 		assert(r <= n);
 
 		T s = 0;
@@ -41,14 +42,14 @@ public:
 		return s;
 	}
 
-	T sum(int l, int r) const {
+	T sum(i32 l, i32 r) const {
 		assert(0 <= l && l <= r && r <= n);
 
 		return sum(r) - sum(l);
 	}
 
 private:
-	int n;
+	i32 n;
 	std::vector<T> d;
 };
 

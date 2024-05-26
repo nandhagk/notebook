@@ -3,15 +3,16 @@
 
 #include <vector>
 #include <cassert>
+#include <lib/prelude.hpp>
 
 struct HLD {
 public:
-	using Graph = std::vector<std::vector<int>>;
+	using Graph = std::vector<std::vector<i32>>;
 
 	explicit HLD(const Graph& g): HLD(g, 0) {}
 
-	HLD(const Graph& g, const int root):
-		n(static_cast<int>(g.size())),
+	HLD(const Graph& g, const i32 root):
+		n(static_cast<i32>(g.size())),
 		sz(n, 1), tin(n), depth(n), par(n), tour(n), best(n, -1), start(n)
 	{
 		par[root] = -1;
@@ -20,13 +21,13 @@ public:
 		dfs_hld(g, root);
 	}
 
-	bool is_ancestor(int u, int v) const {
+	bool is_ancestor(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		return tin[u] <= tin[v] && tin[u] + sz[u] > tin[v];
 	}
 
-	int jump(int u, int k) const {
+	i32 jump(i32 u, i32 k) const {
 		assert(0 <= u && u < n && 0 <= k);
 
 		if (depth[u] < k) return -1;
@@ -44,7 +45,7 @@ public:
 		return u;
 	}
 
-	int lca(int u, int v) const {
+	i32 lca(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		if (is_ancestor(u, v)) return u;
@@ -57,13 +58,13 @@ public:
 		return depth[u] < depth[v] ? u : v;
 	}
 
-	int dist(int u, int v) const {
+	i32 dist(i32 u, i32 v) const {
 		assert(0 <= u && u < n && 0 <= v && v < n);
 
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
-	int jump(int u, int v, int k) const {
+	i32 jump(i32 u, i32 v, i32 k) const {
 		const auto du = depth[u];
 		const auto dv = depth[v];
 		const auto dx = depth[lca(u, v)];
@@ -81,10 +82,10 @@ public:
 	}
 
 private:
-	int n;
-	std::vector<int> sz, tin, depth, par, tour, best, start;
+	i32 n;
+	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
-	void dfs_sz(const Graph& g, int u) {
+	void dfs_sz(const Graph& g, i32 u) {
 		auto &x = best[u];
 		const auto t = par[u];
 
@@ -101,8 +102,8 @@ private:
 		}
 	}
 
-	void dfs_hld(const Graph& g, int u) {
-		static int time = 0;
+	void dfs_hld(const Graph& g, i32 u) {
+		static i32 time = 0;
 
 		tour[time] = u;
 		tin[u] = time++;
