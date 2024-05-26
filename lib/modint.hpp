@@ -2,7 +2,7 @@
 #define LIB_MODINT_HPP 1
 
 #include <iostream>
-#include <lib/type_traits.hpp>
+#include <lib/prelude.hpp>
 
 template<class T>
 constexpr T power(T a, i64 b) {

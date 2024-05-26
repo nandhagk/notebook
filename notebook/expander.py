@@ -72,6 +72,7 @@ class Expander:
                 continue
 
             if line.startswith("#include"):
+                logger.info("ignoring: %s", line)
                 continue
 
             result.append(line)
@@ -82,4 +83,6 @@ class Expander:
         self.included.clear()
 
         result = self._expand(src_path, show_lineno)
-        return "\n".join(("#include <bits/stdc++.h>", *result))
+        result.insert(0, "#include <bits/stdc++.h>")
+
+        return re.sub(r"(\n\s*)+\n+", "\n\n", "\n".join(result))
