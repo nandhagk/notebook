@@ -133,7 +133,6 @@ std::pair<i64, i64> crt(const std::vector<i64>& r, const std::vector<i64>& m) {
 	return {r0, m0};
 }
 
-
 template <class T>
 using is_integral = typename std::is_integral<T>;
 

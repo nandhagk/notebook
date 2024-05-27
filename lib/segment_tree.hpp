@@ -1,7 +1,6 @@
 #ifndef LIB_SEGMENT_TREE_HPP
 #define LIB_SEGMENT_TREE_HPP 1
 
-#include <algorithm>
 #include <vector>
 #include <functional>
 #include <cassert>
@@ -28,7 +27,7 @@ public:
 		log(std::countr_zero(static_cast<u32>(size))),
 		d(2 * size, e())
 	{
-		std::copy(v.begin(), v.end(), d.begin() + size);
+		for (i32 i = 0; i < n; i++) d[size + i] = v[i];
 		for (i32 i = size - 1; i >= 1; --i) update(i);
 	}
 

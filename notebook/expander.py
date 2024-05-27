@@ -12,10 +12,10 @@ logger = getLogger(__name__)
 
 class Expander:
     # #include <lib_name/file_name.hpp>
-    INCLUDE_REGEX = re.compile(r'#include\s*["<]([a-z_/]*(.hpp))[">]\s*')
+    INCLUDE_REGEX = re.compile(r"#include\s*[<](lib/[a-z_/]*(.hpp))[>]\s*")
 
     # #endif/ifndef/define (//) LIB_NAME_FILE_NAME_HPP
-    INCLUDE_GUARD_REGEX = re.compile(r"#.*[A-Z_]*_HPP")
+    INCLUDE_GUARD_REGEX = re.compile(r"#.*LIB_[A-Z_]*_HPP")
 
     included: set[Path]
     lib_paths: list[Path]
@@ -71,7 +71,7 @@ class Expander:
 
                 continue
 
-            if line.startswith("#include"):
+            if line.startswith("#include") and ".hpp" not in line:
                 logger.info("ignoring: %s", line)
                 continue
 

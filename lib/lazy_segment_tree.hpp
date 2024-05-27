@@ -1,7 +1,6 @@
 #ifndef LIB_LAZY_SEGMENT_TREE_HPP
 #define LIB_LAZY_SEGMENT_TREE_HPP 1
 
-#include <algorithm>
 #include <vector>
 #include <functional>
 #include <cassert>
@@ -33,9 +32,8 @@ template <class S, auto op, auto e, class F, auto mapping, auto composition, aut
 			&& IsLazySegmentTreeID<F, id>
 struct LazySegmentTree {
 public:
-	LazySegmentTree() : LazySegmentTree(0) {}
-
 	explicit LazySegmentTree(i32 n_) : LazySegmentTree(std::vector<S>(n_, e())) {}
+
 	explicit LazySegmentTree(const std::vector<S>& v) :
 		n(static_cast<int>(v.size())),
 		size(std::bit_ceil(static_cast<u32>(n))),
@@ -44,9 +42,7 @@ public:
 		lz(size, id())
 	{
 		for (i32 i = 0; i < n; i++) d[size + i] = v[i];
-		for (i32 i = size - 1; i >= 1; i--) {
-			update(i);
-		}
+		for (i32 i = size - 1; i >= 1; i--) update(i);
 	}
 
 	void set(i32 p, S x) {
@@ -92,7 +88,7 @@ public:
 		return op(sml, smr);
 	}
 
-	S all_prod() {
+	S all_prod() const {
 		return d[1];
 	}
 
