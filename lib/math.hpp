@@ -82,16 +82,12 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 	i64 m0 = 0, m1 = 1;
 
 	while (t) {
-		i64 u = s / t;
+		const i64 u = s / t;
 		s -= t * u;
 		m0 -= m1 * u;
 
-		i64 tmp = s;
-		s = t;
-		t = tmp;
-		tmp = m0;
-		m0 = m1;
-		m1 = tmp;
+		std::swap(s, t);
+		std::swap(m0, m1);
 	}
 
 	if (m0 < 0) m0 += b / s;

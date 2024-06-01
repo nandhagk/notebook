@@ -22,13 +22,15 @@ public:
 	}
 
 	bool is_ancestor(i32 u, i32 v) const {
-		assert(0 <= u && u < n && 0 <= v && v < n);
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
 
 		return tin[u] <= tin[v] && tin[u] + sz[u] > tin[v];
 	}
 
 	i32 jump(i32 u, i32 k) const {
-		assert(0 <= u && u < n && 0 <= k);
+		assert(0 <= u && u < n);
+		assert(0 <= k);
 
 		if (depth[u] < k) return -1;
 
@@ -46,7 +48,8 @@ public:
 	}
 
 	i32 lca(i32 u, i32 v) const {
-		assert(0 <= u && u < n && 0 <= v && v < n);
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
 
 		if (is_ancestor(u, v)) return u;
 		if (is_ancestor(v, u)) return v;
@@ -59,13 +62,16 @@ public:
 	}
 
 	i32 dist(i32 u, i32 v) const {
-		assert(0 <= u && u < n && 0 <= v && v < n);
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
 
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
 	i32 jump(i32 u, i32 v, i32 k) const {
-		assert(0 <= u && u < n && 0 <= v && v < n && 0 <= k);
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
+		assert(0 <= k);
 
 		const i32 du = depth[u];
 		const i32 dv = depth[v];
