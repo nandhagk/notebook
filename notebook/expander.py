@@ -9,14 +9,27 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
+# #include <lib_name/file_name.hpp>
+INCLUDE_REGEX = re.compile(r"#include\s*<(lib/[a-z_/]*(.hpp))>\s*")
+
+# #endif/ifndef/define (//) LIB_NAME_FILE_NAME_HPP
+INCLUDE_GUARD_REGEX = re.compile(r"#.*LIB_[A-Z_]*_HPP")
+
+STD_HEADERS = (
+    "vector",
+    "functional",
+    "cstdint",
+    "cassert",
+    "algorithm",
+    "utility",
+    "iostream",
+    "chrono",
+)
+
+STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")
+
 
 class Expander:
-    # #include <lib_name/file_name.hpp>
-    INCLUDE_REGEX = re.compile(r"#include\s*[<](lib/[a-z_/]*(.hpp))[>]\s*")
-
-    # #endif/ifndef/define (//) LIB_NAME_FILE_NAME_HPP
-    INCLUDE_GUARD_REGEX = re.compile(r"#.*LIB_[A-Z_]*_HPP")
-
     included: set[Path]
     lib_paths: list[Path]
 
@@ -28,7 +41,8 @@ class Expander:
         line = line.strip()
 
         return bool(
-            self.INCLUDE_GUARD_REGEX.match(line)
+            INCLUDE_GUARD_REGEX.match(line)
+            or STD_HEADER_REGEX.match(line)
             or line == "#pragma once"
             or line.startswith("//"),
         )
@@ -57,9 +71,10 @@ class Expander:
 
         for lineno, line in enumerate(src_code.splitlines(), 1):
             if self.ignore(line):
+                logger.info("ignoring: %s", line)
                 continue
 
-            if matches := self.INCLUDE_REGEX.match(line):
+            if matches := INCLUDE_REGEX.match(line):
                 file_name = matches.group(1)
                 file_path = self.resolve(file_name)
 
@@ -71,10 +86,6 @@ class Expander:
 
                 continue
 
-            if line.startswith("#include") and ".hpp" not in line:
-                logger.info("ignoring: %s", line)
-                continue
-
             result.append(line)
 
         return result
@@ -83,6 +94,4 @@ class Expander:
         self.included.clear()
 
         result = self._expand(src_path, show_lineno)
-        result.insert(0, "#include <bits/stdc++.h>")
-
         return re.sub(r"(\n\s*)+\n+", "\n\n", "\n".join(result))
