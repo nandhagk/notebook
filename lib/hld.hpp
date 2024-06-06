@@ -1,5 +1,5 @@
-#ifndef LIB_HLD_CPP
-#define LIB_HLD_CPP 1
+#ifndef LIB_HLD_HPP
+#define LIB_HLD_HPP 1
 
 #include <vector>
 #include <cassert>
@@ -89,10 +89,11 @@ public:
 		}
 	}
 
-private:
+public:
 	i32 n;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
+private:
 	void dfs_sz(const Graph& g, i32 u) {
 		i32 &x = best[u];
 		const i32 t = par[u];
@@ -133,4 +134,4 @@ private:
 	}
 };
 
-#endif // LIB_HLD_CPP
+#endif // LIB_HLD_HPP
