@@ -24,6 +24,7 @@ STD_HEADERS = (
     "utility",
     "iostream",
     "chrono",
+    "string",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")
