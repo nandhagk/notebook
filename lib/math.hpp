@@ -4,6 +4,7 @@
 #include <utility>
 #include <vector>
 #include <cassert>
+#include <array>
 #include <lib/prelude.hpp>
 
 constexpr i64 safe_mod(i64 x, i64 m) {
@@ -53,7 +54,7 @@ constexpr bool is_prime(i32 n) {
 	i64 d = n - 1;
 	while (d % 2 == 0) d /= 2;
 
-	constexpr i64 bases[3] = {2, 7, 61};
+	constexpr std::array<i64, 3> bases{2, 7, 61};
 	for (const i64 a : bases) {
 		i64 t = d;
 		i64 y = pow_mod(a, t, n);
@@ -94,7 +95,7 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 	return {s, m0};
 }
 
-std::pair<i64, i64> crt(const std::vector<i64>& r, const std::vector<i64>& m) {
+inline std::pair<i64, i64> crt(const std::vector<i64>& r, const std::vector<i64>& m) {
 	assert(r.size() == m.size());
 
 	i32 n = static_cast<i32>(r.size());

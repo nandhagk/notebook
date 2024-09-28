@@ -13,6 +13,7 @@ CXX_FLAGS = [
     "-std=c++20",
     "-O2",
     "-g",
+    "-DNANDHAGK_LOCAL",
     "-fsanitize=address",
     "-fsanitize=undefined",
     "-Wall",
@@ -21,8 +22,16 @@ CXX_FLAGS = [
     "-Wconversion",
 ]
 
+CXX_FLAGS_FAST = [
+    "-std=c++20",
+    "-Ofast",
+    "-DNANDHAGK_LOCAL",
+]
+
 TEMPLATE = """
 #include <bits/stdc++.h>
+#include <contest/debug.hpp>
+
 #include <lib/prelude.hpp>
 
 void solve() {
@@ -52,8 +61,8 @@ def main() -> None:
 @main.command()
 @click.argument("q")
 @click.option("-d", "--debug", default=False, is_flag=True)
-@click.option("-i", "--interactive", default=False, is_flag=True)
-def run(q: str, debug: bool, interactive: bool) -> None:
+@click.option("-f", "--fast", default=False, is_flag=True)
+def run(q: str, debug: bool, fast: bool) -> None:
     """
     Runner.
 
@@ -76,17 +85,14 @@ def run(q: str, debug: bool, interactive: bool) -> None:
     input_path = q_dir / "input.txt"
 
     subprocess.run(
-        ["g++", dst_path, *CXX_FLAGS, "-o", exec_path],
+        ["g++", dst_path, *(CXX_FLAGS_FAST if fast else CXX_FLAGS), "-o", exec_path],
         check=False,
     )
 
     logger.info("compiled: %s", q)
 
-    if interactive:
-        subprocess.run([exec_path], check=False)
-    else:
-        with input_path.open("r") as f:
-            subprocess.run([exec_path], stdin=f, check=False)
+    with input_path.open("r") as f:
+        subprocess.run([exec_path], stdin=f, check=False)
 
 
 @main.command()

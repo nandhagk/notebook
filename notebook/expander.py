@@ -23,8 +23,11 @@ STD_HEADERS = (
     "algorithm",
     "utility",
     "iostream",
+    "iomanip",
+    "type_traits",
     "chrono",
     "string",
+    "array",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")
@@ -73,6 +76,16 @@ class Expander:
         for lineno, line in enumerate(src_code.splitlines(), 1):
             if self.ignore(line):
                 logger.info("ignoring: %s", line)
+                continue
+
+            if line == '#include <contest/debug.hpp>':
+                result.append('')
+                result.append('#ifdef NANDHAGK_LOCAL')
+                result.append('#include "debug.hpp"')
+                result.append('#else')
+                result.append('#define debug(...)')
+                result.append('#endif')
+
                 continue
 
             if matches := INCLUDE_REGEX.match(line):

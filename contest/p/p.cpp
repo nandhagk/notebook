@@ -1,4 +1,6 @@
 #include <bits/stdc++.h>
+#include <contest/debug.hpp>
+
 #include <lib/prelude.hpp>
 
 void solve() {

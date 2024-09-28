@@ -1,227 +1,229 @@
 #ifndef LIB_LAZY_SEGMENT_TREE_HPP
 #define LIB_LAZY_SEGMENT_TREE_HPP 1
 
-#include <vector>
-#include <functional>
 #include <cassert>
+#include <vector>
+#include <bit>
 #include <lib/prelude.hpp>
 
-template<class S, auto op>
-concept IsLazySegmentTreeOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
-
-template <class S, auto e>
-concept IsLazySegmentTreeE = std::is_convertible<decltype(e), std::function<S()>>::value;
-
-template<class S, class F, auto mapping>
-concept IsLazySegmentTreeMapping = std::is_convertible<decltype(mapping), std::function<F(F, S)>>::value;
-
-template<class F, auto composition>
-concept IsLazySegmentTreeComposition = std::is_convertible<decltype(composition), std::function<F(F, F)>>::value;
-
-template<class F, auto id>
-concept IsLazySegmentTreeID = std::is_convertible<decltype(id), std::function<F()>>::value;
-
-template <class S, class G>
-concept IsLazySegmentTreeG = std::is_convertible<G, std::function<bool(S)>>::value;
-
-template <class S, auto op, auto e, class F, auto mapping, auto composition, auto id>
-	requires IsLazySegmentTreeOp<S, op>
-			&& IsLazySegmentTreeE<S, e>
-			&& IsLazySegmentTreeMapping<S, F, mapping>
-			&& IsLazySegmentTreeComposition<F, composition>
-			&& IsLazySegmentTreeID<F, id>
+template <typename ActedMonoid>
 struct LazySegmentTree {
-public:
-	explicit LazySegmentTree(i32 n_) : LazySegmentTree(std::vector<S>(n_, e())) {}
+	using AM = ActedMonoid;
 
-	explicit LazySegmentTree(const std::vector<S>& v) :
-		n(static_cast<int>(v.size())),
-		size(std::bit_ceil(static_cast<u32>(n))),
-		log(std::countr_zero(static_cast<u32>(size))),
-		d(2 * size, e()),
-		lz(size, id())
-	{
-		for (i32 i = 0; i < n; i++) d[size + i] = v[i];
-		for (i32 i = size - 1; i >= 1; i--) update(i);
+	using MX = typename AM::MX;
+	using MA = typename AM::MA;
+
+	using X = typename MX::ValueT;
+	using A = typename MA::ValueT;
+
+	i32 n, log, size;
+	std::vector<X> d;
+	std::vector<A> z;
+
+	LazySegmentTree() {}
+	LazySegmentTree(i32 m) { 
+		Build(m); 
 	}
 
-	void set(i32 p, S x) {
+	template <typename F>
+	LazySegmentTree(i32 m, F f) {
+		Build(m, f);
+	}
+
+	LazySegmentTree(const std::vector<X>& v) {
+		Build(v); 
+	}
+
+	void Build(i32 m) {
+		Build(m, [](i32) -> X { return MX::Unit(); });
+	}
+
+	void Build(const std::vector<X>& v) {
+		Build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
+	}
+
+	template <typename F>
+	void Build(i32 m, F f) {
+		n = m;
+		size = std::bit_ceil(static_cast<u32>(n));
+		log = lowbit(size);
+
+		d.assign(size << 1, MX::Unit());
+		z.assign(size, MA::Unit());
+
+		for (i32 i = 0; i < n; ++i) d[i + size] = f(i);
+		for (i32 i = size - 1; i >= 1; --i) Update(i);
+	}
+
+	void Update(i32 k) { 
+		d[k] = MX::Op(d[2 * k], d[2 * k + 1]); 
+	}
+
+	void Set(i32 p, X x) {
 		assert(0 <= p && p < n);
 
 		p += size;
-		for (i32 i = log; i >= 1; i--) push(p >> i);
+		for (i32 i = log; i >= 1; i--) Push(p >> i);
 
 		d[p] = x;
-		for (i32 i = 1; i <= log; i++) update(p >> i);
+		for (i32 i = 1; i <= log; i++) Update(p >> i);
 	}
 
-	S get(i32 p) {
+	void Multiply(i32 p, const X& x) {
 		assert(0 <= p && p < n);
 
 		p += size;
-		for (i32 i = log; i >= 1; i--) push(p >> i);
+		for (i32 i = log; i >= 1; i--) Push(p >> i);
+
+		d[p] = MX::Op(d[p], x);
+		for (i32 i = 1; i <= log; i++) Update(p >> i);
+	}
+
+	X Get(i32 p) {
+		assert(0 <= p && p < n);
+
+		p += size;
+		for (i32 i = log; i >= 1; i--) Push(p >> i);
 
 		return d[p];
 	}
 
-	S prod(i32 l, i32 r) {
+	std::vector<X> GetAll() {
+		for (i32 k = size - 1; k >= 1; --k) Push(k);
+		return {d.begin() + size, d.begin() + size + n};
+	}
+
+	X Prod(i32 l, i32 r) {
 		assert(0 <= l && l <= r && r <= n);
 
-		if (l == r) return e();
-
-		l += size;
-		r += size;
+		if (l == r) return MX::Unit();
+		l += size, r += size;
 
 		for (i32 i = log; i >= 1; i--) {
-			if (((l >> i) << i) != l) push(l >> i);
-			if (((r >> i) << i) != r) push((r - 1) >> i);
+			if (((l >> i) << i) != l) Push(l >> i);
+			if (((r >> i) << i) != r) Push((r - 1) >> i);
 		}
 
-		S sml = e(), smr = e();
+		X xl = MX::Unit(), xr = MX::Unit();
 		while (l < r) {
-			if (l & 1) sml = op(sml, d[l++]);
-			if (r & 1) smr = op(d[--r], smr);
+			if (l & 1) xl = MX::Op(xl, d[l++]);
+			if (r & 1) xr = MX::Op(d[--r], xr);
+
 			l >>= 1;
 			r >>= 1;
 		}
 
-		return op(sml, smr);
+		return MX::Op(xl, xr);
 	}
 
-	S all_prod() const {
-		return d[1];
+	X ProdAll() { 
+		return d[1]; 
 	}
 
-	void apply(i32 p, F f) {
-		assert(0 <= p && p < n);
-
-		p += size;
-		for (i32 i = log; i >= 1; i--) push(p >> i);
-
-		d[p] = mapping(f, d[p]);
-		for (i32 i = 1; i <= log; i++) update(p >> i);
-	}
-
-	void apply(i32 l, i32 r, F f) {
+	void Apply(i32 l, i32 r, A a) {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return;
-
-		l += size;
-		r += size;
+		l += size, r += size;
 
 		for (i32 i = log; i >= 1; i--) {
-			if (((l >> i) << i) != l) push(l >> i);
-			if (((r >> i) << i) != r) push((r - 1) >> i);
+			if (((l >> i) << i) != l) Push(l >> i);
+			if (((r >> i) << i) != r) Push((r - 1) >> i);
 		}
 
-		{
-			i32 l2 = l, r2 = r;
-			while (l < r) {
-				if (l & 1) all_apply(l++, f);
-				if (r & 1) all_apply(--r, f);
-				l >>= 1;
-				r >>= 1;
-			}
+		i32 l2 = l, r2 = r;
+		while (l < r) {
+			if (l & 1) ApplyAt(l++, a);
+			if (r & 1) ApplyAt(--r, a);
 
-			l = l2;
-			r = r2;
+			l >>= 1;
+			r >>= 1;
 		}
 
+		l = l2, r = r2;
 		for (i32 i = 1; i <= log; i++) {
-			if (((l >> i) << i) != l) update(l >> i);
-			if (((r >> i) << i) != r) update((r - 1) >> i);
+			if (((l >> i) << i) != l) Update(l >> i);
+			if (((r >> i) << i) != r) Update((r - 1) >> i);
 		}
 	}
 
-	template <class G>
-		requires IsLazySegmentTreeG<S, G>
-	i32 max_right(i32 l, G g) {
+	template <typename F>
+	i32 MaxRight(const F f, i32 l) {
 		assert(0 <= l && l <= n);
-		assert(g(e()));
+		assert(f(MX::Unit()));
 
 		if (l == n) return n;
 
 		l += size;
-		for (i32 i = log; i >= 1; i--) push(l >> i);
+		for (i32 i = log; i >= 1; i--) Push(l >> i);
 
-		S sm = e();
+		X sm = MX::Unit();
 		do {
 			while (l % 2 == 0) l >>= 1;
-
-			if (!g(op(sm, d[l]))) {
+			if (!f(MX::Op(sm, d[l]))) {
 				while (l < size) {
-					push(l);
+					Push(l);
 					l = (2 * l);
-					if (g(op(sm, d[l]))) {
-						sm = op(sm, d[l]);
-						l++;
+					if (f(MX::Op(sm, d[l]))) { 
+						sm = MX::Op(sm, d[l++]); 
 					}
 				}
 
 				return l - size;
 			}
-
-			sm = op(sm, d[l]);
-			l++;
+			sm = MX::Op(sm, d[l++]);
 		} while ((l & -l) != l);
 
 		return n;
 	}
 
-	template <class G>
-		requires IsLazySegmentTreeG<S, G>
-	i32 min_left(i32 r, G g) {
+	template <typename F>
+	i32 MinLeft(const F f, i32 r) {
 		assert(0 <= r && r <= n);
-		assert(g(e()));
+		assert(f(MX::Unit()));
 
 		if (r == 0) return 0;
 
 		r += size;
-		for (i32 i = log; i >= 1; i--) push((r - 1) >> i);
+		for (i32 i = log; i >= 1; i--) Push((r - 1) >> i);
 
-		S sm = e();
+		X sm = MX::Unit();
 		do {
 			r--;
 			while (r > 1 && (r % 2)) r >>= 1;
 
-			if (!g(op(d[r], sm))) {
+			if (!f(MX::Op(d[r], sm))) {
 				while (r < size) {
-					push(r);
+					Push(r);
 					r = (2 * r + 1);
-					if (g(op(d[r], sm))) {
-						sm = op(d[r], sm);
-						r--;
+					if (f(MX::Op(d[r], sm))) { 
+						sm = MX::Op(d[r--], sm); 
 					}
 				}
 
 				return r + 1 - size;
 			}
-
-			sm = op(d[r], sm);
+			sm = MX::Op(d[r], sm);
 		} while ((r & -r) != r);
 
 		return 0;
 	}
 
 private:
-	i32 n, size, log;
-	std::vector<S> d;
-	std::vector<F> lz;
+	void ApplyAt(i32 k, A a) {
+		const i64 sz = 1 << (log - topbit(k));
 
-	void update(i32 k) {
-		d[k] = op(d[2 * k], d[2 * k + 1]);
+		d[k] = AM::Act(d[k], a, sz);
+		if (k < size) z[k] = MA::Op(z[k], a);
 	}
 
-	void all_apply(i32 k, F f) {
-		d[k] = mapping(f, d[k]);
-		if (k < size) lz[k] = composition(f, lz[k]);
-	}
+	void Push(i32 k) {
+		if (z[k] == MA::Unit()) return;
 
-	void push(i32 k) {
-		all_apply(2 * k, lz[k]);
-		all_apply(2 * k + 1, lz[k]);
-		lz[k] = id();
+		ApplyAt(2 * k, z[k]);
+		ApplyAt(2 * k + 1, z[k]);
+
+		z[k] = MA::Unit();
 	}
 };
 

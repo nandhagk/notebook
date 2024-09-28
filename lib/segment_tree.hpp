@@ -1,139 +1,161 @@
 #ifndef LIB_SEGMENT_TREE_HPP
 #define LIB_SEGMENT_TREE_HPP 1
 
-#include <vector>
-#include <functional>
 #include <cassert>
+#include <vector>
 #include <lib/prelude.hpp>
 
-template<class S, auto op>
-concept IsSegmentTreeOp = std::is_convertible<decltype(op), std::function<S(S, S)>>::value;
-
-template <class S, auto e>
-concept IsSegmentTreeE = std::is_convertible<decltype(e), std::function<S()>>::value;
-
-template <class S, class F>
-concept IsSegmentTreeF = std::is_convertible<F, std::function<bool(S)>>::value;
-
-template <class S, auto op, auto e>
-	requires IsSegmentTreeOp<S, op> && IsSegmentTreeE<S, e>
+template <class Monoid>
 struct SegmentTree {
-public:
-	explicit SegmentTree(const i32 n_): SegmentTree(std::vector<S>(n_, e())) {}
+        using MX = Monoid;
+        using X = typename MX::ValueT;
 
-	explicit SegmentTree(const std::vector<S> &v):
-		n(static_cast<i32>(v.size())),
-		size(std::bit_ceil(static_cast<u32>(n))),
-		log(std::countr_zero(static_cast<u32>(size))),
-		d(2 * size, e())
-	{
-		for (i32 i = 0; i < n; i++) d[size + i] = v[i];
-		for (i32 i = size - 1; i >= 1; --i) update(i);
-	}
+        std::vector<X> d;
+        i32 n, log, size;
 
-	void set(i32 p, S x) {
-		assert(0 <= p && p < n);
+        SegmentTree() {}
+        explicit SegmentTree(i32 m) {
+                Build(m);
+        }
 
-		p += size;
-		d[p] = x;
+        template <typename F>
+        SegmentTree(i32 m, F f) {
+                Build(m, f);
+        }
 
-		for (i32 i = 1; i <= log; i++) update(p >> i);
-	}
+        explicit SegmentTree(const std::vector<X> &v) {
+                Build(v);
+        }
 
-	S get(i32 p) const {
-		assert(0 <= p && p < n);
+        void Build(i32 m) {
+                Build(m, [](i32) -> X { return MX::Unit(); });
+        }
 
-		return d[p + size];
-	}
+        void Build(const std::vector<X> &v) {
+                Build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
+        }
 
-	S prod(i32 l, i32 r) const {
-		assert(0 <= l && l <= r && r <= n);
+        template <typename F>
+        void Build(i32 m, F f) {
+                n = m;
+		size = std::bit_ceil(static_cast<u32>(n));
+		log = lowbit(size);
 
-		S sml = e(), smr = e();
-		for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
-			if (l & 1) sml = op(sml, d[l++]);
-			if (r & 1) smr = op(d[--r], smr);
-		}
+                d.assign(size << 1, MX::Unit());
 
-		return op(sml, smr);
-	}
+                for (i32 i = 0; i < n; ++i) d[size + i] = f(i);
+                for (i32 i = size - 1; i >= 1; --i) Update(i);
+        }
 
-	S all_prod() const {
-		return d[1];
-	}
+        X Get(i32 i) {
+                return d[size + i];
+        }
 
-	template <class F>
-		requires IsSegmentTreeF<S, F>
-	i32 max_right(i32 l, F f) const {
-		assert(0 <= l && l <= n);
-		assert(f(e()));
+        std::vector<X> GetAll() {
+                return {d.begin() + size, d.begin() + size + n};
+        }
 
-		if (l == n) return n;
+        void Update(i32 i) {
+                d[i] = Monoid::Op(d[2 * i], d[2 * i + 1]);
+        }
 
-		l += size;
-		S sm = e();
+        void Set(i32 i, const X &x) {
+                assert(i < n);
 
-		do {
-			while (l % 2 == 0) l >>= 1;
-			if (!f(op(sm, d[l]))) {
-				while (l < size) {
-					l = 2 * l;
-					if (f(op(sm, d[l]))) {
-						sm = op(sm, d[l]);
-						++l;
-					}
-				}
+                i += size;
+                d[i] = x;
 
-				return l - size;
-			}
+                while (i >>= 1) Update(i);
+        }
 
-			sm = op(sm, d[l]);
-			++l;
-		} while ((l & -l) != l);
+        void Multiply(i32 i, const X &x) {
+                assert(i < n);
 
-		return n;
-	}
+                i += size;
+                d[i] = Monoid::Op(d[i], x);
 
-	template <class F>
-		requires IsSegmentTreeF<S, F>
-	i32 min_left(i32 r, F f) const {
-		assert(0 <= r && r <= n);
-		assert(f(e()));
+                while (i >>= 1) Update(i);
+        }
 
-		if (r == 0) return 0;
+        X Prod(i32 l, i32 r) {
+                assert(0 <= l && l <= r && r <= n);
 
-		r += size;
-		S sm = e();
+                X vl = Monoid::Unit(), vr = Monoid::Unit();
+                l += size, r += size;
 
-		do {
-			--r;
-			while (r > 1 && (r % 2)) r >>= 1;
+                while (l < r) {
+                        if (l & 1) vl = Monoid::Op(vl, d[l++]);
+                        if (r & 1) vr = Monoid::Op(d[--r], vr);
 
-			if (!f(op(d[r], sm))) {
-				while (r < size) {
-					r = 2 * r + 1;
-					if (f(op(d[r], sm))) {
-						sm = op(d[r], sm);
-						--r;
-					}
-				}
+                        l >>= 1;
+                        r >>= 1;
+                }
 
-				return r + 1 - size;
-			}
+                return Monoid::Op(vl, vr);
+        }
 
-			sm = op(d[r], sm);
-		} while ((r & -r) != r);
+        X ProdAll() { 
+                return d[1]; 
+        }
 
-		return 0;
-	}
+        template <class F>
+        i32 MaxRight(F f, i32 l) {
+                assert(0 <= l && l <= n);
+                assert(f(Monoid::Unit()));
 
-private:
-	i32 n, size, log;
-	std::vector<S> d;
+                if (l == n) return n;
 
-	void update(i32 k) {
-		d[k] = op(d[2 * k], d[2 * k + 1]);
-	}
+                l += size;
+                X sm = Monoid::Unit();
+                do {
+                        while (l % 2 == 0) l >>= 1;
+
+                        if (!f(Monoid::Op(sm, d[l]))) {
+                                while (l < size) {
+                                        l = 2 * l;
+                                        if (f(Monoid::Op(sm, d[l]))) {
+                                                sm = Monoid::Op(sm, d[l++]);
+                                        }
+                                }
+
+                                return l - size;
+                        }
+
+                        sm = Monoid::Op(sm, d[l++]);
+                } while ((l & -l) != l);
+
+                return n;
+        }
+
+        template <class F>
+        i32 MinLeft(F f, i32 r) {
+                assert(0 <= r && r <= n)
+                assert(f(Monoid::Unit()));
+
+                if (r == 0) return 0;
+
+                r += size;
+                X sm = Monoid::Unit();
+                do {
+                        --r;
+                        while (r > 1 && (r % 2)) r >>= 1;
+
+                        if (!f(Monoid::Op(d[r], sm))) {
+                                while (r < size) {
+                                        r = 2 * r + 1;
+                                        if (f(Monoid::Op(d[r], sm))) {
+                                                sm = Monoid::Op(d[r--], sm);
+                                        }
+                                }
+
+                                return r + 1 - size;
+                        }
+
+                        sm = Monoid::Op(d[r], sm);
+                } while ((r & -r) != r);
+
+                return 0;
+        }
 };
 
 #endif // LIB_SEGMENT_TREE_HPP
