@@ -4,14 +4,14 @@
 #include <lib/monoids/add.hpp>
 
 template <typename T>
-struct ActedMonoidSumAdd {
-	using MX = MonoidAdd<T>;
-	using MA = MonoidAdd<T>;
+struct acted_monoid_sum_add {
+	using MX = monoid_add<T>;
+	using MA = monoid_add<T>;
 
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X Act(const X &x, const A &a, const i64 size) {
+	static constexpr X act(const X &x, const A &a, const i64 size) {
 		return x + a * T(size);
 	}
 };

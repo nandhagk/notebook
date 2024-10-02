@@ -6,152 +6,150 @@
 #include <lib/prelude.hpp>
 
 template <class Monoid>
-struct SegmentTree {
+struct segment_tree {
         using MX = Monoid;
         using X = typename MX::ValueT;
 
-        std::vector<X> d;
         i32 n, log, size;
+        std::vector<X> d;
 
-        SegmentTree() {}
-        explicit SegmentTree(i32 m) {
-                Build(m);
+        segment_tree() {}
+        explicit segment_tree(i32 m) {
+                build(m);
         }
 
         template <typename F>
-        SegmentTree(i32 m, F f) {
-                Build(m, f);
+        segment_tree(i32 m, F f) {
+                build(m, f);
         }
 
-        explicit SegmentTree(const std::vector<X> &v) {
-                Build(v);
+        explicit segment_tree(const std::vector<X> &v) {
+                build(v);
         }
 
-        void Build(i32 m) {
-                Build(m, [](i32) -> X { return MX::Unit(); });
+        void build(i32 m) {
+                build(m, [](i32) -> X { return MX::unit(); });
         }
 
-        void Build(const std::vector<X> &v) {
-                Build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
+        void build(const std::vector<X> &v) {
+                build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
         }
 
         template <typename F>
-        void Build(i32 m, F f) {
+        void build(i32 m, F f) {
                 n = m;
 		size = std::bit_ceil(static_cast<u32>(n));
 		log = lowbit(size);
 
-                d.assign(size << 1, MX::Unit());
+                d.assign(size << 1, MX::unit());
 
                 for (i32 i = 0; i < n; ++i) d[size + i] = f(i);
-                for (i32 i = size - 1; i >= 1; --i) Update(i);
+                for (i32 i = size - 1; i >= 1; --i) update(i);
         }
 
-        X Get(i32 i) {
+        X get(i32 i) {
                 return d[size + i];
         }
 
-        std::vector<X> GetAll() {
+        std::vector<X> get_all() {
                 return {d.begin() + size, d.begin() + size + n};
         }
 
-        void Update(i32 i) {
-                d[i] = Monoid::Op(d[2 * i], d[2 * i + 1]);
+        void update(i32 i) {
+                d[i] = Monoid::op(d[2 * i], d[2 * i + 1]);
         }
 
-        void Set(i32 i, const X &x) {
+        void set(i32 i, const X &x) {
                 assert(i < n);
 
                 i += size;
                 d[i] = x;
 
-                while (i >>= 1) Update(i);
+                while (i >>= 1) update(i);
         }
 
-        void Multiply(i32 i, const X &x) {
+        void multiply(i32 i, const X &x) {
                 assert(i < n);
 
                 i += size;
-                d[i] = Monoid::Op(d[i], x);
+                d[i] = Monoid::op(d[i], x);
 
-                while (i >>= 1) Update(i);
+                while (i >>= 1) update(i);
         }
 
-        X Prod(i32 l, i32 r) {
+        X prod(i32 l, i32 r) {
                 assert(0 <= l && l <= r && r <= n);
 
-                X vl = Monoid::Unit(), vr = Monoid::Unit();
+                X vl = Monoid::unit(), vr = Monoid::unit();
                 l += size, r += size;
 
                 while (l < r) {
-                        if (l & 1) vl = Monoid::Op(vl, d[l++]);
-                        if (r & 1) vr = Monoid::Op(d[--r], vr);
+                        if (l & 1) vl = Monoid::op(vl, d[l++]);
+                        if (r & 1) vr = Monoid::op(d[--r], vr);
 
                         l >>= 1;
                         r >>= 1;
                 }
 
-                return Monoid::Op(vl, vr);
+                return Monoid::op(vl, vr);
         }
 
-        X ProdAll() { 
+        X prod_all() { 
                 return d[1]; 
         }
 
         template <class F>
-        i32 MaxRight(F f, i32 l) {
-                assert(0 <= l && l <= n);
-                assert(f(Monoid::Unit()));
+        i32 max_right(F f, i32 l) {
+                assert(0 <= l && l <= n && f(Monoid::unit()));
 
                 if (l == n) return n;
 
                 l += size;
-                X sm = Monoid::Unit();
+                X sm = Monoid::unit();
                 do {
                         while (l % 2 == 0) l >>= 1;
 
-                        if (!f(Monoid::Op(sm, d[l]))) {
+                        if (!f(Monoid::op(sm, d[l]))) {
                                 while (l < size) {
                                         l = 2 * l;
-                                        if (f(Monoid::Op(sm, d[l]))) {
-                                                sm = Monoid::Op(sm, d[l++]);
+                                        if (f(Monoid::op(sm, d[l]))) {
+                                                sm = Monoid::op(sm, d[l++]);
                                         }
                                 }
 
                                 return l - size;
                         }
 
-                        sm = Monoid::Op(sm, d[l++]);
+                        sm = Monoid::op(sm, d[l++]);
                 } while ((l & -l) != l);
 
                 return n;
         }
 
         template <class F>
-        i32 MinLeft(F f, i32 r) {
-                assert(0 <= r && r <= n)
-                assert(f(Monoid::Unit()));
+        i32 min_left(F f, i32 r) {
+                assert(0 <= r && r <= n && f(Monoid::unit()));
 
                 if (r == 0) return 0;
 
                 r += size;
-                X sm = Monoid::Unit();
+                X sm = Monoid::unit();
                 do {
                         --r;
                         while (r > 1 && (r % 2)) r >>= 1;
 
-                        if (!f(Monoid::Op(d[r], sm))) {
+                        if (!f(Monoid::op(d[r], sm))) {
                                 while (r < size) {
                                         r = 2 * r + 1;
-                                        if (f(Monoid::Op(d[r], sm))) {
-                                                sm = Monoid::Op(d[r--], sm);
+                                        if (f(Monoid::op(d[r], sm))) {
+                                                sm = Monoid::op(d[r--], sm);
                                         }
                                 }
 
                                 return r + 1 - size;
                         }
 
-                        sm = Monoid::Op(d[r], sm);
+                        sm = Monoid::op(d[r], sm);
                 } while ((r & -r) != r);
 
                 return 0;

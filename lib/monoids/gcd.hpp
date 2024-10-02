@@ -4,15 +4,15 @@
 #include <numeric>
 
 template <class T>
-struct MonoidGCD {
+struct monoid_gcd {
         using X = T;
         using ValueT = T;
 
-        static constexpr X Op(const X &x, const X &y) {
+        static constexpr X op(const X &x, const X &y) {
                 return std::gcd(x, y);
         }
 
-        static constexpr X Unit() {
+        static constexpr X unit() {
                 return X(0);
         }
 

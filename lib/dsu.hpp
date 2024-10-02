@@ -6,23 +6,23 @@
 #include <vector>
 #include <lib/prelude.hpp>
 
-struct DSU {
+struct dsu {
 public:
 	i32 n, ccs;
 	std::vector<i32> d;
 
-	DSU() {}
-	explicit DSU(i32 m) {
-		Build(m);
+	dsu() {}
+	explicit dsu(i32 m) {
+		build(m);
 	}
 
-	void Build(i32 m) {
+	void build(i32 m) {
 		n = ccs = m;
 		d.assign(n, -1);
 	}
 
-	void Reset() {
-		Build(n);
+	void reset() {
+		build(n);
 	}
 
 	i32 operator[](i32 x) {
@@ -36,12 +36,12 @@ public:
 		return x;
 	}
 
-	i32 Size(i32 x) {
+	i32 size(i32 x) {
 		x = (*this)[x];
 		return -d[x];
 	}
 
-	bool Merge(i32 x, i32 y) {
+	bool merge(i32 x, i32 y) {
 		x = (*this)[x];
 		y = (*this)[y];
 

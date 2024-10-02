@@ -2,15 +2,15 @@
 #define LIB_MONOID_AND_HPP 1
 
 template <class T>
-struct MonoidAnd {
+struct monoid_and {
         using X = T;
         using ValueT = T;
 
-        static constexpr X Op(const X &x, const X &y) {
+        static constexpr X op(const X &x, const X &y) {
                 return x & y;
         }
 
-        static constexpr X Unit() {
+        static constexpr X unit() {
                 return X(-1);
         }
 

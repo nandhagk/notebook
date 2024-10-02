@@ -7,16 +7,16 @@
 static const u64 FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
 
 template <class T, class D = void>
-struct Hash {};
+struct hash {};
 
 template <class T>
 inline void hash_combine(u64& seed, const T& v) {
-	Hash<T> hasher;
+	hash<T> hasher;
 	seed ^= hasher(v) + 0x9e3779b97f4a7c15 + (seed << 12) + (seed >> 4);
 };
 
 template <class T>
-struct Hash<T, typename std::enable_if<std::is_integral<T>::value>::type> {
+struct hash<T, typename std::enable_if<std::is_integral<T>::value>::type> {
 	u64 operator()(T _x) const {
 		u64 x = _x;
 		x += 0x9e3779b97f4a7c15 + FIXED_RANDOM;
@@ -27,7 +27,7 @@ struct Hash<T, typename std::enable_if<std::is_integral<T>::value>::type> {
 };
 
 template <class T>
-struct Hash<T, std::void_t<decltype(std::begin(std::declval<T>()))>> {
+struct hash<T, std::void_t<decltype(std::begin(std::declval<T>()))>> {
 	u64 operator()(const T& a) const {
 		u64 value = FIXED_RANDOM;
 		for (const auto& x : a) hash_combine(value, x);
@@ -36,7 +36,7 @@ struct Hash<T, std::void_t<decltype(std::begin(std::declval<T>()))>> {
 };
 
 template <class... T>
-struct Hash<std::tuple<T...>> {
+struct hash<std::tuple<T...>> {
 	u64 operator()(const std::tuple<T...>& a) const {
 		u64 value = FIXED_RANDOM;
 		std::apply([&value](T const&... args) { (hash_combine(value, args), ...); }, a);
@@ -45,7 +45,7 @@ struct Hash<std::tuple<T...>> {
 };
 
 template <class T, class U>
-struct Hash<std::pair<T, U>> {
+struct hash<std::pair<T, U>> {
 	u64 operator()(const std::pair<T, U>& a) const {
 		u64 value = FIXED_RANDOM;
 		hash_combine(value, a.first);

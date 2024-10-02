@@ -95,6 +95,49 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 	return {s, m0};
 }
 
+constexpr i32 primitive_root_constexpr(i32 m) {
+	if (m == 2) return 1;
+	if (m == 167772161) return 3;
+	if (m == 469762049) return 3;
+	if (m == 754974721) return 11;
+	if (m == 998244353) return 3;
+
+	std::array<i32, 20> divs{};
+	divs[0] = 2;
+
+	i32 cnt = 1;
+	i32 x = (m - 1) / 2;
+	while (x % 2 == 0) x /= 2;
+
+	for (i32 i = 3; static_cast<i64>(i) * i <= x; i += 2) {
+		if (x % i == 0) {
+			divs[cnt++] = i;
+			while (x % i == 0) {
+				x /= i;
+			}
+		}
+	}
+
+	if (x > 1) {
+		divs[cnt++] = x;
+	}
+
+	for (i32 g = 2;; g++) {
+		bool ok = true;
+		for (i32 i = 0; i < cnt; i++) {
+			if (pow_mod(g, (m - 1) / divs[i], m) == 1) {
+				ok = false;
+				break;
+			}
+		}
+
+		if (ok) return g;
+	}
+}
+
+template <i32 m> 
+constexpr i32 primitive_root = primitive_root_constexpr(m);
+
 inline std::pair<i64, i64> crt(const std::vector<i64>& r, const std::vector<i64>& m) {
 	assert(r.size() == m.size());
 

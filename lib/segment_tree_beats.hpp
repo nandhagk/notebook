@@ -1,5 +1,5 @@
-#ifndef LIB_LAZY_SEGMENT_TREE_HPP
-#define LIB_LAZY_SEGMENT_TREE_HPP 1
+#ifndef LIB_SEGMENT_TREE_BEATS_HPP
+#define LIB_SEGMENT_TREE_BEATS_HPP 1
 
 #include <cassert>
 #include <vector>
@@ -7,7 +7,7 @@
 #include <lib/prelude.hpp>
 
 template <typename ActedMonoid>
-struct lazy_segment_tree {
+struct segment_tree_beats {
 	using AM = ActedMonoid;
 
 	using MX = typename AM::MX;
@@ -20,17 +20,17 @@ struct lazy_segment_tree {
 	std::vector<X> d;
 	std::vector<A> z;
 
-	lazy_segment_tree() {}
-	lazy_segment_tree(i32 m) { 
+	segment_tree_beats() {}
+	segment_tree_beats(i32 m) { 
 		build(m); 
 	}
 
 	template <typename F>
-	lazy_segment_tree(i32 m, F f) {
+	segment_tree_beats(i32 m, F f) {
 		build(m, f);
 	}
 
-	lazy_segment_tree(const std::vector<X>& v) {
+	segment_tree_beats(const std::vector<X>& v) {
 		build(v); 
 	}
 
@@ -69,16 +69,6 @@ struct lazy_segment_tree {
 		for (i32 i = 1; i <= log; i++) update(p >> i);
 	}
 
-	void multiply(i32 p, const X& x) {
-		assert(0 <= p && p < n);
-
-		p += size;
-		for (i32 i = log; i >= 1; i--) push(p >> i);
-
-		d[p] = MX::op(d[p], x);
-		for (i32 i = 1; i <= log; i++) update(p >> i);
-	}
-
 	X get(i32 p) {
 		assert(0 <= p && p < n);
 
@@ -93,7 +83,7 @@ struct lazy_segment_tree {
 		return {d.begin() + size, d.begin() + size + n};
 	}
 
-	X prod(i32 l, i32 r) {
+	X Prod(i32 l, i32 r) {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return MX::unit();
@@ -147,74 +137,18 @@ struct lazy_segment_tree {
 		}
 	}
 
-	template <typename F>
-	i32 max_right(const F f, i32 l) {
-		assert(0 <= l && l <= n);
-		assert(f(MX::unit()));
-
-		if (l == n) return n;
-
-		l += size;
-		for (i32 i = log; i >= 1; i--) push(l >> i);
-
-		X sm = MX::unit();
-		do {
-			while (l % 2 == 0) l >>= 1;
-			if (!f(MX::op(sm, d[l]))) {
-				while (l < size) {
-					push(l);
-					l = (2 * l);
-					if (f(MX::op(sm, d[l]))) { 
-						sm = MX::op(sm, d[l++]); 
-					}
-				}
-
-				return l - size;
-			}
-			sm = MX::op(sm, d[l++]);
-		} while ((l & -l) != l);
-
-		return n;
-	}
-
-	template <typename F>
-	i32 min_left(const F f, i32 r) {
-		assert(0 <= r && r <= n);
-		assert(f(MX::unit()));
-
-		if (r == 0) return 0;
-
-		r += size;
-		for (i32 i = log; i >= 1; i--) push((r - 1) >> i);
-
-		X sm = MX::unit();
-		do {
-			r--;
-			while (r > 1 && (r % 2)) r >>= 1;
-
-			if (!f(MX::op(d[r], sm))) {
-				while (r < size) {
-					push(r);
-					r = (2 * r + 1);
-					if (f(MX::op(d[r], sm))) { 
-						sm = MX::op(d[r--], sm); 
-					}
-				}
-
-				return r + 1 - size;
-			}
-			sm = MX::op(d[r], sm);
-		} while ((r & -r) != r);
-
-		return 0;
-	}
-
 private:
 	void apply_at(i32 k, A a) {
 		const i64 sz = 1 << (log - topbit(k));
 
 		d[k] = AM::act(d[k], a, sz);
-		if (k < size) z[k] = MA::op(z[k], a);
+		if (k < size) {
+			z[k] = MA::op(z[k], a);
+			if (d[k].fail) {
+				push(k);
+				update(k);
+			}
+		}
 	}
 
 	void push(i32 k) {
@@ -227,4 +161,4 @@ private:
 	}
 };
 
-#endif // LIB_LAZY_SEGMENT_TREE_HPP
+#endif // LIB_SEGMENT_TREE_BEATS_HPP

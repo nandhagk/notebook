@@ -6,8 +6,8 @@
 
 #include <lib/hash.hpp>
 
-template <class Key, class Value, class Hash = ::Hash<Key>>
-using HashMap = __gnu_pbds::gp_hash_table<Key,
+template <class Key, class Value, class Hash = hash<Key>>
+using hash_map = __gnu_pbds::gp_hash_table<Key,
 						Value,
 						Hash,
 						std::equal_to<Key>,
@@ -17,13 +17,13 @@ using HashMap = __gnu_pbds::gp_hash_table<Key,
 											__gnu_pbds::hash_load_check_resize_trigger<>,
 											true>>;
 
-template <class Key, class Hash = ::Hash<Key>>
-using HashSet = HashMap<Key, __gnu_pbds::null_type, Hash>;
+template <class Key, class Hash = hash<Key>>
+using hash_set = hash_map<Key, __gnu_pbds::null_type, Hash>;
 
 template <class Key, class Value, class Compare = std::less<Key>>
-using IndexedMap = __gnu_pbds::tree<Key, Value, Compare, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>;
+using indexed_map = __gnu_pbds::tree<Key, Value, Compare, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>;
 
 template <class Key, class Compare = std::less<Key>>
-using IndexedSet = IndexedMap<Key, __gnu_pbds::null_type, Compare>;
+using indexed_set = indexed_map<Key, __gnu_pbds::null_type, Compare>;
 
 #endif // LIB_PBDS_HPP

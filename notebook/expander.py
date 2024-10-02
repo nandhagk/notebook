@@ -28,6 +28,7 @@ STD_HEADERS = (
     "chrono",
     "string",
     "array",
+    "bit",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

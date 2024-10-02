@@ -6,22 +6,22 @@
 #include <lib/prelude.hpp>
 
 template <class T>
-struct MonoidMNSS {
+struct monoid_mnss {
         using X = std::tuple<T, T, T, T>;
         using ValueT = X;
 
-        static constexpr X Op(const X &x, const X &y) {
+        static constexpr X op(const X &x, const X &y) {
                 const auto [a, b, c, d] = x;
                 const auto [p, q, r, s] = y;
 
                 return {a + p, std::min(b, a + q), std::min(r, c + p), std::min({d, s, c + q})};
         }
 
-        static constexpr X FromElement(const T& t) {
+        static constexpr X from_element(const T& t) {
                 return {t, t, t, t};
         }
 
-        static constexpr X Unit() {
+        static constexpr X unit() {
                 return FromElement(T(0));
         }
 

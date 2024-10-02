@@ -5,14 +5,14 @@
 #include <lib/monoids/affine.hpp>
 
 template <typename T>
-struct ActedMonoidSumAffine {
-	using MX = MonoidAdd<T>;
-	using MA = MonoidAffine<T>;
+struct acted_monoid_sum_affine {
+	using MX = monoid_add<T>;
+	using MA = monoid_affine<T>;
 
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X Act(const X &x, const A &a, const i64 size) {
+	static constexpr X act(const X &x, const A &a, const i64 size) {
 		return x * a.first + T(size) * a.second;
 	}
 };
