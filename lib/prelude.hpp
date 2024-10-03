@@ -43,4 +43,6 @@ inline i32 lowbit(u32 x) { return std::countr_zero(x); }
 inline i32 lowbit(i64 x) { return std::countr_zero(static_cast<u64>(x)); }
 inline i32 lowbit(u64 x) { return std::countr_zero(x); }
 
+#define len(x) static_cast<i64>(x.size())
+
 #endif // LIB_PRELUDE_HPP

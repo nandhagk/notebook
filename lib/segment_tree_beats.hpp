@@ -69,6 +69,16 @@ struct segment_tree_beats {
 		for (i32 i = 1; i <= log; i++) update(p >> i);
 	}
 
+	void multiply(i32 p, const X& x) {
+		assert(0 <= p && p < n);
+
+		p += size;
+		for (i32 i = log; i >= 1; i--) push(p >> i);
+
+		d[p] = MX::op(d[p], x);
+		for (i32 i = 1; i <= log; i++) update(p >> i);
+	}
+
 	X get(i32 p) {
 		assert(0 <= p && p < n);
 
@@ -83,7 +93,7 @@ struct segment_tree_beats {
 		return {d.begin() + size, d.begin() + size + n};
 	}
 
-	X Prod(i32 l, i32 r) {
+	X prod(i32 l, i32 r) {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return MX::unit();
