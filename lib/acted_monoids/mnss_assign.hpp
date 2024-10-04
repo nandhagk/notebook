@@ -14,12 +14,7 @@ struct acted_monoid_mnss_assign {
 
 	static constexpr X act(const X &x, const A &a, const i64 size) {
 		if (a == MA::unit()) return x;
-
-		if (a < 0) {
-			return MX::from_element(a * size);
-		} else {
-			return {a * size, T(0), T(0), T(0)};
-		}
+		return MX::from_element(a * size);
 	}
 };
 

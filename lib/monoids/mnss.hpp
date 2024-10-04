@@ -18,7 +18,7 @@ struct monoid_mnss {
         }
 
         static constexpr X from_element(const T& t) {
-                return {t, t, t, t};
+                return {t, std::min(t, T(0)), std::min(t, T(0)), std::min(t, T(0))};
         }
 
         static constexpr X unit() {

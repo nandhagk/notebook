@@ -6,19 +6,18 @@
 #include <lib/prelude.hpp>
 
 struct hld {
-public:
-	using Graph = std::vector<std::vector<i32>>;
+	using Tree = std::vector<std::vector<i32>>;
 
-	explicit hld(const Graph& g): hld(g, 0) {}
+	explicit hld(const Tree& t): hld(t, 0) {}
 
-	hld(const Graph& g, const i32 root):
-		n(static_cast<i32>(g.size())),
+	hld(const Tree& t, const i32 root):
+		n(static_cast<i32>(t.size())), g(t),
 		sz(n, 1), tin(n), depth(n), par(n), tour(n), best(n, -1), start(n)
 	{
 		par[root] = -1;
-		dfs_sz(g, root);
+		dfs_sz(root);
 		start[root] = root;
-		dfs_hld(g, root);
+		dfs_hld(root);
 	}
 
 	bool is_ancestor(i32 u, i32 v) const {
@@ -89,12 +88,35 @@ public:
 		}
 	}
 
-public:
+	std::vector<std::pair<i32, i32>> decompose(i32 u, i32 v) const {
+		std::vector<std::pair<i32, i32>> up, dn;
+
+		while (start[u] != start[v]) {
+			if (tin[u] < tin[v]) {
+				dn.emplace_back(start[v], v);
+				v = par[start[v]];
+			} else {
+				up.emplace_back(u, start[u]);
+				u = par[start[u]];
+			}
+		}
+
+		if (tin[u] < tin[v]) {
+			dn.emplace_back(u, v);
+		} else {
+			up.emplace_back(u, v);
+		}
+
+		up.insert(up.end(), dn.rbegin(), dn.rend());
+		return up;
+	}
+
 	i32 n;
+	const Tree& g;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
 private:
-	void dfs_sz(const Graph& g, i32 u) {
+	void dfs_sz(i32 u) {
 		i32 &x = best[u];
 		const i32 t = par[u];
 
@@ -104,14 +126,14 @@ private:
 			par[v] = u;
 			depth[v] = depth[u] + 1;
 
-			dfs_sz(g, v);
+			dfs_sz(v);
 
 			sz[u] += sz[v];
 			if (x == -1 || sz[v] > sz[x]) x = v;
 		}
 	}
 
-	void dfs_hld(const Graph& g, i32 u) {
+	void dfs_hld(i32 u) {
 		static i32 time = 0;
 
 		tour[time] = u;
@@ -122,14 +144,14 @@ private:
 
 		if (x != -1) {
 			start[x] = start[u];
-			dfs_hld(g, x);
+			dfs_hld(x);
 		}
 
 		for (const i32 v : g[u]) {
 			if (v == t || v == x) continue;
 
 			start[v] = v;
-			dfs_hld(g, v);
+			dfs_hld(v);
 		}
 	}
 };

@@ -23,15 +23,15 @@ struct barrett {
 	u64 im;
 
 	// @param m `1 <= m`
-	explicit barrett(u32 m) : _m(m), im((u64)(-1) / m + 1) {}
+	constexpr explicit barrett(u32 m) : _m(m), im((u64)(-1) / m + 1) {}
 
 	// @return m
-	u32 umod() const { return _m; }
+	constexpr u32 umod() const { return _m; }
 
 	// @param a `0 <= a < m`
 	// @param b `0 <= b < m`
 	// @return `a * b % m`
-	u32 mul(u32 a, u32 b) const {
+	constexpr u32 mul(u32 a, u32 b) const {
 		// [1] m = 1
 		// a = b = im = 0, so okay
 
@@ -256,17 +256,17 @@ public:
 		return x;
 	}
 
-	static_modint() : _v(0) {}
+	constexpr static_modint() : _v(0) {}
 
 	template <class T, is_signed_int_t<T>* = nullptr>
-	static_modint(T v) {
+	constexpr static_modint(T v) {
 		i64 x = (i64)(v % (i64)(umod()));
 		if (x < 0) x += umod();
 		_v = (u32)(x);
 	}
 
 	template <class T, is_unsigned_int_t<T>* = nullptr>
-	static_modint(T v) {
+	constexpr static_modint(T v) {
 		_v = (u32)(v % umod());
 	}
 
@@ -380,7 +380,6 @@ public:
 		return is;
 	}
 
-private:
 	u32 _v;
 	static constexpr u32 umod() { return m; }
 	static constexpr bool prime = is_prime<m>;

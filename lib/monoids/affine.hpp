@@ -27,6 +27,18 @@ struct monoid_affine {
                 return {T(1), T(0)}; 
         }
 
+        static constexpr X pow(const X& x, i64 n) {
+                X z = unit();
+                X y = x;
+                while (n) {
+                        if (n & 1) z = op(z, y);
+                        y = op(y, y);
+                        n >>= 1;
+                }
+
+                return z;
+        }
+
         static constexpr bool commutative = false;
 };
 
