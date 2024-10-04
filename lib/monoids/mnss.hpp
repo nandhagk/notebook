@@ -22,7 +22,7 @@ struct monoid_mnss {
         }
 
         static constexpr X unit() {
-                return FromElement(T(0));
+                return from_element(T(0));
         }
 
         static constexpr bool commutative = false;
