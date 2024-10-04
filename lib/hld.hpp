@@ -28,6 +28,25 @@ public:
 		return tin[u] <= tin[v] && tin[u] + sz[u] > tin[v];
 	}
 
+	i32 jump(i32 u, i32 k) const {
+		assert(0 <= u && u < n);
+		assert(0 <= k);
+
+		if (depth[u] < k) return -1;
+
+		while (u != -1) {
+			const i32 s = start[u];
+			if (depth[s] <= depth[u] - k) {
+				return tour[tin[u] - k];
+			}
+
+			k -= depth[u] - depth[s] + 1;
+			u = par[s];
+		}
+
+		return u;
+	}
+
 	i32 lca(i32 u, i32 v) const {
 		assert(0 <= u && u < n);
 		assert(0 <= v && v < n);
@@ -49,6 +68,28 @@ public:
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
 	}
 
+	i32 jump(i32 u, i32 v, i32 k) const {
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
+		assert(0 <= k);
+
+		const i32 du = depth[u];
+		const i32 dv = depth[v];
+		const i32 dx = depth[lca(u, v)];
+
+		const i32 l = du - dx;
+		const i32 r = dv - dx;
+
+		if (l + r < k) {
+			return -1;
+		} else if (k < l) {
+			return jump(u, k);
+		} else {
+			return jump(v, l + r - k);
+		}
+	}
+
+public:
 	i32 n;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
