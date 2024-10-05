@@ -29,6 +29,7 @@ STD_HEADERS = (
     "string",
     "array",
     "bit",
+    "random",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")
