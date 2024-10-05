@@ -8,6 +8,10 @@
 struct hld {
 	using Tree = std::vector<std::vector<i32>>;
 
+	i32 n;
+	const Tree& g;
+	std::vector<i32> sz, tin, depth, par, tour, best, start;
+
 	explicit hld(const Tree& t): hld(t, 0) {}
 
 	hld(const Tree& t, const i32 root):
@@ -111,9 +115,6 @@ struct hld {
 		return up;
 	}
 
-	i32 n;
-	const Tree& g;
-	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
 private:
 	void dfs_sz(i32 u) {

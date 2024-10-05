@@ -10,6 +10,8 @@ using i64 = std::int64_t;
 using u64 = std::uint64_t;
 using i128 = __int128;
 using u128 = unsigned __int128;
+using isize = std::ptrdiff_t;
+using usize = std::size_t;
 
 using f32 = float;
 using f64 = double;
@@ -42,7 +44,5 @@ inline i32 lowbit(i32 x) { return std::countr_zero(static_cast<u32>(x)); }
 inline i32 lowbit(u32 x) { return std::countr_zero(x); }
 inline i32 lowbit(i64 x) { return std::countr_zero(static_cast<u64>(x)); }
 inline i32 lowbit(u64 x) { return std::countr_zero(x); }
-
-#define len(x) static_cast<i64>(x.size())
 
 #endif // LIB_PRELUDE_HPP
