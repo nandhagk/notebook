@@ -11,6 +11,9 @@ struct monoid_mnss {
         using ValueT = X;
 
         static constexpr X op(const X &x, const X &y) {
+                if (x == unit()) return y;
+                if (y == unit()) return x;
+
                 const auto [a, b, c, d] = x;
                 const auto [p, q, r, s] = y;
 
@@ -18,11 +21,11 @@ struct monoid_mnss {
         }
 
         static constexpr X from_element(const T& t) {
-                return {t, std::min(t, T(0)), std::min(t, T(0)), std::min(t, T(0))};
+                return {t, t, t, t};
         }
 
         static constexpr X unit() {
-                return from_element(T(0));
+                return from_element(inf<T>);
         }
 
         static constexpr bool commutative = false;
