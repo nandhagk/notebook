@@ -12,8 +12,8 @@ template <class ActedMonoid>
 struct hld_lazy_segment_tree {
 	using AM = ActedMonoid;
 	
-        using MX = AM::MX;
-	using MA = AM::MA;
+        using MX = typename AM::MX;
+	using MA = typename AM::MA;
 
         using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
@@ -21,11 +21,11 @@ struct hld_lazy_segment_tree {
 	const hld& h;
 
 	struct RAM {
-		using MX = monoid_reverse_monoid<MX>;
-		using MA = MA;
+		using MX = monoid_reverse_monoid<hld_lazy_segment_tree::MX>;
+		using MA = hld_lazy_segment_tree::MA;
 
-		using X = MX::ValueT;
-		using A = MA::ValueT;
+		using X = typename MX::ValueT;
+		using A = typename MA::ValueT;
 
 		static constexpr X act(const X& x, const A& a, const i64 size) {
 			return AM::act(x, a, size);

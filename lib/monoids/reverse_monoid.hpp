@@ -3,7 +3,7 @@
 
 template <class Monoid>
 struct monoid_reverse_monoid {
-        using X = Monoid::ValueT;
+        using X = typename Monoid::ValueT;
         using ValueT = X;
 
         static constexpr X op(const X &x, const X &y) {
