@@ -28,10 +28,35 @@ std::vector<i32> z_algorithm(const std::vector<T>& s) {
 inline std::vector<i32> z_algorithm(const std::string& s) {
         const i32 n = static_cast<i32>(s.size());
 
-        std::vector<i32> s2(n);
-        for (i32 i = 0; i < n; ++i) s2[i] = s[i];
+        std::vector<i32> t(n);
+        for (i32 i = 0; i < n; ++i) t[i] = s[i];
 
-        return z_algorithm(s2);
+        return z_algorithm(t);
+}
+
+template <class T>
+std::vector<i32> kmp(const std::vector<T> &s) {
+        const i32 n = static_cast<i32>(s.size());
+
+        std::vector<i32> k(n);
+        for (i32 i = 1; i < n; ++i) {
+                i32 j = k[i - 1];
+                while (j > 0 && s[i] != s[j]) j = k[j - 1];
+
+                if (s[i] == s[j]) ++j;
+                k[i] = j;
+        }
+
+        return k;
+}
+
+inline std::vector<i32> kmp(const std::string& s) {
+        const i32 n = static_cast<i32>(s.size());
+
+        std::vector<i32> t(n);
+        for (i32 i = 0; i < n; ++i) t[i] = s[i];
+
+        return kmp(t);
 }
 
 #endif // LIB_STRING_HPP
