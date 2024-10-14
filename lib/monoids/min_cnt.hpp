@@ -6,7 +6,7 @@
 
 template <class T>
 struct monoid_min_cnt {
-        using X = std::pair<T, i32>;
+        using X = std::pair<T, i64>;
         using ValueT = X;
 
         static constexpr X op(const X &x, const X &y) {
@@ -20,11 +20,11 @@ struct monoid_min_cnt {
         }
 
         static constexpr X unit() {
-                return {inf<T>, 0};
+                return {inf<T>, static_cast<i64>(0)};
         }
 
         static constexpr X from_element(const T& t) {
-                return {t, 1};
+                return {t, static_cast<i64>(1)};
         }
 
         static constexpr bool commutative = true;

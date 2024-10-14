@@ -9,11 +9,11 @@ if TYPE_CHECKING:
 
 logger = getLogger(__name__)
 
-# #include <lib_name/file_name.hpp>
-INCLUDE_REGEX = re.compile(r"#include\s*<(lib/[a-z_/]*(.hpp))>\s*")
+# #include <file_name.hpp>
+INCLUDE_REGEX = re.compile(r"#include\s*<([a-z_/]*(.hpp))>\s*")
 
-# #endif/ifndef/define (//) LIB_NAME_FILE_NAME_HPP
-INCLUDE_GUARD_REGEX = re.compile(r"#.*LIB_[A-Z_]*_HPP")
+# #endif/ifndef/define (//) FILE_NAME_HPP
+INCLUDE_GUARD_REGEX = re.compile(r"#.*[A-Z_]*_HPP")
 
 STD_HEADERS = (
     "vector",
@@ -30,6 +30,7 @@ STD_HEADERS = (
     "array",
     "bit",
     "random",
+    "numeric",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

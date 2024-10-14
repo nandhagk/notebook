@@ -17,6 +17,7 @@ namespace __DEBUG_UTIL__
     inline void print(char x) { std::cerr << "\'" << x << "\'"; }
     inline void print(bool x) { std::cerr << (x ? "T" : "F"); }
     inline void print(std::string x) { std::cerr << "\"" << x << "\""; }
+    inline void print(std::string_view x) { std::cerr << "\"" << x << "\""; }
     inline void print(std::vector<bool> &v)
     { /* Overloaded this because stl optimizes vector<bool> by using
          _Bit_reference instead of bool to conserve space. */

@@ -93,6 +93,9 @@ struct hld {
 	}
 
 	std::vector<std::pair<i32, i32>> decompose(i32 u, i32 v) const {
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
+
 		std::vector<std::pair<i32, i32>> up, dn;
 
 		while (start[u] != start[v]) {
@@ -114,7 +117,6 @@ struct hld {
 		up.insert(up.end(), dn.rbegin(), dn.rend());
 		return up;
 	}
-
 
 private:
 	void dfs_sz(i32 u) {
