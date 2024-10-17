@@ -4,9 +4,9 @@
 #include <utility>
 #include <lib/prelude.hpp>
 
-template <class T>
+template <class T, class S>
 struct monoid_min_cnt {
-        using X = std::pair<T, i64>;
+        using X = std::pair<T, S>;
         using ValueT = X;
 
         static constexpr X op(const X &x, const X &y) {
@@ -20,11 +20,7 @@ struct monoid_min_cnt {
         }
 
         static constexpr X unit() {
-                return {inf<T>, static_cast<i64>(0)};
-        }
-
-        static constexpr X from_element(const T& t) {
-                return {t, static_cast<i64>(1)};
+                return {inf<T>, S(0)};
         }
 
         static constexpr bool commutative = true;

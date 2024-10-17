@@ -10,12 +10,11 @@
 #include <lib/acted_monoids/min_cnt_add.hpp>
 #include <lib/lazy_segment_tree.hpp>
 
+template <typename T>
 struct rectangle_union {
-	std::vector<i64> xs, ys;
+	std::vector<T> xs, ys;
 
-	void add(i64 xl, i64 yt, i64 xr, i64 yb) {
-		assert(xl < xr && yt > yb);
-
+	void add(T xl, T yt, T xr, T yb) {
 		xs.push_back(xl);
 		xs.push_back(xr);
 
@@ -23,7 +22,7 @@ struct rectangle_union {
 		ys.push_back(yb);
 	}
 
-	i64 area() {
+	T area() {
 		const i32 n = static_cast<i32>(xs.size());
 
 		std::vector<i32> xi(n), yi(n), yr(n);
@@ -38,19 +37,19 @@ struct rectangle_union {
 			return ys[a] == ys[b] ? a < b : ys[a] < ys[b]; 
 		});
 
-		std::vector<i64> as(n), bs(n);
+		std::vector<T> as(n), bs(n);
 		for (i32 i = 0; i < n; ++i) {
 			as[i] = xs[xi[i]];
 			bs[i] = ys[yi[i]];
 			yr[yi[i]] = i;
 		}
 
-		lazy_segment_tree<acted_monoid_min_cnt_add<i64>> st(n - 1, [&](const i32 i) -> std::pair<i32, i64> { 
+		lazy_segment_tree<acted_monoid_min_cnt_add<i32, T>> st(n - 1, [&](const i32 i) -> std::pair<i32, T> { 
 			return {0, bs[i + 1] - bs[i]}; 
 		});
 
-		i64 area{};
-		i64 total = bs[n - 1] - bs[0];
+		T area{};
+		T total = bs[n - 1] - bs[0];
 
 		for (i32 i = 0; i < n - 1; ++i) {
 			const i32 k = xi[i] / 2;
@@ -60,8 +59,8 @@ struct rectangle_union {
 			st.apply(l, r, a);
 
 			const auto [m, c] = st.prod_all();
-			const i64 dy = total - (m == 0 ? c : 0);
-			const i64 dx = as[i + 1] - as[i];
+			const T dy = total - (m == 0 ? c : 0);
+			const T dx = as[i + 1] - as[i];
 
 			area += dx * dy;
 		}
