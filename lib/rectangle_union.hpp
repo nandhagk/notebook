@@ -14,6 +14,12 @@ template <typename T>
 struct rectangle_union {
 	std::vector<T> xs, ys;
 
+	rectangle_union() {}
+	explicit rectangle_union(i32 n) {
+		xs.reserve(2 * n);
+		ys.reserve(2 * n);
+	}
+
 	void add_rectangle(T x0, T y0, T x1, T y1) {
 		xs.push_back(x0);
 		xs.push_back(x1);
