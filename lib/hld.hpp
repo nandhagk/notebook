@@ -8,14 +8,14 @@
 struct hld {
 	using Tree = std::vector<std::vector<i32>>;
 
-	i32 n;
+	i32 n, time;
 	const Tree& g;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
 	explicit hld(const Tree& t): hld(t, 0) {}
 
 	hld(const Tree& t, const i32 root):
-		n(static_cast<i32>(t.size())), g(t),
+		n(static_cast<i32>(t.size())), time{}, g(t),
 		sz(n, 1), tin(n), depth(n), par(n), tour(n), best(n, -1), start(n)
 	{
 		par[root] = -1;
@@ -142,8 +142,6 @@ private:
 	}
 
 	void dfs_hld(i32 u) {
-		static i32 time = 0;
-
 		tour[time] = u;
 		tin[u] = time++;
 
