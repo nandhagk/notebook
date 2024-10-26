@@ -11,7 +11,6 @@ public:
 	i32 n, ccs;
 	std::vector<i32> d;
 
-	dsu() {}
 	explicit dsu(i32 m) {
 		build(m);
 	}

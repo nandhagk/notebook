@@ -31,11 +31,6 @@ struct hld {
 		return tin[u] <= tin[v] && tin[u] + sz[u] > tin[v];
 	}
 
-	bool is_on_path(i32 u, i32 v, i32 s) const {
-		const i32 l = lca(u, v);
-		return l == s || (is_ancestor(s, u) ^ is_ancestor(s, v));
-	}
-
 	i32 jump(i32 u, i32 k) const {
 		assert(0 <= u && u < n);
 		assert(0 <= k);
@@ -74,6 +69,10 @@ struct hld {
 		assert(0 <= v && v < n);
 
 		return depth[u] + depth[v] - 2 * depth[lca(u, v)];
+	}
+
+	bool is_on_path(i32 u, i32 v, i32 s) const {
+		return lca(u, v) == s || (is_ancestor(s, u) ^ is_ancestor(s, v));
 	}
 
 	i32 jump(i32 u, i32 v, i32 k) const {

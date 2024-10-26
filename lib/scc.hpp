@@ -7,13 +7,13 @@
 inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 	const i32 n = static_cast<i32>(g.size());
 
-	std::vector<i32> visited, low(n), tin(n, -1), ids(n);
-	visited.reserve(n);
+	std::vector<i32> seen, low(n), tin(n, -1), ids(n);
+	seen.reserve(n);
 
-	i32 timer{}, group{};
+	i32 time{}, group{};
 	const auto dfs = [&](auto &&self, i32 u) -> void {
-		low[u] = tin[u] = timer++;
-		visited.push_back(u);
+		tin[u] = low[u] = time++;
+		seen.push_back(u);
 
 		for (const i32 v : g[u]) {
 			if (tin[v] == -1) {
@@ -26,8 +26,8 @@ inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 
 		if (low[u] == tin[u]) {
 			for (;;) {
-				const i32 v = visited.back();
-				visited.pop_back();
+				const i32 v = seen.back();
+				seen.pop_back();
 
 				tin[v] = n;
 				ids[v] = group;
@@ -40,8 +40,7 @@ inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 	};
 
 	for (i32 u = 0; u < n; ++u) {
-		if (tin[u] != -1) continue;
-		dfs(dfs, u);
+		if (tin[u] == -1) dfs(dfs, u);
 	}
 
 	for (auto& id : ids) id = group - 1 - id;

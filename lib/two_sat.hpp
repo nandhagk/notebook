@@ -8,7 +8,7 @@
 
 struct two_sat {
 	i32 n;
-	std::vector<i32> ans;
+	std::vector<bool> ans;
 	std::vector<std::vector<i32>> g;
 
 	explicit two_sat(i32 m):
