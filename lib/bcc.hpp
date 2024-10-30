@@ -1,5 +1,5 @@
-#ifndef LIB_BCT_HPP
-#define LIB_BCT_HPP 1
+#ifndef LIB_BCC_HPP
+#define LIB_BCC_HPP 1
 
 #include <vector>
 #include <lib/prelude.hpp>
@@ -62,7 +62,7 @@ inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const std
 	return {std::move(c), std::move(ccs)};
 }
 
-inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> bct(
+inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> block_cut_tree(
         const std::vector<std::vector<i32>> &g, 
         const std::vector<bool> &c, 
         const std::vector<std::vector<i32>> &ccs) {
@@ -91,4 +91,4 @@ inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> bct(
         return {std::move(ids), std::move(h)};
 }
 
-#endif // LIB_BCT_HPP
+#endif // LIB_BCC_HPP

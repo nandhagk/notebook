@@ -1,5 +1,5 @@
-#ifndef LIB_BCC_HPP
-#define LIB_BCC_HPP 1
+#ifndef LIB_BECC_HPP
+#define LIB_BECC_HPP 1
 
 #include <vector>
 #include <lib/prelude.hpp>
@@ -54,4 +54,4 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
 	return ids;
 }
 
-#endif // LIB_BCC_HPP
+#endif // LIB_BECC_HPP

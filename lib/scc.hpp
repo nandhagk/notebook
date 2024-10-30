@@ -48,7 +48,8 @@ inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 	return ids;
 }
 
-inline std::vector<std::pair<i32, i32>> make_sc(const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
+inline std::vector<std::pair<i32, i32>> make_strongly_connected(
+	const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
 	const i32 n = static_cast<i32>(g.size());
         const i32 k = *std::max_element(ids.begin(), ids.end()) + 1;
 

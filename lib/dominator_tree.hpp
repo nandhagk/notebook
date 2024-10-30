@@ -1,11 +1,11 @@
-#ifndef LIB_DOM_HPP
-#define LIB_DOM_HPP 1
+#ifndef LIB_DOMINATOR_TREE_HPP
+#define LIB_DOMINATOR_TREE_HPP 1
 
 #include <vector>
 #include <numeric>
 #include <lib/prelude.hpp>
 
-inline std::vector<i32> dom(const std::vector<std::vector<i32>> &g, const i32 root) {
+inline std::vector<i32> dominator_tree(const std::vector<std::vector<i32>> &g, const i32 root) {
         const i32 n = static_cast<i32>(g.size());
 
         std::vector<i32> par(n, -1), tin(n, -1), seen;
@@ -77,4 +77,4 @@ inline std::vector<i32> dom(const std::vector<std::vector<i32>> &g, const i32 ro
         return idom;
 }
 
-#endif // LIB_DOM_HPP
+#endif // LIB_DOMINATOR_TREE_HPP
