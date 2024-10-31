@@ -61,7 +61,7 @@ class Expander:
                 return file_path
 
         logger.error("cannot find: %s", file_name)
-        raise FileNotFoundError
+        raise FileNotFoundError(file_name)
 
     def _expand(self, src_path: Path, show_lineno: bool) -> list[str]:
         result: list[str] = []
@@ -93,15 +93,18 @@ class Expander:
 
             if matches := INCLUDE_REGEX.match(line):
                 file_name = matches.group(1)
-                file_path = self.resolve(file_name)
+                try:
+                    file_path = self.resolve(file_name)
 
-                expanded = self._expand(file_path, show_lineno)
+                    expanded = self._expand(file_path, show_lineno)
 
-                result.extend(expanded)
-                if show_lineno:
-                    result.append(f'#line {lineno + 1} "{src_path}"')
+                    result.extend(expanded)
+                    if show_lineno:
+                        result.append(f'#line {lineno + 1} "{src_path}"')
 
-                continue
+                    continue
+                except Exception:
+                    pass
 
             result.append(line)
 
