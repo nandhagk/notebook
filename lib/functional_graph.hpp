@@ -10,14 +10,14 @@
 
 struct functional_graph {
         i32 n;
-        const std::vector<i32> &to;
-
-        std::vector<i32> root;
+        std::vector<i32> to, root;
         std::vector<std::vector<i32>> t;
         hld h;
 
-        explicit functional_graph(const std::vector<i32> &to_):
-                n{static_cast<i32>(to_.size())}, to{to_}, root(n), t(n + 1), h(build()) {}
+        functional_graph() {}
+        explicit functional_graph(const std::vector<i32> &to_) {
+                build(to_);
+        }
 
         bool in_cycle(i32 u) const {
                 assert(0 <= u && u < n);
@@ -57,8 +57,13 @@ struct functional_graph {
                 return k == 0 ? u : h.jump(b, k - 1);
         }
 
-private:
-        hld build() {
+        void build(const std::vector<i32> to_) {
+                n = static_cast<i32>(to_.size());
+
+                to = to_;
+                root.assign(n, 0);
+                t.assign(n + 1, {});
+
                 dsu dsu(n);
                 for (i32 u = 0; u < n; ++u) {
                         if (!dsu.merge(u, to[u])) root[u] = u;
@@ -82,7 +87,7 @@ private:
                         }
                 }
 
-                return hld(t, n);
+                h.build(t, n);
         }
 };
 

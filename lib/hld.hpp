@@ -14,19 +14,36 @@ struct hld {
 	using Tree = std::vector<std::vector<i32>>;
 
 	i32 n, time;
-	const Tree& g;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
+	hld() {}
 	explicit hld(const Tree& t): hld(t, 0) {}
 
-	hld(const Tree& t, const i32 root):
-		n(static_cast<i32>(t.size())), time{}, g(t),
-		sz(n, 1), tin(n), depth(n), par(n), tour(n), best(n, -1), start(n)
-	{
+	hld(const Tree& t, i32 root) {
+		build(t, root);
+	}
+
+	void build(const Tree& t) {
+		build(t, 0);
+	}
+
+	void build(const Tree& t, i32 root) {
+		n = static_cast<i32>(t.size());
+		time = 0;
+
+		sz.assign(n, 1);
+		tin.assign(n, 0);
+		depth.assign(n, 0);
+		par.assign(n, 0);
+		tour.assign(n, 0);
+		best.assign(n, -1);
+		start.assign(n, 0);
+
 		par[root] = -1;
-		dfs_sz(root);
+		dfs_sz(t, root);
+
 		start[root] = root;
-		dfs_hld(root);
+		dfs_hld(t, root);
 	}
 
 	bool is_ancestor(i32 u, i32 v) const {
@@ -128,7 +145,7 @@ struct hld {
 	}
 
 private:
-	void dfs_sz(i32 u) {
+	void dfs_sz(const Tree& g, i32 u) {
 		i32 &x = best[u];
 		const i32 t = par[u];
 
@@ -138,14 +155,14 @@ private:
 			par[v] = u;
 			depth[v] = depth[u] + 1;
 
-			dfs_sz(v);
+			dfs_sz(g, v);
 
 			sz[u] += sz[v];
 			if (x == -1 || sz[v] > sz[x]) x = v;
 		}
 	}
 
-	void dfs_hld(i32 u) {
+	void dfs_hld(const Tree& g, i32 u) {
 		tour[time] = u;
 		tin[u] = time++;
 
@@ -154,14 +171,14 @@ private:
 
 		if (x != -1) {
 			start[x] = start[u];
-			dfs_hld(x);
+			dfs_hld(g, x);
 		}
 
 		for (const i32 v : g[u]) {
 			if (v == t || v == x) continue;
 
 			start[v] = v;
-			dfs_hld(v);
+			dfs_hld(g, v);
 		}
 	}
 };

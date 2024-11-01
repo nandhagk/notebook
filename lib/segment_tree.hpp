@@ -13,7 +13,7 @@ struct segment_tree {
         i32 n, log, size;
         std::vector<X> d;
 
-        segment_tree(): segment_tree(0) {}
+        segment_tree() {}
         explicit segment_tree(i32 m) {
                 build(m);
         }
