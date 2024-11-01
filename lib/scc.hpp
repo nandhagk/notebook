@@ -75,8 +75,7 @@ inline std::vector<std::pair<i32, i32>> make_strongly_connected(
 			if (seen[v]) continue;
 
 			seen[v] = true;
-			const i32 zero_out = self(self, v);
-			if (zero_out != -1) return zero_out; 
+			if (const i32 zero_out = self(self, v); zero_out != -1) return zero_out; 
                 }
 
                 return -1;

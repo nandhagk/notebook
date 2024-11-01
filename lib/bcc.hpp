@@ -5,7 +5,7 @@
 #include <lib/prelude.hpp>
 
 inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const std::vector<std::vector<i32>> &g) {
-	const i32 n = static_cast<i32>(g.size());
+        const i32 n = static_cast<i32>(g.size());
 
         std::vector<i32> seen, tin(n, -1), low(n);
         seen.reserve(n);
@@ -79,10 +79,11 @@ inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> block_cut_tree
                 for (const i32 u : cc) {
                         if (!c[u]) {
                                 ids[u] = group;
-                        } else {
-                                h[ids[u]].push_back(group);
-                                h[group].push_back(ids[u]);
+                                continue;
                         }
+
+                        h[ids[u]].push_back(group);
+                        h[group].push_back(ids[u]);
                 }
  
                 ++group;
