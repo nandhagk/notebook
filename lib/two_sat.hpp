@@ -11,6 +11,7 @@ struct two_sat {
 	std::vector<bool> ans;
 	std::vector<std::vector<i32>> g;
 
+	two_sat(): two_sat(0) {}
 	explicit two_sat(i32 m):
 		n{m}, ans(n), g(2 * n) {}
 

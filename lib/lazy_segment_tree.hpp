@@ -20,18 +20,18 @@ struct lazy_segment_tree {
 	std::vector<X> d;
 	std::vector<A> z;
 
-	lazy_segment_tree() {}
-	lazy_segment_tree(i32 m) { 
+	lazy_segment_tree(): lazy_segment_tree(0) {}
+	explicit lazy_segment_tree(i32 m) { 
 		build(m); 
+	}
+
+	explicit lazy_segment_tree(const std::vector<X>& v) {
+		build(v); 
 	}
 
 	template <typename F>
 	lazy_segment_tree(i32 m, F f) {
 		build(m, f);
-	}
-
-	lazy_segment_tree(const std::vector<X>& v) {
-		build(v); 
 	}
 
 	void build(i32 m) {

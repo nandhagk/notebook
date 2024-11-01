@@ -13,18 +13,18 @@ struct segment_tree {
         i32 n, log, size;
         std::vector<X> d;
 
-        segment_tree() {}
+        segment_tree(): segment_tree(0) {}
         explicit segment_tree(i32 m) {
                 build(m);
+        }
+
+        explicit segment_tree(const std::vector<X> &v) {
+                build(v);
         }
 
         template <typename F>
         segment_tree(i32 m, F f) {
                 build(m, f);
-        }
-
-        explicit segment_tree(const std::vector<X> &v) {
-                build(v);
         }
 
         void build(i32 m) {
