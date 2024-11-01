@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <vector>
-#include <bit>
 #include <lib/prelude.hpp>
 
 template <typename ActedMonoid>
@@ -45,9 +44,11 @@ struct lazy_segment_tree {
 	template <typename F>
 	void build(i32 m, F f) {
 		n = m;
-		size = std::bit_ceil(static_cast<u32>(n));
-		log = lowbit(size);
 
+                log = 1;
+                while ((1 << log) < n) ++log;
+
+                size = 1 << log;
 		d.assign(size << 1, MX::unit());
 		z.assign(size, MA::unit());
 

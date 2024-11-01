@@ -21,29 +21,30 @@ inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const std
                 i32 child{};
                 for (const i32 v : g[u]) {
                         if (v == t) continue;
-
-                        if (tin[v] == -1) {
-                                ++child;
-                                const i32 s = static_cast<i32>(seen.size());
-
-                                self(self, v, u);
-                                low[u] = std::min(low[u], low[v]);
-
-                                if ((t == -1 && child > 1) || (t != -1 && low[v] >= tin[u])) {
-                                        c[u] = true;
-                                        auto &cc = ccs.back();
- 
-                                        cc.push_back(u);
-                                        while (static_cast<i32>(seen.size()) > s) {
-                                                cc.push_back(seen.back());
-                                                seen.pop_back();
-                                        }
- 
-                                        ccs.emplace_back();
-                                }
-                        } else {
+                        
+                        if (tin[v] != -1) {
                                 low[u] = std::min(low[u], tin[v]);
-			}
+                                continue;
+                        }
+
+                        ++child;
+                        const i32 s = static_cast<i32>(seen.size());
+
+                        self(self, v, u);
+                        low[u] = std::min(low[u], low[v]);
+
+                        if ((t == -1 && child > 1) || (t != -1 && low[v] >= tin[u])) {
+                                c[u] = true;
+                                auto &cc = ccs.back();
+
+                                cc.push_back(u);
+                                while (static_cast<i32>(seen.size()) > s) {
+                                        cc.push_back(seen.back());
+                                        seen.pop_back();
+                                }
+
+                                ccs.emplace_back();
+                        }
                 }
         };
  

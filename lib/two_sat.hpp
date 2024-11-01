@@ -11,9 +11,16 @@ struct two_sat {
 	std::vector<bool> ans;
 	std::vector<std::vector<i32>> g;
 
-	two_sat(): two_sat(0) {}
-	explicit two_sat(i32 m):
-		n{m}, ans(n), g(2 * n) {}
+	two_sat() {}
+	explicit two_sat(i32 m) {
+		build(m);
+	}
+
+	void build(i32 m) {
+		n = m;
+		ans.assign(n, false);
+		g.assign(2 * n, {});
+	}
 
 	void add_clause(i32 i, bool p, i32 j, bool q) {
 		assert(0 <= i && i < n);

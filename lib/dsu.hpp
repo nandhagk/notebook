@@ -11,7 +11,7 @@ public:
 	i32 n, ccs;
 	std::vector<i32> d;
 
-	dsu(): dsu(0) {}
+	dsu() {}
 	explicit dsu(i32 m) {
 		build(m);
 	}
@@ -53,6 +53,12 @@ public:
 		--ccs;
 
 		return true;
+	}
+
+	std::vector<i32> get_all() {
+		std::vector<i32> a(n);
+		for (i32 i = 0; i < n; ++i) a[i] = (*this)[i];
+		return a;
 	}
 };
 

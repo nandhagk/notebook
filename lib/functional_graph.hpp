@@ -11,7 +11,6 @@
 struct functional_graph {
         i32 n;
         std::vector<i32> to, root;
-        std::vector<std::vector<i32>> t;
         hld h;
 
         functional_graph() {}
@@ -57,12 +56,13 @@ struct functional_graph {
                 return k == 0 ? u : h.jump(b, k - 1);
         }
 
-        void build(const std::vector<i32> to_) {
+        void build(const std::vector<i32> &to_) {
                 n = static_cast<i32>(to_.size());
 
                 to = to_;
                 root.assign(n, 0);
-                t.assign(n + 1, {});
+
+                std::vector<std::vector<i32>> t(n + 1);
 
                 dsu dsu(n);
                 for (i32 u = 0; u < n; ++u) {

@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <vector>
-#include <bit>
 #include <lib/prelude.hpp>
 
 template <typename ActedMonoid>
@@ -21,17 +20,17 @@ struct segment_tree_beats {
 	std::vector<A> z;
 
 	segment_tree_beats() {}
-	segment_tree_beats(i32 m) { 
+	explicit segment_tree_beats(i32 m) { 
 		build(m); 
+	}
+
+	explicit segment_tree_beats(const std::vector<X>& v) {
+		build(v); 
 	}
 
 	template <typename F>
 	segment_tree_beats(i32 m, F f) {
 		build(m, f);
-	}
-
-	segment_tree_beats(const std::vector<X>& v) {
-		build(v); 
 	}
 
 	void build(i32 m) {
@@ -45,9 +44,11 @@ struct segment_tree_beats {
 	template <typename F>
 	void build(i32 m, F f) {
 		n = m;
-		size = std::bit_ceil(static_cast<u32>(n));
-		log = lowbit(size);
 
+                log = 1;
+                while ((1 << log) < n) ++log;
+
+                size = 1 << log;
 		d.assign(size << 1, MX::unit());
 		z.assign(size, MA::unit());
 
