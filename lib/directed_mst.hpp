@@ -7,113 +7,107 @@
 #include <lib/prelude.hpp>
 #include <lib/rollback_dsu.hpp>
 
-template <typename T> 
-struct directed_mst {
-        explicit directed_mst(i32 m) : n(m), heap(n, -1) {}
+template <typename T>
+inline std::vector<i32> directed_mst(
+        const std::vector<std::vector<std::pair<i32, T>>> &g, const i32 root) {
+        const i32 n = static_cast<i32>(g.size());
 
-        void add_edge(i32 u, i32 v, T w) {
-                assert(0 <= u && u < n);
-                assert(0 <= v && v < n);
+        i32 m{};
+        for (i32 u = 0; u < n; ++u) m += static_cast<i32>(g[u].size());
 
-                const i32 id = static_cast<i32>(from.size());
-                from.push_back(u);
-                to.push_back(v);
-                cost.push_back(w);
-                left.push_back(-1);
-                right.push_back(-1);
-                lazy.push_back(T(0));
+        std::vector<i32> seen(n, -1), path(n), queue(n), in(n, -1), heap(n, -1);
+        std::vector<i32> from(m), to(m), left(m), right(m);
+        std::vector<T> cost(m), lazy(m);
 
-                heap[v] = merge(heap[v], id);
-        }
-
-        std::pair<T, std::vector<i32>> run(i32 root) {
-                rollback_dsu dsu(n);
-                T result{};
-
-                std::vector<i32> seen(n, -1), path(n), queue(n), in(n, -1);
-                seen[root] = root;
-
-                std::vector<std::pair<i32, std::vector<i32>>> cycles;
-                for (i32 s = 0; s < n; ++s) {
-                        i32 u = s, pos = 0, w = -1;
-                        while (!~seen[u]) {
-                                if (!~heap[u]) return {-1, {}};
-
-                                push(heap[u]);
-                                const i32 e = heap[u];
-                                result += cost[e];
-                                lazy[heap[u]] -= cost[e];
-                                heap[u] = pop(heap[u]);
-                                queue[pos] = e;
-                                path[pos++] = u;
-                                seen[u] = s;
-                                u = dsu.find(from[e]);
-                                if (seen[u] == s) {
-                                        i32 cycle = -1;
-                                        i32 end = pos;
-                                        do {
-                                                w = path[--pos];
-                                                cycle = merge(cycle, heap[w]);
-                                        } while (dsu.merge(u, w));
-
-                                        u = dsu.find(u);
-                                        heap[u] = cycle;
-                                        seen[u] = -1;
-                                        cycles.emplace_back(u,
-                                                std::vector<i32>(queue.begin() + pos,
-                                                                 queue.begin() + end));
-                                }
-                        }
-
-                        for (i32 i = 0; i < pos; ++i) in[dsu.find(to[queue[i]])] = queue[i];
-                }
-
-                for (auto it = cycles.rbegin(); it != cycles.rend(); ++it) {
-                        const auto &[u, comp] = *it;
-                        const i32 count = static_cast<i32>(comp.size()) - 1;
-                        dsu.rollback(count);
-
-                        i32 inedge = in[u];
-                        for (const i32 e : comp) in[dsu.find(to[e])] = e;
-
-                        in[dsu.find(to[inedge])] = inedge;
-                }
-
-                std::vector<i32> parent;
-                parent.reserve(n);
-
-                for (i32 i : in) parent.push_back(~i ? from[i] : -1);
-                return {result, parent};
-        }
-
-private:
-        void push(i32 u) {
+        const auto push = [&](i32 u) -> void {
                 cost[u] += lazy[u];
                 if (const i32 l = left[u]; ~l) lazy[l] += lazy[u];
                 if (const i32 r = right[u]; ~r) lazy[r] += lazy[u];
                 lazy[u] = 0;
-        }
+        };
 
-        i32 merge(i32 u, i32 v) {
+        const auto merge = [&](auto &&self, i32 u, i32 v) -> i32 {
                 if (!~u || !~v) return ~u ? u : v;
 
                 push(u);
                 push(v);
                 if (cost[u] > cost[v]) std::swap(u, v);
 
-                right[u] = merge(v, right[u]);
+                right[u] = self(self, v, right[u]);
                 std::swap(left[u], right[u]);
                 return u;
-        }
+        };
 
-        i32 pop(i32 u) {
+        const auto pop = [&](i32 u) -> i32 {
                 push(u);
-                return merge(left[u], right[u]);
+                return merge(merge, left[u], right[u]);
+        };
+
+        i32 id{};
+        for (i32 u = 0; u < n; ++u) {
+                for (const auto &[v, w] : g[u]) {
+                        from[id] = u;
+                        to[id] = v;
+                        cost[id] = w;
+                        left[id] = -1;
+                        right[id] = -1;
+                        heap[v] = merge(merge, heap[v], id);
+                        ++id;
+                }
         }
 
-        i32 n;
-        std::vector<i32> from, to, left, right, heap;
-        std::vector<T> cost, lazy;
-};
+        rollback_dsu dsu(n);
+        seen[root] = root;
+
+        std::vector<std::pair<i32, std::vector<i32>>> cycles;
+        for (i32 s = 0; s < n; ++s) {
+                i32 u = s, pos = 0, w = -1;
+                while (!~seen[u]) {
+                        if (!~heap[u]) return {};
+
+                        push(heap[u]);
+                        const i32 e = heap[u];
+                        lazy[heap[u]] -= cost[e];
+                        heap[u] = pop(heap[u]);
+                        queue[pos] = e;
+                        path[pos++] = u;
+                        seen[u] = s;
+                        u = dsu.find(from[e]);
+                        if (seen[u] == s) {
+                                i32 cycle = -1;
+                                i32 end = pos;
+                                do {
+                                        w = path[--pos];
+                                        cycle = merge(merge, cycle, heap[w]);
+                                } while (dsu.merge(u, w));
+
+                                u = dsu.find(u);
+                                heap[u] = cycle;
+                                seen[u] = -1;
+                                cycles.emplace_back(u,
+                                        std::vector<i32>(queue.begin() + pos,
+                                                         queue.begin() + end));
+                        }
+                }
+
+                for (i32 i = 0; i < pos; ++i) in[dsu.find(to[queue[i]])] = queue[i];
+        }
+
+        for (auto it = cycles.rbegin(); it != cycles.rend(); ++it) {
+                const auto &[u, comp] = *it;
+                const i32 count = static_cast<i32>(comp.size()) - 1;
+                dsu.rollback(count);
+
+                const i32 inedge = in[u];
+                for (const i32 e : comp) in[dsu.find(to[e])] = e;
+
+                in[dsu.find(to[inedge])] = inedge;
+        }
+
+        std::vector<i32> par(n);
+        for (i32 u = 0; u < n; ++u) par[u] = ~in[u] ? from[in[u]] : -1;
+
+        return par;
+}
 
 #endif // LIB_DIRECTED_MST_HPP
