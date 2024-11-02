@@ -2,7 +2,6 @@
 #define LIB_PRELUDE_HPP 1
 
 #include <cstdint>
-#include <bit>
 
 using i32 = std::int32_t;
 using u32 = std::uint32_t;

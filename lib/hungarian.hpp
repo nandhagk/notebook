@@ -38,7 +38,7 @@ std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
 		if (transferrable[row]) {
 			i32 col = row_mate[row];
 			i32 c = -1;
-			for (i32 v = 0; v < n; ++v) {
+			for (i32 v = 0; v < m; ++v) {
 				if (v != col && (c == -1 || residual(row, c) > residual(row, v))) c = v;
 			}
 
