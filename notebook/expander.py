@@ -31,6 +31,10 @@ STD_HEADERS = (
     "bit",
     "random",
     "numeric",
+    "queue",
+    "stack",
+    "set",
+    "map",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

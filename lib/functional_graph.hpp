@@ -14,8 +14,8 @@ struct functional_graph {
         hld h;
 
         functional_graph() {}
-        explicit functional_graph(const std::vector<i32> &to_) {
-                build(to_);
+        explicit functional_graph(const std::vector<i32> &t) {
+                build(t);
         }
 
         bool in_cycle(i32 u) const {
@@ -56,13 +56,13 @@ struct functional_graph {
                 return k == 0 ? u : h.jump(b, k - 1);
         }
 
-        void build(const std::vector<i32> &to_) {
-                n = static_cast<i32>(to_.size());
+        void build(const std::vector<i32> &t) {
+                n = static_cast<i32>(t.size());
 
-                to = to_;
+                to = t;
                 root.assign(n, 0);
 
-                std::vector<std::vector<i32>> t(n + 1);
+                std::vector<std::vector<i32>> g(n + 1);
 
                 dsu dsu(n);
                 for (i32 u = 0; u < n; ++u) {
@@ -70,24 +70,24 @@ struct functional_graph {
                 }
 
                 for (i32 u = 0; u < n; ++u) {
-                        if (root[u] == u) root[dsu[u]] = u;
+                        if (root[u] == u) root[dsu.find(u)] = u;
                 }
 
                 for (i32 u = 0; u < n; ++u) {
-                        root[u] = root[dsu[u]];
+                        root[u] = root[dsu.find(u)];
                 }
 
                 for (i32 u = 0; u < n; ++u) {
                         if (root[u] == u) {
-                                t[u].push_back(n);
-                                t[n].push_back(u);
+                                g[u].push_back(n);
+                                g[n].push_back(u);
                         } else {
-                                t[to[u]].push_back(u);
-                                t[u].push_back(to[u]);
+                                g[to[u]].push_back(u);
+                                g[u].push_back(to[u]);
                         }
                 }
 
-                h.build(t, n);
+                h.build(g, n);
         }
 };
 

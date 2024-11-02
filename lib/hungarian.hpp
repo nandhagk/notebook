@@ -78,7 +78,7 @@ std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
 	for (i32 row = 0; row < n; ++row) {
 		if (row_mate[row] != -1) continue;
 
-		std::vector<T> dist(n);
+		std::vector<T> dist(m);
 		for (i32 c = 0; c < m; ++c) dist[c] = residual(row, c);
 
 		i32 scanned = 0, labeled = 0, last = 0;

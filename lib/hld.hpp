@@ -248,7 +248,9 @@ struct hld_segment_tree {
 		return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
 	}
 
-	X prod_all() { return st.prod_all(); }
+	X prod_all() { 
+		return st.prod_all(); 
+	}
 
 	X prod(i32 u, i32 v) {
 		const i32 a = h.tin[u];
@@ -342,7 +344,9 @@ struct hld_lazy_segment_tree {
 		return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
 	}
 
-	X prod_all() { return st.prod_all(); }
+	X prod_all() { 
+		return st.prod_all(); 
+	}
 
 	X prod(i32 u, i32 v) {
 		const i32 a = h.tin[u];
