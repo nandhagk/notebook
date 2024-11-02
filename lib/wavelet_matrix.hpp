@@ -110,10 +110,10 @@ struct wavelet_matrix {
                 }
         }
 
-        i32 count(i32 l, i32 r, T t) const {
+        i32 count(i32 l, i32 r, T a) const {
                 assert(0 <= l && l <= r && r <= n);
 
-                const i32 p = static_cast<i32>(std::lower_bound(rv.begin(), rv.end(), t) - rv.begin());
+                const i32 p = static_cast<i32>(std::lower_bound(rv.begin(), rv.end(), a) - rv.begin());
 
                 if (l == r || p == 0) return 0;
                 if (p == size) return r - l;
@@ -139,8 +139,8 @@ struct wavelet_matrix {
                 return cnt;
         }
 
-        i32 count(i32 l, i32 r, T t1, T t2) const {
-                return count(l, r, t2) - count(l, r, t1);
+        i32 count(i32 l, i32 r, T a, T b) const {
+                return count(l, r, a) - count(l, r, b);
         }
 
         T kth(i32 l, i32 r, i32 k) const {
