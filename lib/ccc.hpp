@@ -1,12 +1,12 @@
-#ifndef LIB_CCCC_HPP
-#define LIB_CCCC_HPP 1
+#ifndef LIB_CCC_HPP
+#define LIB_CCC_HPP 1
 
 #include <vector>
 #include <numeric>
 #include <queue>
 #include <lib/prelude.hpp>
 
-inline std::vector<i32> cccc(const std::vector<std::vector<i32>> &g) {
+inline std::vector<i32> ccc(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
 
         std::vector<i32> ids(n, -1), rem(n), flg(n);
@@ -47,4 +47,4 @@ inline std::vector<i32> cccc(const std::vector<std::vector<i32>> &g) {
         return ids;
 }
 
-#endif // LIB_CCCC_HPP
+#endif // LIB_CCC_HPP

@@ -4,14 +4,13 @@
 #include <algorithm>
 #include <cassert>
 #include <vector>
-#include <stack>
 
 #include <lib/prelude.hpp>
 
 struct rollback_dsu {
         i32 n, ccs;
         std::vector<i32> d;
-        std::stack<std::pair<i32, i32>> his;
+        std::vector<std::pair<i32, i32>> h;
 
         rollback_dsu() {}
         explicit rollback_dsu(i32 m) {
@@ -21,8 +20,7 @@ struct rollback_dsu {
         void build(i32 m) {
                 n = ccs = m;
                 d.assign(n, -1);
-                
-                while (!his.empty()) his.pop();
+                h.clear();
         }
 
         i32 find(i32 u) const {
@@ -39,7 +37,7 @@ struct rollback_dsu {
                 if (u == v) return false;
                 if (-d[u] < -d[v]) std::swap(u, v);
 
-                his.emplace(v, d[v]);
+                h.emplace_back(v, d[v]);
                 d[u] += d[v];
                 d[v] = u;
                 --ccs;
@@ -61,22 +59,23 @@ struct rollback_dsu {
         }
 
         void rollback() {
-                assert(!his.empty());
+                assert(!h.empty());
 
-                const auto [v, val] = his.top();
+                const auto [v, val] = h.back();
                 const i32 u = d[v];
 
                 d[v] = val;
                 d[u] -= val;
 
                 ++ccs;
-                his.pop();
+                h.pop_back();
         }
 
         void rollback(i32 k) {
-                for (i32 i = 0; i < k; ++i) rollback();
-        }
+                assert(0 <= k);
 
+                while (k--) rollback();
+        }
 };
 
 #endif // LIB_ROLLBACK_DSU_HPP
