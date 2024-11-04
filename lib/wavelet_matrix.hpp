@@ -177,6 +177,14 @@ struct wavelet_matrix {
                 const i32 k = count(l, r, *it);
                 return k == r - l ? a : kth(l, r, k);
         }
+
+        T prev(i32 l, i32 r, T a) const {
+                const auto it = std::lower_bound(rv.begin(), rv.end(), a);
+                if (it == rv.begin()) return a;
+
+                const i32 k = count(l, r, *it);
+                return k == 0 ? a : kth(l, r, k - 1);
+        }
 };
 
 template <typename T>
@@ -284,8 +292,8 @@ struct hld_wavelet_matrix {
                 const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
                 if (it == wm.rv.begin()) return a;
 
-                const i32 k = count_path(u, v, *std::prev(it));
-                return k == 0 ? a : kth_path(u, v, k);
+                const i32 k = count_path(u, v, *it);
+                return k == 0 ? a : kth_path(u, v, k - 1);
         }
 
         T next_subtree(i32 u, T a) const {
@@ -300,8 +308,8 @@ struct hld_wavelet_matrix {
                 const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
                 if (it == wm.rv.begin()) return a;
 
-                const i32 k = count_path(u, *std::prev(it));
-                return k == 0 ? a : kth_path(u, k);
+                const i32 k = count_path(u, *it);
+                return k == 0 ? a : kth_path(u, k - 1);
         }
 };
 
