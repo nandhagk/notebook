@@ -14,7 +14,7 @@ struct bit_vector {
         std::vector<std::pair<u64, u32>> d;
 
         explicit bit_vector(i32 m):
-                n(m), d((n + 127) >> 6) {}
+        n(m), d((n + 127) >> 6) {}
 
         void set(i32 i) {
                 d[i >> 6].first |= static_cast<u64>(1) << (i & 63);
@@ -69,7 +69,7 @@ struct wavelet_matrix {
 
                 std::vector<i32> vi(n);
                 std::iota(vi.begin(), vi.end(), 0);
-                std::sort(vi.begin(), vi.end(), [&](i32 i, i32 j) {
+                std::sort(vi.begin(), vi.end(), [&](const i32 i, const i32 j) {
                         return v[i] == v[j] ? i < j : v[i] < v[j];
                 });
 
@@ -94,8 +94,7 @@ struct wavelet_matrix {
                 for (i32 d = log - 1; d >= 0; --d) {
                         i32 p0{}, p1{};
                         for (i32 i = 0; i < n; ++i) {
-                                const bool f = (b[i] >> d) & 1;
-                                if (f) {
+                                if ((b[i] >> d) & 1) {
                                         bv[d].set(i);
                                         b1[p1++] = b[i];
                                 } else {

@@ -15,7 +15,7 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
  
                 i32 cnt{};
                 for (const i32 v : g[u]) {
-                        if (v == t && !cnt) {
+                        if (v == t && cnt == 0) {
                                 ++cnt;
                                 continue;
                         }
@@ -35,7 +35,7 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
 
 	const auto is_bridge = [&](i32 u, i32 v) {
 		if (tin[u] > tin[v]) std::swap(u, v);
-		return low[u] > tin[v];
+		return tin[u] < low[v];
 	};
 
 	const auto dfs2 = [&](auto &&self, i32 u) -> void {
@@ -48,7 +48,10 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
 	};
 
 	for (i32 u = 0; u < n; ++u) {
-		if (ids[u] == -1) dfs2(dfs2, u);
+		if (ids[u] != -1) continue;
+
+                dfs2(dfs2, u);
+                ++group;
 	}
 
 	return ids;

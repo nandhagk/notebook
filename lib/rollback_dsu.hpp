@@ -58,6 +58,23 @@ struct rollback_dsu {
                 return -d[find(u)];
         }
 
+        std::vector<i32> ids() const {
+                std::vector<std::vector<i32>> cc(n);
+                for (i32 u = 0; u < n; ++u) cc[find(u)].push_back(u);
+
+                std::vector<i32> ids;
+
+                i32 group{};
+                for (i32 u = 0; u < n; ++u) {
+                        if (cc[u].empty()) continue;
+
+                        for (const i32 v : cc[u]) ids[v] = group;
+                        ++group;
+                }
+
+                return ids;
+        }
+
         void rollback() {
                 assert(!h.empty());
 

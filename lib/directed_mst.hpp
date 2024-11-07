@@ -93,8 +93,8 @@ inline std::vector<i32> directed_mst(
                 for (i32 i = 0; i < pos; ++i) in[dsu.find(to[queue[i]])] = queue[i];
         }
 
-        for (auto it = cycles.rbegin(); it != cycles.rend(); ++it) {
-                const auto &[u, comp] = *it;
+        std::reverse(cycles.begin(), cycles.end());
+        for (const auto &[u, comp] : cycles) {
                 const i32 count = static_cast<i32>(comp.size()) - 1;
                 dsu.rollback(count);
 

@@ -21,8 +21,9 @@ struct dsu {
                 d.assign(n, -1);
         }
 
-        i32 find(i32 u) const {
-                return d[u] < 0 ? u : find(d[u]);
+        i32 find(i32 u) {
+                if (d[u] < 0) return u;
+                return d[u] = find(d[u]);
         }
 
         bool merge(i32 u, i32 v) {
@@ -42,17 +43,34 @@ struct dsu {
                 return true;
         }
 
-        bool same(i32 u, i32 v) const {
+        bool same(i32 u, i32 v) {
                 assert(0 <= u && u < n);
                 assert(0 <= v && v < n);
 
                 return find(u) == find(v);
         }
 
-        i32 size(i32 u) const {
+        i32 size(i32 u) {
                 assert(0 <= u && u < n);
                 
                 return -d[find(u)];
+        }
+
+        std::vector<i32> ids() {
+                std::vector<std::vector<i32>> cc(n);
+                for (i32 u = 0; u < n; ++u) cc[find(u)].push_back(u);
+
+                std::vector<i32> ids(n);
+
+                i32 group{};
+                for (i32 u = 0; u < n; ++u) {
+                        if (cc[u].empty()) continue;
+
+                        for (const i32 v : cc[u]) ids[v] = group;
+                        ++group;
+                }
+
+                return ids;
         }
 };
 

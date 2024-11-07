@@ -8,8 +8,9 @@
 
 #include <lib/prelude.hpp>
 
+// http://compalg.inf.elte.hu/~tony/Kutatas/EGHH/Comb-IvanyiLucz-23Nov.pdf
 inline bool erdos_gallai(const std::vector<i32> &d) {
-        std::vector<i64> deg(d.begin(), d.end());
+        std::vector<i32> deg(d.begin(), d.end());
         const i32 n = static_cast<i32>(deg.size());
 
         if (n == 0) return true;
@@ -19,9 +20,9 @@ inline bool erdos_gallai(const std::vector<i32> &d) {
         std::vector<i32> cnt(n);
         for (i32 i = 0; i < n; ++i) ++cnt[deg[i]];
 
-        i32 p = n - 1;
+        i32 p = n;
         for (i32 i = 0; i < n; ++i) {
-                for (i32 j = 0; j < cnt[i]; ++j) deg[p--] = i;
+                for (i32 j = 0; j < cnt[i]; ++j) deg[--p] = i;
         }
 
         std::vector<i64> h(n);
@@ -32,16 +33,14 @@ inline bool erdos_gallai(const std::vector<i32> &d) {
                 while (w >= 0 && deg[w] < i) --w;
 
                 const i64 y = std::max(i, w);
-                if (h[i] > (i + 1) * y + h[n - 1] - h[y]) return false;
+                if (h[i] > y * (i + 1) + h[n - 1] - h[y]) return false;
         }
 
         return true;
 }
 
 inline std::vector<std::pair<i32, i32>> havel_hakimi(const std::vector<i32> &dg) {
-        assert(erdos_gallai(dg));
-
-        std::vector<i64> deg(dg.begin(), dg.end());
+        std::vector<i32> deg(dg.begin(), dg.end());
         const i32 n = static_cast<i32>(deg.size());
 
         std::vector<std::vector<i32>> d(n);
@@ -67,17 +66,17 @@ inline std::vector<std::pair<i32, i32>> havel_hakimi(const std::vector<i32> &dg)
                                 continue;
                         }
 
-                        const i32 x = d[k].back();
+                        const i32 v = d[k].back();
                         d[k].pop_back();
 
-                        nbd.push_back(x);
+                        nbd.push_back(v);
                 }
 
-                for (const i32 x : nbd) {
-                        es.emplace_back(u, x);
+                for (const i32 v : nbd) {
+                        es.emplace_back(u, v);
 
-                        --deg[x];
-                        d[deg[x]].push_back(x);
+                        --deg[v];
+                        d[deg[v]].push_back(v);
                 }
 
                 deg[u] = 0;
