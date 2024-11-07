@@ -69,14 +69,13 @@ inline std::vector<i32> matching(const std::vector<std::vector<i32>> &g) {
                                 if (label[v] == -1) {
                                         par[v] = u;
                                         label[v] = 1;
-                                        const i32 mv = mate[v];
-                                        if (mv == -1) {
+                                        if (mate[v] == -1) {
                                                 augment(v);
                                                 goto done;
                                         }
 
-                                        q.push(mv);
-                                        label[mv] = 0;
+                                        q.push(mate[v]);
+                                        label[mate[v]] = 0;
                                 } else if (!label[v] && orig[u] != orig[v]) {
                                         const i32 w = lca(u, v);
 
