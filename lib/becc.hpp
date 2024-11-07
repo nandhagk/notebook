@@ -7,18 +7,15 @@
 inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
 	const i32 n = static_cast<i32>(g.size());
 
-        std::vector<i32> tin(n, -1), low(n), ids(n, -1);
         i32 time{}, group{};
+        std::vector<i32> tin(n, -1), low(n), ids(n, -1);
 
         const auto dfs = [&](auto &&self, i32 u, i32 t = -1) -> void {
                 tin[u] = low[u] = time++;
  
                 i32 cnt{};
                 for (const i32 v : g[u]) {
-                        if (v == t && cnt == 0) {
-                                ++cnt;
-                                continue;
-                        }
+                        if (v == t && !cnt++) continue;
  
                         if (tin[v] == -1) {
                                 self(self, v, u);

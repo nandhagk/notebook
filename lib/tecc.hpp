@@ -10,26 +10,26 @@
 inline std::vector<i32> tecc(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
 
-        i32 dft = -1;
-        std::vector<i32> pre(n, -1), post(n), path(n, -1), low(n), deg(n);
+        i32 time{};
+        std::vector<i32> tin(n, -1), tout(n), path(n, -1), low(n), deg(n);
 
         dsu dsu(n);
         const auto dfs = [&](auto &&self, i32 u, i32 t = -1) -> void {
-                i32 pc{};
+                tin[u] = low[u] = time++;
 
-                low[u] = pre[u] = ++dft;
+                i32 cnt{};
                 for (i32 v : g[u]) {
-                        if (v == u || (v == t && !pc++)) continue;
+                        if (v == u || (v == t && !cnt++)) continue;
 
-                        if (pre[v] != -1) {
-                                if (pre[v] < pre[u]) {
+                        if (tin[v] != -1) {
+                                if (tin[v] < tin[u]) {
                                         ++deg[u];
-                                        low[u] = std::min(low[u], pre[v]);
+                                        low[u] = std::min(low[u], tin[v]);
                                         continue;
                                 }
 
                                 --deg[u];
-                                for (i32 &p = path[u]; p != -1 && pre[p] <= pre[v] && pre[v] <= post[p]; p = path[p]) {
+                                for (i32 &p = path[u]; p != -1 && tin[p] <= tin[v] && tin[v] <= tout[p]; p = path[p]) {
                                         dsu.merge(u, p);
                                         deg[u] += deg[p];
                                 }
@@ -56,11 +56,11 @@ inline std::vector<i32> tecc(const std::vector<std::vector<i32>> &g) {
                         }
                 }
 
-                post[u] = dft;
+                tout[u] = time;
         };
 
         for (i32 u = 0; u < n; ++u) {
-                if (pre[u] == -1) dfs(dfs, u);
+                if (tin[u] == -1) dfs(dfs, u);
         }
 
         return dsu.ids();

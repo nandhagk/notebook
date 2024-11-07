@@ -22,6 +22,8 @@ struct dsu {
         }
 
         i32 find(i32 u) {
+                assert(0 <= u && u < n);
+
                 if (d[u] < 0) return u;
                 return d[u] = find(d[u]);
         }

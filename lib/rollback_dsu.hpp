@@ -24,6 +24,8 @@ struct rollback_dsu {
         }
 
         i32 find(i32 u) const {
+                assert(0 <= u && u < n);
+
                 return d[u] < 0 ? u : find(d[u]);
         }
 

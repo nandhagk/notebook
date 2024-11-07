@@ -223,9 +223,7 @@ std::vector<i32> lcp_array(const std::vector<T>& s, const std::vector<i32>& sa) 
         assert(n >= 1);
 
         std::vector<i32> rnk(n);
-        for (i32 i = 0; i < n; ++i) {
-                rnk[sa[i]] = i;
-        }
+        for (i32 i = 0; i < n; ++i) rnk[sa[i]] = i;
 
         std::vector<i32> lcp(n - 1);
 
