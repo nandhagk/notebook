@@ -93,7 +93,7 @@ struct lazy_segment_tree {
 	}
 
 	std::vector<X> get_all() {
-		for (i32 k = size - 1; k >= 1; --k) push(k);
+		for (i32 k = 1; k < size; ++k) push(k);
 		return {d.begin() + size, d.begin() + size + n};
 	}
 
