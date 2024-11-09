@@ -58,9 +58,7 @@ struct hld {
 
 		while (u != -1) {
 			const i32 s = start[u];
-			if (depth[s] <= depth[u] - k) {
-				return tour[tin[u] - k];
-			}
+			if (depth[s] <= depth[u] - k) return tour[tin[u] - k];
 
 			k -= depth[u] - depth[s] + 1;
 			u = par[s];
@@ -91,6 +89,10 @@ struct hld {
 	}
 
 	bool is_on_path(i32 u, i32 v, i32 s) const {
+		assert(0 <= u && u < n);
+		assert(0 <= v && v < n);
+		assert(0 <= s && s < n);
+
 		return lca(u, v) == s || (is_ancestor(s, u) ^ is_ancestor(s, v));
 	}
 
