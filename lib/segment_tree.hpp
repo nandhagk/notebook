@@ -85,8 +85,11 @@ struct segment_tree {
         X prod(i32 l, i32 r) {
                 assert(0 <= l && l <= r && r <= n);
 
-                X vl = Monoid::unit(), vr = Monoid::unit();
-                l += size, r += size;
+                X vl = Monoid::unit();
+                X vr = Monoid::unit();
+
+                l += size;
+                r += size;
 
                 while (l < r) {
                         if (l & 1) vl = Monoid::op(vl, d[l++]);
@@ -166,10 +169,10 @@ struct hld_segment_tree {
         using MX = Monoid;
         using X = typename MX::ValueT;
 
-	const hld& h;
+        const hld& h;
 
-	segment_tree<MX> st;
-	segment_tree<monoid_reverse_monoid<MX>> rst;
+        segment_tree<MX> st;
+        segment_tree<monoid_reverse_monoid<MX>> rst;
 
         explicit hld_segment_tree(const hld& g): h(g) {
                 build();
@@ -194,8 +197,8 @@ struct hld_segment_tree {
 
         template <typename F>
         void build(F f) {
-		st.build(h.n, f);
-		if constexpr (!MX::commutative) rst.build(h.n, f);
+                st.build(h.n, f);
+                if constexpr (!MX::commutative) rst.build(h.n, f);
         }
 
         X get(i32 u) {
@@ -203,41 +206,41 @@ struct hld_segment_tree {
         }
 
         void set(i32 u, const X &x) {
-		st.set(h.tin[u], x);
-		if constexpr (!MX::commutative) rst.set(h.tin[u], x);
+                st.set(h.tin[u], x);
+                if constexpr (!MX::commutative) rst.set(h.tin[u], x);
         }
 
         void multiply(i32 u, const X &x) {
-		st.multiply(h.tin[u], x);
-		if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
+                st.multiply(h.tin[u], x);
+                if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
         }
 
         X prod_path(i32 u, i32 v) {
-		X x = MX::unit();
-		for (const auto &[s, t] : h.decompose(u, v)) {
-			x = MX::op(x, prod(s, t));
-		}
+                X x = MX::unit();
+                for (const auto &[s, t] : h.decompose(u, v)) {
+                        x = MX::op(x, prod(s, t));
+                }
 
-		return x;
+                return x;
         }
 
-	X prod_subtree(i32 u) {
-		return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
-	}
+        X prod_subtree(i32 u) {
+                return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
+        }
 
-	X prod_all() { 
-		return st.prod_all(); 
-	}
+        X prod_all() { 
+                return st.prod_all(); 
+        }
 
-	X prod(i32 u, i32 v) {
-		const i32 a = h.tin[u];
-		const i32 b = h.tin[v];
+        X prod(i32 u, i32 v) {
+                const i32 a = h.tin[u];
+                const i32 b = h.tin[v];
 
-		if (a <= b) return st.prod(a, b + 1);
-		if constexpr (!MX::commutative) return rst.prod(b, a + 1);
+                if (a <= b) return st.prod(a, b + 1);
+                if constexpr (!MX::commutative) return rst.prod(b, a + 1);
 
-		return st.prod(b, a + 1);
-	}
+                return st.prod(b, a + 1);
+        }
 };
 
 #endif // LIB_SEGMENT_TREE_HPP
