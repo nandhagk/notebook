@@ -1,5 +1,5 @@
-#ifndef LIB_MATCHING_HPP
-#define LIB_MATCHING_HPP 1
+#ifndef LIB_BLOSSOMS_HPP
+#define LIB_BLOSSOMS_HPP 1
 
 #include <vector>
 #include <algorithm>
@@ -8,7 +8,7 @@
 
 #include <lib/prelude.hpp>
 
-inline std::vector<i32> matching(const std::vector<std::vector<i32>> &g) {
+inline std::vector<i32> blossoms(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
 
         i32 time{};
@@ -93,4 +93,4 @@ inline std::vector<i32> matching(const std::vector<std::vector<i32>> &g) {
         return mate;
 }
 
-#endif // LIB_MATCHING_HPP
+#endif // LIB_BLOSSOMS_HPP

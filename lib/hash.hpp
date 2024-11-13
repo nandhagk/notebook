@@ -1,10 +1,10 @@
 #ifndef LIB_HASH_HPP
 #define LIB_HASH_HPP 1
 
-#include <chrono>
-#include <lib/prelude.hpp>
+#include <type_traits>
 
-static const u64 FIXED_RANDOM = std::chrono::steady_clock::now().time_since_epoch().count();
+#include <lib/prelude.hpp>
+#include <lib/random.hpp>
 
 template <class T, class D = void>
 struct hash {};
