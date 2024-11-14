@@ -28,6 +28,9 @@ using make_signed = typename std::conditional<
 	std::is_same_v<T, u128>, i128, typename std::conditional<std::is_same_v<T, u64>, i64, i32>::type>::type;
 
 template <typename T>
+using make_double = typename std::conditional<std::is_same_v<T, u64>, u128, u64>::type;
+
+template <typename T>
 constexpr T binpow(T a, u64 b, T r = 1) {
 	for (; b != 0; b >>= 1, a *= a) {
 		if (b & 1) r *= a;
@@ -137,10 +140,11 @@ private:
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
 using barrett = std::conditional<std::is_same_v<U, u32>, barrett_32, barrett_64>::type;
 
-template <typename U, typename V, i32 id, is_unsigned_integral_t<U>* = nullptr>
+template <typename U, i32 id, is_unsigned_integral_t<U>* = nullptr>
 struct dynamic_montgomery_modint_base {
 	using mint = dynamic_montgomery_modint_base;
 
+	using V = make_double<U>;
 	using S = make_signed<U>;
 	using T = make_signed<V>;
 
@@ -255,10 +259,10 @@ private:
 };
 
 template <i32 id>
-using dynamic_montgomery_modint_32 = dynamic_montgomery_modint_base<u32, u64, id>;
+using dynamic_montgomery_modint_32 = dynamic_montgomery_modint_base<u32, id>;
 
 template <i32 id>
-using dynamic_montgomery_modint_64 = dynamic_montgomery_modint_base<u64, u128, id>;
+using dynamic_montgomery_modint_64 = dynamic_montgomery_modint_base<u64, id>;
 
 constexpr bool miller_rabin(u32 n) {
 	if (n <= 2) return n == 2;
@@ -439,10 +443,11 @@ using dynamic_modint_64 = dynamic_modint_base<u64, id>;
 template <>
 inline barrett<u64> dynamic_modint_64<-1>::bt = (u64(1) << 61) - 1;
 
-template <typename U, typename V, U m, is_unsigned_integral_t<U>* = nullptr>
+template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
 struct static_montgomery_modint_base {
 	using mint = static_montgomery_modint_base;
 
+	using V = make_double<U>;
 	using S = make_signed<U>;
 	using T = make_signed<V>;
 
@@ -557,10 +562,10 @@ private:
 };
 
 template <u32 m>
-using static_montgomery_modint_32 = static_montgomery_modint_base<u32, u64, m>;
+using static_montgomery_modint_32 = static_montgomery_modint_base<u32, m>;
 
 template <u64 m>
-using static_montgomery_modint_64 = static_montgomery_modint_base<u64, u128, m>;
+using static_montgomery_modint_64 = static_montgomery_modint_base<u64, m>;
 
 template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
 struct static_modint_base {
