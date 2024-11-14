@@ -1,27 +1,19 @@
-#ifndef LIB_NT_HPP
-#define LIB_NT_HPP 1
+#ifndef LIB_POLLARD_RHO_HPP
+#define LIB_POLLARD_RHO_HPP 1
 
-#include <vector>
-#include <algorithm>
+#include <numeric>
 
 #include <lib/prelude.hpp>
+#include <lib/miller_rabin.hpp>
 #include <lib/random.hpp>
-#include <lib/modint.hpp>
-
-inline bool is_prime(u64 n) {
-        if (n < (1 << 30)) {
-                return miller_rabin(static_cast<u32>(n));
-        } else {
-                return miller_rabin(n);
-        }
-}
+#include <lib/arbitrary_montgomery_modint.hpp>
 
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
 inline U pollard_rho(U n) {
         if (n % 2 == 0) return 2;
         if (is_prime(n)) return n;
 
-        using Z = dynamic_montgomery_modint_base<U, -1>;
+        using Z = arbitrary_montgomery_modint_base<U, -1>;
         Z::set_mod(n);
 
         Z R, one = 1;
@@ -59,33 +51,4 @@ inline U pollard_rho(U n) {
         assert(0);
 }
 
-inline std::vector<i64> factorize(u64 m) {
-        const auto inner = [](auto &&self, u64 n) -> std::vector<i64> {
-                if (n <= 1) return {};
-
-                u64 p;
-                if (n <= (1 << 30)) {
-                        p = pollard_rho(static_cast<u32>(n));
-                } else {
-                        p = pollard_rho(n);
-                }
-
-                if (p == n) return {i64(n)};
-
-                auto l = self(self, p);
-                auto r = self(self, n / p);
-                        
-                l.reserve(l.size() + r.size());
-                std::copy(r.begin(), r.end(), std::back_inserter(l));
-
-                return l;
-        };
-
-        auto out = inner(inner, m);
-        std::sort(out.begin(), out.end());
-
-        return out;
-}
-
-#endif // LIB_NT_HPP
-
+#endif // LIB_POLLARD_RHO_HPP 1
