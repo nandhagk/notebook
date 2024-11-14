@@ -61,7 +61,7 @@ inline std::vector<i32> hopcroft_karp(const i32 n, const i32 m, std::vector<std:
 
 inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
-        const auto color = bipartite_vertex_coloring(g);
+        const auto color = bipartition(g);
 
         i32 m{};
         for (i32 u = 0; u < n; ++u) {

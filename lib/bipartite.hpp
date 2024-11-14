@@ -6,7 +6,7 @@
 #include <lib/dsu.hpp>
 #include <lib/prelude.hpp>
 
-inline std::vector<i32> bipartite_vertex_coloring(const std::vector<std::vector<i32>> &g) {
+inline std::vector<i32> bipartition(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
 
         dsu dsu(2 * n);
