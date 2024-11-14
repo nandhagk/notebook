@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <iostream>
 #include <utility>
+#include <limits>
 
 #include <lib/prelude.hpp>
 
@@ -21,6 +22,10 @@ using is_signed_integral_t = std::enable_if_t<is_signed_integral<T>::value>;
 
 template <typename T>
 using is_unsigned_integral_t = std::enable_if_t<is_unsigned_integral<T>::value>;
+
+template <typename T>
+using make_signed = typename std::conditional<
+	std::is_same_v<T, u128>, i128, typename std::conditional<std::is_same_v<T, u64>, i64, i32>::type>::type;
 
 template <typename T>
 constexpr T binpow(T a, u64 b, T r = 1) {
@@ -59,8 +64,13 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 		s -= t * u;
 		m0 -= m1 * u;
 
-		std::swap(s, t);
-		std::swap(m0, m1);
+		i64 tmp = s;
+		s = t;
+		t = tmp;
+
+		tmp = m0;
+		m0 = m1;
+		m1 = tmp;
 	}
 
 	if (m0 < 0) m0 += b / s;
@@ -127,61 +137,71 @@ private:
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
 using barrett = std::conditional<std::is_same_v<U, u32>, barrett_32, barrett_64>::type;
 
-template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
-struct static_modint_base {
-	using mint = static_modint_base;
+template <typename U, typename V, i32 id, is_unsigned_integral_t<U>* = nullptr>
+struct dynamic_montgomery_modint_base {
+	using mint = dynamic_montgomery_modint_base;
 
-	constexpr static_modint_base(): v(0) {}
+	using S = make_signed<U>;
+	using T = make_signed<V>;
 
-	template <typename T, is_unsigned_integral_t<T>* = nullptr>
-	constexpr static_modint_base(T x): v(x % mod()) {}
+	static constexpr i32 W = std::numeric_limits<U>::digits;
 
-	template <typename T, is_signed_integral_t<T>* = nullptr>
-	constexpr static_modint_base(T x) {
-		using S = std::make_signed_t<U>;
+	constexpr dynamic_montgomery_modint_base(): v(0) {}
 
-		S u = S(x % S(mod()));
-		if (u < 0) u += mod();
+	template <typename T, std::enable_if_t<std::is_integral<T>::value>* = nullptr>
+	constexpr dynamic_montgomery_modint_base(T x):
+		v(reduce(V(x % m + m) * n2)) {}
 
-		v = u;
+	constexpr static U reduce(V b) {
+		return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);
 	}
 
-	constexpr static U mod() { 
-		return m;
+	constexpr static U get_r() {
+		U p = m;
+		while (m * p != 1) p *= U(2) - m * p;
+		return p;
+	}
+
+	constexpr static void set_mod(U m_) {
+		assert(m_ & 1 && m_ <= U(1) << (W - 2));
+
+		m = m_;
+		n2 = static_cast<U>(-V(m) % m);
+		r = get_r();
 	}
 
 	constexpr U val() const {
-		return v;
+		U p = reduce(v);
+		return p >= m ? p - m : p;
 	}
 
-	constexpr mint operator-() const {
-		mint r;
-		r.v = (v == 0 ? 0 : mod() - v);
-		return r;
+	constexpr static U mod() {
+		return m;
 	}
 
 	constexpr mint inv() const {
-		return pow(mod() - 2);
+		const auto &[f, s] = inv_gcd(val(), mod());
+		assert(f == 1);
+
+		return s;
 	}
 
-	constexpr mint pow(i64 n) const {
+	constexpr mint pow(u64 n) const {
 		return binpow(*this, n);
 	}
 
 	constexpr mint& operator+=(const mint& rhs) & {
-		v += rhs.val();
-		if (v >= mod()) v -= mod();
+		if (S(v += rhs.v - 2 * m) < 0) v += 2 * m;
 		return *this;
 	}
 
 	constexpr mint& operator-=(const mint& rhs) & {
-		v -= rhs.val();
-		if (v >= mod()) v -= mod();
+		if (S(v -= rhs.v) < 0) v += 2 * m;
 		return *this;
 	}
 
 	constexpr mint& operator*=(const mint& rhs) & {
-		v = mul<mod()>(v, rhs.val());
+		v = reduce(V(v) * rhs.v);
 		return *this;
 	}
 
@@ -205,12 +225,16 @@ struct static_modint_base {
 		return lhs /= rhs;
 	}
 
+	constexpr mint operator-() const {
+		return mint(0) - mint(*this);
+	}
+
 	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
-		return lhs.val() == rhs.val();
+		return (lhs.v >= m ? lhs.v - m : lhs.v) == (rhs.v >= m ? rhs.v - m : rhs.v);
 	}
 
 	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
-		return lhs.val() != rhs.val();
+		return !(lhs == rhs);
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const mint& rhs) {
@@ -227,20 +251,84 @@ struct static_modint_base {
 
 private:
 	U v;
+	inline static U m, r, n2;
 };
 
-template <typename U, is_unsigned_integral_t<U>* = nullptr>
+template <i32 id>
+using dynamic_montgomery_modint_32 = dynamic_montgomery_modint_base<u32, u64, id>;
+
+template <i32 id>
+using dynamic_montgomery_modint_64 = dynamic_montgomery_modint_base<u64, u128, id>;
+
+constexpr bool miller_rabin(u32 n) {
+	if (n <= 2) return n == 2;
+	if (n % 2 == 0) return false;
+
+	u32 d = n - 1;
+	while (d % 2 == 0) d >>= 1;
+
+	using Z = dynamic_montgomery_modint_32<-1>;
+	Z::set_mod(n);
+
+	Z e = 1, r = n - 1;
+	for (const u64 a : {2, 7, 61}) {
+		if (a % n == 0) continue;
+
+		u64 t = d;
+		Z y = Z(a).pow(t);
+		while (t != n - 1 && y != e && y != r) {
+			y *= y;
+			t <<= 1;
+		}
+
+		if (y != r && t % 2 == 0) return false;
+	}
+
+	return true;
+}
+
+constexpr bool miller_rabin(u64 n) {
+	if (n <= 2) return n == 2;
+	if (n % 2 == 0) return false;
+
+	u64 d = n - 1;
+	while (d % 2 == 0) d >>= 1;
+
+	using Z = dynamic_montgomery_modint_64<-1>;
+	Z::set_mod(n);
+
+	Z e = 1, r = n - 1;
+	for (const u64 a : {2, 325, 9375, 28178, 450775, 9780504, 1795265022}) {
+		if (a % n == 0) continue;
+
+		u64 t = d;
+		Z y = Z(a).pow(t);
+		while (t != n - 1 && y != e && y != r) {
+			y *= y;
+			t <<= 1;
+		}
+
+		if (y != r && t % 2 == 0) return false;
+	}
+
+	return true;
+}
+
+template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
+constexpr bool is_prime_v = miller_rabin(m);
+
+template <typename U, i32 id, is_unsigned_integral_t<U>* = nullptr>
 struct dynamic_modint_base {
 	using mint = dynamic_modint_base;
 
 	constexpr dynamic_modint_base(): v(0) {}
 
 	template <typename T, is_unsigned_integral_t<T>* = nullptr>
-	constexpr dynamic_modint_base(T x): v(x % mod()) {}
+	constexpr dynamic_modint_base(T x): v(U(x % mod())) {}
 
 	template <typename T, is_signed_integral_t<T>* = nullptr>
 	constexpr dynamic_modint_base(T x) {
-		using S = std::make_signed_t<U>;
+		using S = make_signed<U>;
 
 		S u = S(x % S(mod()));
 		if (u < 0) u += mod();
@@ -252,7 +340,7 @@ struct dynamic_modint_base {
 		bt = m;
 	}
 
-	static U mod() { 
+	constexpr static U mod() { 
 		return bt.mod();
 	}
 
@@ -273,7 +361,7 @@ struct dynamic_modint_base {
 		return s;
 	}
 
-	constexpr mint pow(i64 n) const {
+	constexpr mint pow(u64 n) const {
 		return binpow(*this, n);
 	}
 
@@ -339,21 +427,256 @@ private:
 	static barrett<U> bt;
 };
 
+template <i32 id>
+using dynamic_modint_32 = dynamic_modint_base<u32, id>;
+
+template <>
+inline barrett<u32> dynamic_modint_32<-1>::bt = 998'244'353;
+
+template <i32 id>
+using dynamic_modint_64 = dynamic_modint_base<u64, id>;
+
+template <>
+inline barrett<u64> dynamic_modint_64<-1>::bt = (u64(1) << 61) - 1;
+
+template <typename U, typename V, U m, is_unsigned_integral_t<U>* = nullptr>
+struct static_montgomery_modint_base {
+	using mint = static_montgomery_modint_base;
+
+	using S = make_signed<U>;
+	using T = make_signed<V>;
+
+	static constexpr i32 W = std::numeric_limits<U>::digits;
+	static_assert(m & 1 && m <= U(1) << (W - 2));
+
+	constexpr static U get_r() {
+		U p = m;
+		while (m * p != 1) p *= U(2) - m * p;
+		return p;
+	}
+
+	static constexpr U n2 = static_cast<U>(-V(m) % m);
+	static constexpr U r = get_r();
+
+	constexpr static_montgomery_modint_base(): v(0) {}
+
+	template <typename T, std::enable_if_t<std::is_integral<T>::value>* = nullptr>
+	constexpr static_montgomery_modint_base(T x):
+		v(reduce(V(x % m + m) * n2)) {}
+
+	constexpr static U reduce(V b) {
+		return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);
+	}
+
+	constexpr U val() const {
+		U p = reduce(v);
+		return p >= m ? p - m : p;
+	}
+
+	constexpr static U mod() {
+		return m;
+	}
+
+	constexpr mint inv() const {
+		if constexpr (is_prime) {
+			return pow(mod() - 2);
+		} else {
+			const auto &[f, s] = inv_gcd(val(), mod());
+			assert(f == 1);
+
+			return s;
+		}
+	}
+
+	constexpr mint pow(u64 n) const {
+		return binpow(*this, n);
+	}
+
+	constexpr mint& operator+=(const mint& rhs) & {
+		if (S(v += rhs.v - 2 * m) < 0) v += 2 * m;
+		return *this;
+	}
+
+	constexpr mint& operator-=(const mint& rhs) & {
+		if (S(v -= rhs.v) < 0) v += 2 * m;
+		return *this;
+	}
+
+	constexpr mint& operator*=(const mint& rhs) & {
+		v = reduce(V(v) * rhs.v);
+		return *this;
+	}
+
+	constexpr mint& operator/=(const mint& rhs) & {
+		return *this *= rhs.inv();
+	}
+
+	friend constexpr mint operator+(mint lhs, const mint& rhs) {
+		return lhs += rhs;
+	}
+
+	friend constexpr mint operator-(mint lhs, const mint& rhs) {
+		return lhs -= rhs;
+	}
+
+	friend constexpr mint operator*(mint lhs, const mint& rhs) {
+		return lhs *= rhs;
+	}
+
+	friend constexpr mint operator/(mint lhs, const mint& rhs) {
+		return lhs /= rhs;
+	}
+
+	constexpr mint operator-() const {
+		return mint(0) - mint(*this);
+	}
+
+	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
+		return (lhs.v >= m ? lhs.v - m : lhs.v) == (rhs.v >= m ? rhs.v - m : rhs.v);
+	}
+
+	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
+		return !(lhs == rhs);
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const mint& rhs) {
+		return os << rhs.val();
+	}
+
+	friend std::istream& operator>>(std::istream& is, mint& rhs) {
+		i64 x;
+		is >> x;
+
+		rhs = mint(x);
+		return is;
+	}
+
+private:
+	U v;
+	inline static constexpr bool is_prime = is_prime_v<U, m>;
+};
+
+template <u32 m>
+using static_montgomery_modint_32 = static_montgomery_modint_base<u32, u64, m>;
+
+template <u64 m>
+using static_montgomery_modint_64 = static_montgomery_modint_base<u64, u128, m>;
+
+template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
+struct static_modint_base {
+	using mint = static_modint_base;
+
+	constexpr static_modint_base(): v(0) {}
+
+	template <typename T, is_unsigned_integral_t<T>* = nullptr>
+	constexpr static_modint_base(T x): v(U(x % mod())) {}
+
+	template <typename T, is_signed_integral_t<T>* = nullptr>
+	constexpr static_modint_base(T x) {
+		using S = make_signed<U>;
+
+		S u = S(x % S(mod()));
+		if (u < 0) u += mod();
+
+		v = u;
+	}
+
+	constexpr static U mod() { 
+		return m;
+	}
+
+	constexpr U val() const {
+		return v;
+	}
+
+	constexpr mint operator-() const {
+		mint r;
+		r.v = (v == 0 ? 0 : mod() - v);
+		return r;
+	}
+
+	constexpr mint inv() const {
+		if constexpr (is_prime) {
+			return pow(mod() - 2);
+		} else {
+			const auto &[f, s] = inv_gcd(v, mod());
+			assert(f == 1);
+
+			return s;
+		}
+	}
+
+	constexpr mint pow(u64 n) const {
+		return binpow(*this, n);
+	}
+
+	constexpr mint& operator+=(const mint& rhs) & {
+		v += rhs.val();
+		if (v >= mod()) v -= mod();
+		return *this;
+	}
+
+	constexpr mint& operator-=(const mint& rhs) & {
+		v -= rhs.val();
+		if (v >= mod()) v -= mod();
+		return *this;
+	}
+
+	constexpr mint& operator*=(const mint& rhs) & {
+		v = mul<mod()>(v, rhs.val());
+		return *this;
+	}
+
+	constexpr mint& operator/=(const mint& rhs) & {
+		return *this *= rhs.inv();
+	}
+
+	friend constexpr mint operator+(mint lhs, const mint& rhs) {
+		return lhs += rhs;
+	}
+
+	friend constexpr mint operator-(mint lhs, const mint& rhs) {
+		return lhs -= rhs;
+	}
+
+	friend constexpr mint operator*(mint lhs, const mint& rhs) {
+		return lhs *= rhs;
+	}
+
+	friend constexpr mint operator/(mint lhs, const mint& rhs) {
+		return lhs /= rhs;
+	}
+
+	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
+		return lhs.val() == rhs.val();
+	}
+
+	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
+		return lhs.val() != rhs.val();
+	}
+
+	friend std::ostream& operator<<(std::ostream& os, const mint& rhs) {
+		return os << rhs.val();
+	}
+
+	friend std::istream& operator>>(std::istream& is, mint& rhs) {
+		i64 x;
+		is >> x;
+
+		rhs = mint(x);
+		return is;
+	}
+
+private:
+	U v;
+	inline static constexpr bool is_prime = is_prime_v<U, m>;
+};
+
 template <u32 m>
 using static_modint_32 = static_modint_base<u32, m>;
 
 template <u64 m>
 using static_modint_64 = static_modint_base<u64, m>;
-
-using dynamic_modint_32 = dynamic_modint_base<u32>;
-
-template <>
-inline barrett<u32> dynamic_modint_32::bt = 998'244'353;
-
-using dynamic_modint_64 = dynamic_modint_base<u64>;
-
-template <>
-inline barrett<u64> dynamic_modint_64::bt = (u64(1) << 61) - 1;
 
 using modint998244353 = static_modint_32<998'244'353>;
 using modint1000000007 = static_modint_32<1'000'000'007>;
