@@ -8,10 +8,10 @@
 #include <lib/pollard_rho.hpp>
 
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
-inline std::vector<U> factorize(U m) {
-        std::vector<U> out;
+inline std::vector<std::pair<U, i32>> factorize(U m) {
+        std::vector<std::pair<U, i32>> out;
 
-        const auto inner = [&](auto &&self, U n) -> void {
+        const auto dfs = [&](auto &&self, U n) -> void {
                 if (n <= 1) return;
 
                 U p;
@@ -21,16 +21,17 @@ inline std::vector<U> factorize(U m) {
                         p = pollard_rho(n);
                 }
 
-                if (p == n) {
-                        out.push_back(p);
-                        return;
-                }
+                i32 c{};
+                do {
+                        n /= p;
+                        ++c;
+                } while (n % p == 0);
 
-                self(self, p);
-                self(self, n / p);
+                out.emplace_back(p, c);
+                self(self, n);
         };
 
-        inner(inner, m);
+        dfs(dfs, m);
 
         std::sort(out.begin(), out.end());
         return out;
