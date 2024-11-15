@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 logger = getLogger(__name__)
 
 # #include <file_name.hpp>
-INCLUDE_REGEX = re.compile(r"#include\s*<([a-z_/]*(.hpp))>\s*")
+INCLUDE_REGEX = re.compile(r"#include\s*<([a-z0-9_/]*(.hpp))>\s*")
 
 # #endif/ifndef/define (//) FILE_NAME_HPP
 INCLUDE_GUARD_REGEX = re.compile(r"#.*[A-Z_]*_HPP")
