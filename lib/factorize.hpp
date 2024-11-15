@@ -9,7 +9,7 @@
 
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
 inline std::vector<std::pair<U, i32>> factorize(U m) {
-        std::vector<std::pair<U, i32>> out;
+        std::vector<U> ps;
 
         const auto dfs = [&](auto &&self, U n) -> void {
                 if (n <= 1) return;
@@ -21,20 +21,29 @@ inline std::vector<std::pair<U, i32>> factorize(U m) {
                         p = pollard_rho(n);
                 }
 
-                i32 c{};
-                do {
-                        n /= p;
-                        ++c;
-                } while (n % p == 0);
+                if (p == n) {
+                        ps.push_back(p);
+                        return;
+                }
 
-                out.emplace_back(p, c);
-                self(self, n);
+                self(self, p);
+                self(self, n / p);
         };
 
         dfs(dfs, m);
 
-        std::sort(out.begin(), out.end());
-        return out;
+        std::sort(ps.begin(), ps.end());
+
+        std::vector<std::pair<U, i32>> fs;
+        for (const U p : ps) {
+                if (fs.empty() || fs.back().first != p) {
+                        fs.emplace_back(p, 1);
+                } else {
+                        ++fs.back().second;
+                }
+        }
+
+        return fs;
 }
 
 #endif // LIB_FACTORIZE_HPP
