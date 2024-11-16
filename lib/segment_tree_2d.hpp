@@ -22,6 +22,10 @@ struct segment_tree_2d {
 	std::vector<segment_tree<Monoid>> sg;
 
 	segment_tree_2d() {}
+
+	explicit segment_tree_2d(i32 m) {
+		pts.reserve(m);
+	}
 	
 	void add_point(T x, T y) {
 		pts.emplace_back(x, y);
