@@ -5,15 +5,14 @@
 #include <algorithm>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 #include <lib/segment_tree.hpp>
 #include <lib/bit_vector.hpp>
 
-template <typename T, typename Monoid>
+template <typename T, typename Monoid, is_commutative_monoid_t<Monoid>* = nullptr>
 struct wavelet_matrix_2d {
 	using MX = Monoid;
 	using X = typename MX::ValueT;
-
-        static_assert(MX::commutative);
 
 	using pt = std::pair<T, T>;
 

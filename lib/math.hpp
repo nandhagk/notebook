@@ -5,28 +5,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <lib/type_traits.hpp>
 #include <lib/prelude.hpp>
-
-template <typename T>
-using is_signed_integral = typename std::conditional<
-	std::is_integral<T>::value && std::is_signed<T>::value, std::true_type, std::false_type>::type;
-	
-template <typename T>
-using is_unsigned_integral = typename std::conditional<
-	std::is_integral<T>::value && std::is_unsigned<T>::value, std::true_type, std::false_type>::type;
-
-template <typename T>
-using is_signed_integral_t = std::enable_if_t<is_signed_integral<T>::value>;
-
-template <typename T>
-using is_unsigned_integral_t = std::enable_if_t<is_unsigned_integral<T>::value>;
-
-template <typename T>
-using make_signed = typename std::conditional<
-	std::is_same_v<T, u128>, i128, typename std::conditional<std::is_same_v<T, u64>, i64, i32>::type>::type;
-
-template <typename T>
-using make_double = typename std::conditional<std::is_same_v<T, u64>, u128, u64>::type;
 
 template <typename T>
 constexpr T binpow(T a, u64 b, T r = 1) {

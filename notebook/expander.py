@@ -35,6 +35,7 @@ STD_HEADERS = (
     "stack",
     "set",
     "map",
+    "limits",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

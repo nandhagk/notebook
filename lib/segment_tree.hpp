@@ -5,8 +5,9 @@
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
-template <class Monoid>
+template <typename Monoid, is_monoid_t<Monoid>* = nullptr>
 struct segment_tree {
         using MX = Monoid;
         using X = typename MX::ValueT;
