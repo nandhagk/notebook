@@ -1,7 +1,6 @@
-#ifndef LIB_WAVELET_MATRIX_2D_HPP
-#define LIB_WAVELET_MATRIX_2D_HPP 1
+#ifndef LIB_RECT_WAVELET_MATRIX_HPP
+#define LIB_RECT_WAVELET_MATRIX_HPP 1
 
-#include <numeric>
 #include <algorithm>
 
 #include <lib/prelude.hpp>
@@ -10,7 +9,7 @@
 #include <lib/bit_vector.hpp>
 
 template <typename T, typename Monoid, is_commutative_monoid_t<Monoid>* = nullptr>
-struct wavelet_matrix_2d {
+struct rect_wavelet_matrix {
 	using MX = Monoid;
 	using X = typename MX::ValueT;
 
@@ -23,9 +22,9 @@ struct wavelet_matrix_2d {
 	std::vector<segment_tree<Monoid>> sg;
         std::vector<bit_vector> bv;
 
-        wavelet_matrix_2d() {}
+        rect_wavelet_matrix() {}
 
-	explicit wavelet_matrix_2d(i32 m) {
+	explicit rect_wavelet_matrix(i32 m) {
 		pts.reserve(m);
 		ys.reserve(m);
 	}
@@ -99,7 +98,7 @@ struct wavelet_matrix_2d {
                         }
 
                         --d;
-                        const i32 c = std::midpoint(p, q);
+                        const i32 c = (p + q) / 2;
 
                         const i32 l0 = bv[d].rank0(L);
                         const i32 r0 = bv[d].rank0(R);
@@ -205,4 +204,4 @@ private:
 	}
 };
 
-#endif // LIB_WAVELET_MATRIX_2D_HPP
+#endif // LIB_RECT_WAVELET_MATRIX_HPP

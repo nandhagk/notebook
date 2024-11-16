@@ -6,7 +6,7 @@
 #include <lib/segment_tree.hpp>
 #include <lib/monoids/reverse_monoid.hpp>
 
-template <class Monoid>
+template <typename Monoid>
 struct hld_segment_tree {
         using MX = Monoid;
         using X = typename MX::ValueT;

@@ -5,7 +5,7 @@
 #include <lib/hld.hpp>
 #include <lib/dual_segment_tree.hpp>
 
-template <class Monoid>
+template <typename Monoid>
 struct hld_dual_segment_tree {
 	using MA = Monoid;
 	using A = typename MA::ValueT;

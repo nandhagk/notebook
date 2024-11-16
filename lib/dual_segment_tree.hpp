@@ -5,8 +5,9 @@
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
-template <typename Monoid>
+template <typename Monoid, is_monoid_t<Monoid>* = nullptr>
 struct dual_segment_tree {
 	using MA = Monoid;
 	using A = typename MA::ValueT;

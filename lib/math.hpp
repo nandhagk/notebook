@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <utility>
 
-#include <lib/type_traits.hpp>
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
 template <typename T>
 constexpr T binpow(T a, u64 b, T r = 1) {
@@ -112,10 +112,10 @@ struct barrett_64 {
 
 private:
 	u64 m;
-	u128 mh, ml;
+	u128 mh{}, ml{};
 };
 
 template <typename U, is_unsigned_integral_t<U>* = nullptr>
-using barrett = std::conditional<std::is_same_v<U, u32>, barrett_32, barrett_64>::type;
+using barrett = typename std::conditional_t<std::is_same_v<U, u32>, barrett_32, barrett_64>;
 
 #endif // LIB_MATH_HPP
