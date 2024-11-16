@@ -5,14 +5,13 @@
 #include <algorithm>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 #include <lib/segment_tree.hpp>
 
-template <typename T, typename Monoid>
+template <typename T, typename Monoid, is_commutative_monoid_t<Monoid>* = nullptr>
 struct rect_segment_tree {
 	using MX = Monoid;
 	using X = typename MX::ValueT;
-
-	static_assert(MX::commutative);
 
 	i32 n;
 
