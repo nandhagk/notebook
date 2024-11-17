@@ -87,7 +87,7 @@ struct segment_tree_2d {
 
 		while (xl < xr) {
 			if (xl & 1) r = MX::op(r, prod(xl++, yl, yr));
-			if (xr & 1) r = MX::op(r, prod(--xr, yl, yr));
+			if (xr & 1) r = MX::op(prod(--xr, yl, yr), r);
 
 			xl >>= 1;
 			xr >>= 1;
@@ -134,7 +134,7 @@ private:
 
 		while (yl < yr) {
 			if (yl & 1) r = MX::op(r, d[idx(x, yl++)]);
-			if (yr & 1) r = MX::op(r, d[idx(x, --yr)]);
+			if (yr & 1) r = MX::op(d[idx(x, --yr)], r);
 
 			yl >>= 1;
 			yr >>= 1;
