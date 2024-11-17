@@ -98,37 +98,37 @@ struct hld_wavelet_matrix {
 		return wm.kth(h.tin[u], h.tin[u] + h.sz[u], k);
 	}
 
-        T next_path(i32 u, i32 v, T a) const {
-                const auto it = std::upper_bound(wm.rv.begin(), wm.rv.end(), a);
-                if (it == wm.rv.end()) return a;
+	T next_path(i32 u, i32 v, T a) const {
+		const auto it = std::upper_bound(wm.rv.begin(), wm.rv.end(), a);
+		if (it == wm.rv.end()) return a;
 
-                const i32 k = count_path(u, v, *it);
-                return k == h.dist(u, v) + 1 ? a : kth_path(u, v, k);
-        }
+		const i32 k = count_path(u, v, *it);
+		return k == h.dist(u, v) + 1 ? a : kth_path(u, v, k);
+	}
 
-        T prev_path(i32 u, i32 v, T a) const {
-                const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
-                if (it == wm.rv.begin()) return a;
+	T prev_path(i32 u, i32 v, T a) const {
+		const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
+		if (it == wm.rv.begin()) return a;
 
-                const i32 k = count_path(u, v, *it);
-                return k == 0 ? a : kth_path(u, v, k - 1);
-        }
+		const i32 k = count_path(u, v, *it);
+		return k == 0 ? a : kth_path(u, v, k - 1);
+	}
 
-        T next_subtree(i32 u, T a) const {
-                const auto it = std::upper_bound(wm.rv.begin(), wm.rv.end(), a);
-                if (it == wm.rv.end()) return a;
+	T next_subtree(i32 u, T a) const {
+		const auto it = std::upper_bound(wm.rv.begin(), wm.rv.end(), a);
+		if (it == wm.rv.end()) return a;
 
-                const i32 k = count_subtree(u, *it);
-                return k == h.sz[u] ? a : kth_subtree(u, k);
-        }
+		const i32 k = count_subtree(u, *it);
+		return k == h.sz[u] ? a : kth_subtree(u, k);
+	}
 
-        T prev_subtree(i32 u, T a) const {
-                const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
-                if (it == wm.rv.begin()) return a;
+	T prev_subtree(i32 u, T a) const {
+		const auto it = std::lower_bound(wm.rv.begin(), wm.rv.end(), a);
+		if (it == wm.rv.begin()) return a;
 
-                const i32 k = count_path(u, *it);
-                return k == 0 ? a : kth_path(u, k - 1);
-        }
+		const i32 k = count_path(u, *it);
+		return k == 0 ? a : kth_path(u, k - 1);
+	}
 };
 
 #endif // LIB_HLD_WAVELET_MATRIX_HPP

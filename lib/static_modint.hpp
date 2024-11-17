@@ -48,14 +48,12 @@ struct static_modint_base {
 	}
 
 	constexpr mint& operator+=(const mint& rhs) & {
-		v += rhs.val();
-		if (v >= mod()) v -= mod();
+		if ((v += rhs.val()) >= mod()) v -= mod();
 		return *this;
 	}
 
 	constexpr mint& operator-=(const mint& rhs) & {
-		v -= rhs.val();
-		if (v >= mod()) v -= mod();
+		if ((v += mod() - rhs.val()) >= mod()) v -= mod();
 		return *this;
 	}
 

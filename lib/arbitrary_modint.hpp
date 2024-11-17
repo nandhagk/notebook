@@ -38,9 +38,7 @@ struct arbitrary_modint_base {
 	}
 
 	mint operator-() const {
-		mint r;
-		r.v = (v == 0 ? 0 : mod() - v);
-		return r;
+		return mint(0) - mint(*this);
 	}
 
 	mint inv() const {
@@ -53,14 +51,12 @@ struct arbitrary_modint_base {
 	}
 
 	mint& operator+=(const mint& rhs) & {
-		v += rhs.val();
-		if (v >= mod()) v -= mod();
+		if ((v += rhs.val()) >= mod()) v -= mod();
 		return *this;
 	}
 
 	mint& operator-=(const mint& rhs) & {
-		v -= rhs.val();
-		if (v >= mod()) v -= mod();
+		if ((v += mod() - rhs.val()) >= mod()) v -= mod();
 		return *this;
 	}
 
