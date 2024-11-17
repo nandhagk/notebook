@@ -51,7 +51,7 @@ struct arbitrary_montgomery_modint_base {
 	}
 
 	mint inv() const {
-		return inv(S(val()), S(mod()));
+		return ::inv(S(val()), S(mod()));
 	}
 
 	mint pow(u64 n) const {

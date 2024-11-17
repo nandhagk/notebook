@@ -9,7 +9,8 @@
 #include <lib/type_traits.hpp>
 
 template <typename T>
-constexpr T binpow(T a, u64 b, T r = 1) {
+constexpr T binpow(T a, u64 b) {
+	T r = 1;
 	for (; b != 0; b >>= 1, a *= a) {
 		if (b & 1) r *= a;
 	}

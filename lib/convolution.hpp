@@ -6,18 +6,17 @@
 #include <cassert>
 
 #include <lib/prelude.hpp>
-#include <lib/static_montgomery_modint.hpp>
 
 template <typename Z>
 void ntt(std::vector<Z> &a, bool inv) {
-	static std::array<Z, 30> dw{}, idw{};
+	static std::array<Z, 30> dw{}, iw{};
 	if (dw[0] == 0) {
 		Z root = 2;
 		while (root.pow((Z::mod() - 1) / 2) == 1) root += 1;
 
 		for (i32 i = 0; i < 30; ++i) {
 			dw[i] = -root.pow((Z::mod() - 1) >> (i + 2));
-			idw[i] = dw[i].inv();
+			iw[i] = dw[i].inv();
 		}
 	}
 
@@ -47,7 +46,7 @@ void ntt(std::vector<Z> &a, bool inv) {
 					a[j] = (x - y) * w;
 				}
 
-				w *= idw[lowbit(++k)];
+				w *= iw[lowbit(++k)];
 			}
 		}
 

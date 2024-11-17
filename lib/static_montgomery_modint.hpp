@@ -51,7 +51,7 @@ struct static_montgomery_modint_base {
 		if constexpr (is_prime) {
 			return pow(mod() - 2);
 		} else {
-			return inv(S(v), S(mod()));
+			return ::inv(S(val()), S(mod()));
 		}
 	}
 

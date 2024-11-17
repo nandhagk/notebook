@@ -34,11 +34,11 @@ inline std::vector<u64> convolution_2_64(std::vector<u64> l, std::vector<u64> r)
 	static constexpr i64 M1M2M3M4_MOD6 = M1M2M3_MOD6 * MOD4 % MOD6;
 	static constexpr i64 M1M2M3M4M5_MOD6 = M1M2M3M4_MOD6 * MOD5 % MOD6;
 
-	static constexpr i64 INV_M1_MOD2 = inv_gcd(M1_MOD2, MOD2).second;
-	static constexpr i64 INV_M1M2_MOD3 = inv_gcd(M1M2_MOD3, MOD3).second;
-	static constexpr i64 INV_M1M2M3_MOD4 = inv_gcd(M1M2M3_MOD4, MOD4).second;
-	static constexpr i64 INV_M1M2M3M4_MOD5 = inv_gcd(M1M2M3M4_MOD5, MOD5).second;
-	static constexpr i64 INV_M1M2M3M4M5_MOD6 = inv_gcd(M1M2M3M4M5_MOD6, MOD6).second;
+	static constexpr i64 INV_M1_MOD2 = inv(M1_MOD2, MOD2);
+	static constexpr i64 INV_M1M2_MOD3 = inv(M1M2_MOD3, MOD3);
+	static constexpr i64 INV_M1M2M3_MOD4 = inv(M1M2M3_MOD4, MOD4);
+	static constexpr i64 INV_M1M2M3M4_MOD5 = inv(M1M2M3M4_MOD5, MOD5);
+	static constexpr i64 INV_M1M2M3M4M5_MOD6 = inv(M1M2M3M4M5_MOD6, MOD6);
 
 	static constexpr u64 M1 = MOD1;
 	static constexpr u64 M1M2 = M1 * MOD2;

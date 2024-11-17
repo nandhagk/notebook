@@ -5,6 +5,7 @@
 
 #include <lib/prelude.hpp>
 #include <lib/math.hpp>
+#include <lib/miller_rabin.hpp>
 
 template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
 struct static_modint_base {
@@ -33,12 +34,13 @@ struct static_modint_base {
 		return v;
 	}
 
-	constexpr mint operator-() const {
-		return mint(0) - mint(*this);
-	}
-
 	constexpr mint inv() const {
-		return pow(mod() - 2);
+		if constexpr (is_prime) {
+			return pow(mod() - 2);
+		} else {
+			using S = make_signed<U>;
+			return ::inv(S(val()), S(mod()));
+		}
 	}
 
 	constexpr mint pow(u64 n) const {
@@ -82,6 +84,10 @@ struct static_modint_base {
 		return lhs /= rhs;
 	}
 
+	constexpr mint operator-() const {
+		return mint(0) - mint(*this);
+	}
+
 	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
 		return lhs.val() == rhs.val();
 	}
@@ -104,6 +110,7 @@ struct static_modint_base {
 
 private:
 	U v;
+	inline static constexpr bool is_prime = is_prime_v<U, m>;
 };
 
 template <u32 m>

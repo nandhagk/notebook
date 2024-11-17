@@ -45,7 +45,7 @@ struct arbitrary_modint_base {
 
 	mint inv() const {
 		using S = make_signed<U>;
-		return inv(S(v), S(mod()));
+		return ::inv(S(val()), S(mod()));
 	}
 
 	mint pow(u64 n) const {
