@@ -36,6 +36,7 @@ struct rect_segment_tree {
 
 		n = static_cast<i32>(pts.size());
 		rs.resize(2 * n);
+		sg.resize(2 * n);
 
 		for (i32 i = 0; i < n; ++i) rs[n + i] = {{pts[i].second, pts[i].first}};
 		for (i32 i = n - 1; i >= 0; --i) {
@@ -46,7 +47,7 @@ struct rect_segment_tree {
 			rs[i].erase(std::unique(rs[i].begin(), rs[i].end()), rs[i].end());
 		}
 
-		for (const auto &v : rs) sg.emplace_back(v.size());
+		for (i32 i = 0; i < 2 * n; ++i) sg[i].build(static_cast<i32>(rs[i].size()));
 	}
 
 	void set(T x, T y, X w) {

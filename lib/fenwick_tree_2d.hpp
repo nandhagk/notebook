@@ -31,7 +31,7 @@ struct fenwick_tree_2d {
 	}
 
 	void build(i32 h, i32 w) {
-		build(h, w, [&](i32, i32) -> X { return MX::unit(); });
+		build(h, w, [](i32, i32) -> X { return MX::unit(); });
 	}
 
 	void build(const std::vector<std::vector<X>> &v) {
