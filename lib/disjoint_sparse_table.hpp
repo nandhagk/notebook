@@ -68,7 +68,7 @@ struct disjoint_sparse_table {
                 assert(0 <= l && l <= r && r <= n);
 
                 --r;
-                if (l == r - 1) return MX::unit();
+                if (l == r + 1) return MX::unit();
                 if (l == r) return d[0][l];
 
                 const i32 k = topbit(l ^ r);
