@@ -27,25 +27,27 @@ constexpr u64 mul(u64 a, u64 b) {
 	return static_cast<u64>((u128(a) * b) % m);
 }
 
-constexpr i64 safe_mod(i64 x, i64 m) {
+template <typename T>
+constexpr T safe_mod(T x, T m) {
 	x %= m;
 	if (x < 0) x += m;
 	return x;
 }
 
-constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
+template <typename T, is_signed_integral_t<T>* = nullptr>
+constexpr std::pair<T, T> inv_gcd(T a, T b) {
 	a = safe_mod(a, b);
 	if (a == 0) return {b, 0};
 
-	i64 s = b, t = a;
-	i64 m0 = 0, m1 = 1;
+	T s = b, t = a;
+	T m0 = 0, m1 = 1;
 
 	while (t) {
-		i64 u = s / t;
+		T u = s / t;
 		s -= t * u;
 		m0 -= m1 * u;
 
-		i64 tmp = s;
+		T tmp = s;
 		s = t;
 		t = tmp;
 
@@ -56,6 +58,29 @@ constexpr std::pair<i64, i64> inv_gcd(i64 a, i64 b) {
 
 	if (m0 < 0) m0 += b / s;
 	return {s, m0};
+}
+
+template <typename T, is_signed_integral_t<T>* = nullptr>
+constexpr T inv(T a, T b) {
+	const auto &[f, s] = inv_gcd(a, b);
+	assert(f == 1);
+
+	return s;
+}
+
+template <typename T>
+constexpr T modpow(T a, i64 n, T p) {
+	using U = make_double<T>;
+
+	a = safe_mod(a, p);
+	T r = 1 % p;
+
+	for (; n != 0; n >>= 1) {
+		if (n & 1) r = T(U(r) * a % p);
+		a = T(U(a) * a % p);
+	}
+
+	return r;
 }
 
 struct barrett_32 {

@@ -6,6 +6,7 @@
 
 #include <lib/prelude.hpp>
 #include <lib/math.hpp>
+#include <lib/miller_rabin.hpp>
 
 template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
 struct static_montgomery_modint_base {
@@ -47,7 +48,11 @@ struct static_montgomery_modint_base {
 	}
 
 	constexpr mint inv() const {
-		return pow(mod() - 2);
+		if constexpr (is_prime) {
+			return pow(mod() - 2);
+		} else {
+			return inv(S(v), S(mod()));
+		}
 	}
 
 	constexpr mint pow(u64 n) const {
@@ -115,6 +120,7 @@ struct static_montgomery_modint_base {
 
 private:
 	U v;
+	inline static constexpr bool is_prime = is_prime_v<U, m>;
 };
 
 template <u32 m>

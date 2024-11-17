@@ -44,10 +44,8 @@ struct arbitrary_modint_base {
 	}
 
 	mint inv() const {
-		const auto &[f, s] = inv_gcd(v, mod());
-		assert(f == 1);
-
-		return s;
+		using S = make_signed<U>;
+		return inv(S(v), S(mod()));
 	}
 
 	mint pow(u64 n) const {

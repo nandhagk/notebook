@@ -2,26 +2,24 @@
 #define LIB_MILLER_RABIN_HPP 1
 
 #include <lib/prelude.hpp>
-#include <lib/arbitrary_montgomery_modint.hpp>
+#include <lib/type_traits.hpp>
+#include <lib/math.hpp>
 
-inline bool miller_rabin(u32 n) {
+constexpr bool miller_rabin(u32 n) {
 	if (n <= 2) return n == 2;
 	if (n % 2 == 0) return false;
 
 	u32 d = n - 1;
 	while (d % 2 == 0) d >>= 1;
 
-	using Z = arbitrary_montgomery_modint_32<-1>;
-	Z::set_mod(n);
-
-	Z e = 1, r = n - 1;
-	for (const u64 a : {2, 7, 61}) {
+	u64 e = 1, r = n - 1;
+	for (const u32 a : {2, 7, 61}) {
 		if (a % n == 0) continue;
 
 		u64 t = d;
-		Z y = Z(a).pow(t);
+		u64 y = modpow<u32>(a, t, n);
 		while (t != n - 1 && y != e && y != r) {
-			y *= y;
+			y = u32(u64(y) * y % n);
 			t <<= 1;
 		}
 
@@ -31,24 +29,21 @@ inline bool miller_rabin(u32 n) {
 	return true;
 }
 
-inline bool miller_rabin(u64 n) {
+constexpr bool miller_rabin(u64 n) {
 	if (n <= 2) return n == 2;
 	if (n % 2 == 0) return false;
 
 	u64 d = n - 1;
 	while (d % 2 == 0) d >>= 1;
 
-	using Z = arbitrary_montgomery_modint_64<-1>;
-	Z::set_mod(n);
-
-	Z e = 1, r = n - 1;
+	u128 e = 1, r = n - 1;
 	for (const u64 a : {2, 325, 9375, 28178, 450775, 9780504, 1795265022}) {
 		if (a % n == 0) continue;
 
 		u64 t = d;
-		Z y = Z(a).pow(t);
+		u128 y = modpow<u64>(a, t, n);
 		while (t != n - 1 && y != e && y != r) {
-			y *= y;
+			y = u64(u128(y) * y % n);
 			t <<= 1;
 		}
 
@@ -57,6 +52,9 @@ inline bool miller_rabin(u64 n) {
 
 	return true;
 }
+
+template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
+constexpr bool is_prime_v = miller_rabin(m);
 
 template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 inline bool is_prime(T n) {

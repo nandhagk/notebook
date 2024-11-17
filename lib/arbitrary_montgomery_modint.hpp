@@ -51,10 +51,7 @@ struct arbitrary_montgomery_modint_base {
 	}
 
 	mint inv() const {
-		const auto &[f, s] = inv_gcd(val(), mod());
-		assert(f == 1);
-
-		return s;
+		return inv(S(val()), S(mod()));
 	}
 
 	mint pow(u64 n) const {
