@@ -20,20 +20,20 @@ struct arbitrary_montgomery_modint_base {
 	constexpr arbitrary_montgomery_modint_base(): v(0) {}
 
 	template <typename T, std::enable_if_t<std::is_integral<T>::value>* = nullptr>
-	constexpr arbitrary_montgomery_modint_base(T x):
+	arbitrary_montgomery_modint_base(T x):
 		v(reduce(V(x % m + m) * n2)) {}
 
-	constexpr static U reduce(V b) {
+	static U reduce(V b) {
 		return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);
 	}
 
-	constexpr static U get_r() {
+	static U get_r() {
 		U p = m;
 		while (m * p != 1) p *= U(2) - m * p;
 		return p;
 	}
 
-	constexpr static void set_mod(U m_) {
+	static void set_mod(U m_) {
 		assert(m_ & 1 && m_ <= U(1) << (W - 2));
 
 		m = m_;
@@ -41,70 +41,70 @@ struct arbitrary_montgomery_modint_base {
 		r = get_r();
 	}
 
-	constexpr U val() const {
+	U val() const {
 		U p = reduce(v);
 		return p >= m ? p - m : p;
 	}
 
-	constexpr static U mod() {
+	static U mod() {
 		return m;
 	}
 
-	constexpr mint inv() const {
+	mint inv() const {
 		const auto &[f, s] = inv_gcd(val(), mod());
 		assert(f == 1);
 
 		return s;
 	}
 
-	constexpr mint pow(u64 n) const {
+	mint pow(u64 n) const {
 		return binpow(*this, n);
 	}
 
-	constexpr mint& operator+=(const mint& rhs) & {
+	mint& operator+=(const mint& rhs) & {
 		if (S(v += rhs.v - 2 * m) < 0) v += 2 * m;
 		return *this;
 	}
 
-	constexpr mint& operator-=(const mint& rhs) & {
+	mint& operator-=(const mint& rhs) & {
 		if (S(v -= rhs.v) < 0) v += 2 * m;
 		return *this;
 	}
 
-	constexpr mint& operator*=(const mint& rhs) & {
+	mint& operator*=(const mint& rhs) & {
 		v = reduce(V(v) * rhs.v);
 		return *this;
 	}
 
-	constexpr mint& operator/=(const mint& rhs) & {
+	mint& operator/=(const mint& rhs) & {
 		return *this *= rhs.inv();
 	}
 
-	friend constexpr mint operator+(mint lhs, const mint& rhs) {
+	friend mint operator+(mint lhs, const mint& rhs) {
 		return lhs += rhs;
 	}
 
-	friend constexpr mint operator-(mint lhs, const mint& rhs) {
+	friend mint operator-(mint lhs, const mint& rhs) {
 		return lhs -= rhs;
 	}
 
-	friend constexpr mint operator*(mint lhs, const mint& rhs) {
+	friend mint operator*(mint lhs, const mint& rhs) {
 		return lhs *= rhs;
 	}
 
-	friend constexpr mint operator/(mint lhs, const mint& rhs) {
+	friend mint operator/(mint lhs, const mint& rhs) {
 		return lhs /= rhs;
 	}
 
-	constexpr mint operator-() const {
+	mint operator-() const {
 		return mint(0) - mint(*this);
 	}
 
-	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
+	friend bool operator==(const mint& lhs, const mint& rhs) {
 		return (lhs.v >= m ? lhs.v - m : lhs.v) == (rhs.v >= m ? rhs.v - m : rhs.v);
 	}
 
-	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
+	friend bool operator!=(const mint& lhs, const mint& rhs) {
 		return !(lhs == rhs);
 	}
 

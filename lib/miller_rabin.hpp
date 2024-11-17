@@ -4,7 +4,7 @@
 #include <lib/prelude.hpp>
 #include <lib/arbitrary_montgomery_modint.hpp>
 
-constexpr bool miller_rabin(u32 n) {
+inline bool miller_rabin(u32 n) {
 	if (n <= 2) return n == 2;
 	if (n % 2 == 0) return false;
 
@@ -31,7 +31,7 @@ constexpr bool miller_rabin(u32 n) {
 	return true;
 }
 
-constexpr bool miller_rabin(u64 n) {
+inline bool miller_rabin(u64 n) {
 	if (n <= 2) return n == 2;
 	if (n % 2 == 0) return false;
 
@@ -57,9 +57,6 @@ constexpr bool miller_rabin(u64 n) {
 
 	return true;
 }
-
-template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
-constexpr bool is_prime_v = miller_rabin(m);
 
 template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 inline bool is_prime(T n) {

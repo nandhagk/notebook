@@ -13,10 +13,10 @@ struct arbitrary_modint_base {
 	constexpr arbitrary_modint_base(): v(0) {}
 
 	template <typename T, is_unsigned_integral_t<T>* = nullptr>
-	constexpr arbitrary_modint_base(T x): v(U(x % mod())) {}
+	arbitrary_modint_base(T x): v(U(x % mod())) {}
 
 	template <typename T, is_signed_integral_t<T>* = nullptr>
-	constexpr arbitrary_modint_base(T x) {
+	arbitrary_modint_base(T x) {
 		using S = make_signed<U>;
 
 		S u = S(x % S(mod()));
@@ -25,77 +25,77 @@ struct arbitrary_modint_base {
 		v = u;
 	}
 
-	constexpr static void set_mod(U m) {
+	static void set_mod(U m) {
 		bt = m;
 	}
 
-	constexpr static U mod() { 
+	static U mod() { 
 		return bt.mod();
 	}
 
-	constexpr U val() const {
+	U val() const {
 		return v;
 	}
 
-	constexpr mint operator-() const {
+	mint operator-() const {
 		mint r;
 		r.v = (v == 0 ? 0 : mod() - v);
 		return r;
 	}
 
-	constexpr mint inv() const {
+	mint inv() const {
 		const auto &[f, s] = inv_gcd(v, mod());
 		assert(f == 1);
 
 		return s;
 	}
 
-	constexpr mint pow(u64 n) const {
+	mint pow(u64 n) const {
 		return binpow(*this, n);
 	}
 
-	constexpr mint& operator+=(const mint& rhs) & {
+	mint& operator+=(const mint& rhs) & {
 		v += rhs.val();
 		if (v >= mod()) v -= mod();
 		return *this;
 	}
 
-	constexpr mint& operator-=(const mint& rhs) & {
+	mint& operator-=(const mint& rhs) & {
 		v -= rhs.val();
 		if (v >= mod()) v -= mod();
 		return *this;
 	}
 
-	constexpr mint& operator*=(const mint& rhs) & {
+	mint& operator*=(const mint& rhs) & {
 		v = bt.mul(v, rhs.val());
 		return *this;
 	}
 
-	constexpr mint& operator/=(const mint& rhs) & {
+	mint& operator/=(const mint& rhs) & {
 		return *this *= rhs.inv();
 	}
 
-	friend constexpr mint operator+(mint lhs, const mint& rhs) {
+	friend mint operator+(mint lhs, const mint& rhs) {
 		return lhs += rhs;
 	}
 
-	friend constexpr mint operator-(mint lhs, const mint& rhs) {
+	friend mint operator-(mint lhs, const mint& rhs) {
 		return lhs -= rhs;
 	}
 
-	friend constexpr mint operator*(mint lhs, const mint& rhs) {
+	friend mint operator*(mint lhs, const mint& rhs) {
 		return lhs *= rhs;
 	}
 
-	friend constexpr mint operator/(mint lhs, const mint& rhs) {
+	friend mint operator/(mint lhs, const mint& rhs) {
 		return lhs /= rhs;
 	}
 
-	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
+	friend bool operator==(const mint& lhs, const mint& rhs) {
 		return lhs.val() == rhs.val();
 	}
 
-	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
+	friend bool operator!=(const mint& lhs, const mint& rhs) {
 		return lhs.val() != rhs.val();
 	}
 

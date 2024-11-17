@@ -1,9 +1,11 @@
 #ifndef LIB_STATIC_MONTGOMERY_MODINT_HPP
 #define LIB_STATIC_MONTGOMERY_MODINT_HPP 1
 
+#include <limits>
+#include <iostream>
+
 #include <lib/prelude.hpp>
 #include <lib/math.hpp>
-#include <lib/miller_rabin.hpp>
 
 template <typename U, U m, is_unsigned_integral_t<U>* = nullptr>
 struct static_montgomery_modint_base {
@@ -45,14 +47,7 @@ struct static_montgomery_modint_base {
 	}
 
 	constexpr mint inv() const {
-		if constexpr (is_prime) {
-			return pow(mod() - 2);
-		} else {
-			const auto &[f, s] = inv_gcd(val(), mod());
-			assert(f == 1);
-
-			return s;
-		}
+		return pow(mod() - 2);
 	}
 
 	constexpr mint pow(u64 n) const {
@@ -120,7 +115,6 @@ struct static_montgomery_modint_base {
 
 private:
 	U v;
-	inline static constexpr bool is_prime = is_prime_v<U, m>;
 };
 
 template <u32 m>
@@ -128,5 +122,8 @@ using static_montgomery_modint_32 = static_montgomery_modint_base<u32, m>;
 
 template <u64 m>
 using static_montgomery_modint_64 = static_montgomery_modint_base<u64, m>;
+
+using montgomerymodint998244353 = static_montgomery_modint_32<998'244'353>;
+using montgomerymodint1000000007 = static_montgomery_modint_32<1'000'000'007>;
 
 #endif // LIB_STATIC_MONTGOMERY_MODINT_HPP
