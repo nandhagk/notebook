@@ -6,6 +6,9 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
+using is_integral_t = std::enable_if_t<std::is_integral_v<T>>;
+
+template <typename T>
 using is_signed_integral = std::conditional_t<
 	std::is_integral_v<T> && std::is_signed_v<T>, std::true_type, std::false_type>;
 	
