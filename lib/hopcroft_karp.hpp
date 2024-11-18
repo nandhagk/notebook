@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <queue>
 
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
@@ -59,9 +60,8 @@ inline std::vector<i32> hopcroft_karp(const i32 n, const i32 m, std::vector<std:
         return l;
 }
 
-inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
+inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, const std::vector<i32> &color) {
         const i32 n = static_cast<i32>(g.size());
-        const auto color = bipartition(g);
 
         i32 m{};
         for (i32 u = 0; u < n; ++u) {
@@ -104,6 +104,11 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
         }
 
         return mat;
+}
+
+inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
+        const auto color = bipartition(g);
+        return hopcroft_karp(g, color);
 }
 
 #endif // LIB_HOPCROFT_KARP_HPP

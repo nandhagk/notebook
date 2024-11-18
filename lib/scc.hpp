@@ -48,6 +48,7 @@ inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 	return ids;
 }
 
+// https://codeforces.com/blog/entry/80391?#comment-667198
 inline std::vector<std::pair<i32, i32>> make_strongly_connected(
 	const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
 	const i32 n = static_cast<i32>(g.size());
