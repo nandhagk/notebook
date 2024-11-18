@@ -20,7 +20,9 @@ struct rollback_dsu {
         void build(i32 m) {
                 n = ccs = m;
                 d.assign(n, -1);
+
                 h.clear();
+                h.reserve(n);
         }
 
         i32 find(i32 u) const {

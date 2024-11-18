@@ -19,9 +19,10 @@ struct sieve {
 
         void build(i64 m) {
                 n = m;
-
                 pr.clear();
+
                 lp.resize(n + 1);
+                pr.reserve(n + 1);
 
                 for (i64 i = 2; i <= n; ++i) {
                         if (lp[i] == 0) {
@@ -37,30 +38,9 @@ struct sieve {
         }
 
         std::vector<std::pair<i64, i32>> factorize(i64 k) const {
-                assert(k <= n * n);
+                assert(k <= n);
 
                 std::vector<std::pair<i64, i32>> f;
-
-                if (k > n) {
-                        for (const i64 p : pr) {
-                                if (k < n) break;
-                                if (k % p) continue;
-
-                                i32 c{};
-                                do { 
-                                        k /= p;
-                                        ++c;
-                                } while (k % p == 0);
-
-                                f.emplace_back(p, c);
-                        }
-                }
-
-                if (k > n) {
-                        f.emplace_back(k, 1);
-                        return f;
-                }
-
                 while (k != 1) {
                         i64 p = lp[k];
 

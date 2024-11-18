@@ -98,7 +98,9 @@ struct arbitrary_montgomery_modint_base {
 	}
 
 	friend bool operator==(const mint& lhs, const mint& rhs) {
-		return (lhs.v >= m ? lhs.v - m : lhs.v) == (rhs.v >= m ? rhs.v - m : rhs.v);
+		const U p = lhs.v >= mod() ? lhs.v - mod() : lhs.v;
+		const U q = rhs.v >= mod() ? rhs.v - mod() : rhs.v;
+		return p == q;
 	}
 
 	friend bool operator!=(const mint& lhs, const mint& rhs) {

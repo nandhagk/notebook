@@ -38,13 +38,13 @@ struct static_montgomery_modint_base {
 		return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);
 	}
 
-	constexpr U val() const {
-		U p = reduce(v);
-		return p >= m ? p - m : p;
-	}
-
 	constexpr static U mod() {
 		return m;
+	}
+
+	constexpr U val() const {
+		U p = reduce(v);
+		return p >= mod() ? p - mod() : p;
 	}
 
 	constexpr mint inv() const {
@@ -60,17 +60,17 @@ struct static_montgomery_modint_base {
 	}
 
 	constexpr mint& operator+=(const mint& rhs) & {
-		if (S(v += rhs.v - 2 * m) < 0) v += 2 * m;
+		if (S(v += rhs.val() - 2 * m) < 0) v += 2 * mod();
 		return *this;
 	}
 
 	constexpr mint& operator-=(const mint& rhs) & {
-		if (S(v -= rhs.v) < 0) v += 2 * m;
+		if (S(v -= rhs.val()) < 0) v += 2 * mod();
 		return *this;
 	}
 
 	constexpr mint& operator*=(const mint& rhs) & {
-		v = reduce(V(v) * rhs.v);
+		v = reduce(V(v) * rhs.val());
 		return *this;
 	}
 
@@ -99,7 +99,9 @@ struct static_montgomery_modint_base {
 	}
 
 	friend constexpr bool operator==(const mint& lhs, const mint& rhs) {
-		return (lhs.v >= m ? lhs.v - m : lhs.v) == (rhs.v >= m ? rhs.v - m : rhs.v);
+		const U p = lhs.v >= mod() ? lhs.v - mod() : lhs.v;
+		const U q = rhs.v >= mod() ? rhs.v - mod() : rhs.v;
+		return p == q;
 	}
 
 	friend constexpr bool operator!=(const mint& lhs, const mint& rhs) {
