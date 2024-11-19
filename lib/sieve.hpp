@@ -57,10 +57,7 @@ struct sieve {
         }
 
         i64 totient(i64 k) const {
-                for (const auto &[p, _] : factorize(k)) {
-                        k -= k / p;
-                }
-
+                for (const auto &[p, _] : factorize(k)) k -= k / p;
                 return k;
         }
 

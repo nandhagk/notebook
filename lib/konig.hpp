@@ -61,7 +61,6 @@ inline std::vector<bool> konig(
 inline std::vector<bool> konig(const std::vector<std::vector<i32>> &g) {
         const auto color = bipartition(g);
         const auto mate = hopcroft_karp(g, color);
-
         return konig(g, color, mate);
 }
 

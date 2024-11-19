@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <queue>
+#include <cassert>
 
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
@@ -95,15 +95,15 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, co
 
         const auto l = hopcroft_karp(p, q, std::move(es));
 
-        std::vector<i32> mat(n, -1);
+        std::vector<i32> mate(n, -1);
         for (i32 i = 0; i < p; ++i) {
                 if (l[i] == -1) continue;
 
-                mat[vs[i]] = vs[l[i] + p];
-                mat[vs[l[i] + p]] = vs[i];
+                mate[vs[i]] = vs[l[i] + p];
+                mate[vs[l[i] + p]] = vs[i];
         }
 
-        return mat;
+        return mate;
 }
 
 inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {

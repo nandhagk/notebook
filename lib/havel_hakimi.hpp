@@ -7,6 +7,7 @@
 
 #include <lib/prelude.hpp>
 
+// Will panic if not possible to construct
 inline std::vector<std::pair<i32, i32>> havel_hakimi(std::vector<i32> deg) {
         const i32 n = static_cast<i32>(deg.size());
 
@@ -27,7 +28,7 @@ inline std::vector<std::pair<i32, i32>> havel_hakimi(std::vector<i32> deg) {
 
                 i32 k = mx;
                 while (static_cast<i32>(nbd.size()) < deg[u]) {
-                        if (k == 0) return {};
+                        assert(k != 0);
                         if (d[k].empty()) {
                                 --k;
                                 continue;
