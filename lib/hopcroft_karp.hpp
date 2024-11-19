@@ -107,7 +107,9 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, co
 }
 
 inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
-        const auto color = bipartition(g);
+        const auto &[is_bipartite, color] = bipartition(g);
+        assert(is_bipartite);
+
         return hopcroft_karp(g, color);
 }
 

@@ -70,7 +70,7 @@ inline std::vector<std::vector<i32>> scc_dag(
 }
 
 // https://codeforces.com/blog/entry/80391?#comment-667198
-inline std::vector<std::pair<i32, i32>> make_strongly_connected(
+inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(
 	const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
 	const auto h = scc_dag(g, ids);
 
