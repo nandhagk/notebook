@@ -19,10 +19,7 @@ struct sieve {
 
         void build(i64 m) {
                 n = m;
-                pr.clear();
-
                 lp.resize(n + 1);
-                pr.reserve(n + 1);
 
                 for (i64 i = 2; i <= n; ++i) {
                         if (lp[i] == 0) {

@@ -8,7 +8,6 @@
 
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
-#include <lib/bipartite.hpp>
 
 inline std::vector<i32> hopcroft_karp(const i32 n, const i32 m, std::vector<std::pair<i32, i32>> e) {
         std::vector<i32> g(e.size()), l(n, -1), r(m, -1), deg(n + 1);
@@ -64,10 +63,7 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, co
         const i32 n = static_cast<i32>(g.size());
 
         i32 m{};
-        for (i32 u = 0; u < n; ++u) {
-                m += static_cast<i32>(g[u].size());
-        }
-
+        for (i32 u = 0; u < n; ++u) m += static_cast<i32>(g[u].size());
         m /= 2;
 
         std::vector<i32> vs(n);
@@ -88,7 +84,7 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, co
 
         for (i32 u = 0; u < n; ++u) {
                 for (const i32 v : g[u]) {
-                        if (color[u]) continue;
+                        if (color[u] == 1) continue;
                         es.emplace_back(rv[u], rv[v] - p);
                 }
         }
@@ -104,13 +100,6 @@ inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g, co
         }
 
         return mate;
-}
-
-inline std::vector<i32> hopcroft_karp(const std::vector<std::vector<i32>> &g) {
-        const auto &[is_bipartite, color] = bipartition(g);
-        assert(is_bipartite);
-
-        return hopcroft_karp(g, color);
 }
 
 #endif // LIB_HOPCROFT_KARP_HPP

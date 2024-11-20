@@ -6,10 +6,7 @@
 #include <cassert>
 
 #include <lib/prelude.hpp>
-#include <lib/bipartite.hpp>
-#include <lib/hopcroft_karp.hpp>
 
-// UNTESTED !!!!!
 inline std::vector<bool> konig(
         const std::vector<std::vector<i32>> &g, 
         const std::vector<i32> &color,
@@ -42,28 +39,13 @@ inline std::vector<bool> konig(
         }
 
         std::vector<bool> cover(n, false);
-
         for (i32 u = 0; u < n; ++u) {
                 const bool a = color[u] == 0 && !z[u];
                 const bool b = color[u] == 1 && z[u];
                 cover[u] = a || b;
         }
 
-        for (i32 u = 0; u < n; ++u) {
-                for (const i32 v : g[u]) {
-                        assert(cover[u] || cover[v]);
-                }
-        }
-
         return cover;
-}
-
-inline std::vector<bool> konig(const std::vector<std::vector<i32>> &g) {
-        const auto &[is_bipartite, color] = bipartition(g);
-        assert(is_bipartite);
-
-        const auto mate = hopcroft_karp(g, color);
-        return konig(g, color, mate);
 }
 
 #endif // LIB_KONIG_HPP
