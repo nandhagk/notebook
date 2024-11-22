@@ -213,9 +213,7 @@ struct lazy_segment_tree {
 
 private:
 	void apply_at(i32 k, A a) {
-		const i64 sz = 1 << (log - topbit(k));
-
-		d[k] = AM::act(d[k], a, sz);
+		d[k] = AM::act(d[k], a);
 		if (k < size) z[k] = MA::op(z[k], a);
 	}
 

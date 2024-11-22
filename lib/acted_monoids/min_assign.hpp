@@ -12,7 +12,7 @@ struct acted_monoid_min_assign {
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X act(const X &x, const A &a, const i64) {
+	static constexpr X act(const X &x, const A &a) {
 		return x == MX::unit() ? x : a;
 	}
 };
