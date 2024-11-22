@@ -48,7 +48,7 @@ struct sparse_table_2d {
 		W = w;
 
                 i32 log = 1;
-                while ((1 << log) < H) ++log;
+                while ((1 << log) < h) ++log;
                 d.resize(log);
 
                 d[0].resize(h);
