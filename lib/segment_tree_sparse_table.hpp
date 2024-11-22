@@ -46,11 +46,11 @@ struct segment_tree_sparse_table {
 		H = h;
 		W = w;
 
-                d.resize(2 * h);
-                for (i32 i = 0; i < h; ++i) d[h + i].build(w, [&](i32 j) -> X { return f(i, j); });
-                for (i32 i = h - 1; i >= 1; --i) {
-                        d[i].build(w, [&](i32 j) -> X { return MX::op(d[(i << 1)].d[0][j], d[(i << 1) | 1].d[0][j]); });
-                }
+		d.resize(2 * h);
+		for (i32 i = 0; i < h; ++i) d[h + i].build(w, [&](i32 j) -> X { return f(i, j); });
+		for (i32 i = h - 1; i >= 1; --i) {
+			d[i].build(w, [&](i32 j) -> X { return MX::op(d[(i << 1)].d[0][j], d[(i << 1) | 1].d[0][j]); });
+		}
 	}
 
 	X prod(i32 xl, i32 xr, i32 yl, i32 yr) const {

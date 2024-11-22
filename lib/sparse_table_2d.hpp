@@ -47,23 +47,23 @@ struct sparse_table_2d {
 		H = h;
 		W = w;
 
-                i32 log = 1;
-                while ((1 << log) < h) ++log;
-                d.resize(log);
+		i32 log = 1;
+		while ((1 << log) < h) ++log;
+		d.resize(log);
 
-                d[0].resize(h);
-                for (i32 i = 0; i < h; ++i) {
-                        d[0][i].build(w, [&](i32 j) -> X { return f(i, j); });
-                }
+		d[0].resize(h);
+		for (i32 i = 0; i < h; ++i) {
+			d[0][i].build(w, [&](i32 j) -> X { return f(i, j); });
+		}
 
-                for (i32 i = 0; i < log - 1; ++i) {
-                        const i32 k = static_cast<i32>(d[i].size()) - (1 << i);
+		for (i32 i = 0; i < log - 1; ++i) {
+			const i32 k = static_cast<i32>(d[i].size()) - (1 << i);
 
-                        d[i + 1].resize(k);
-                        for (i32 j = 0; j < k; ++j) {
-                                d[i + 1][j].build(w, [&](i32 p) -> X { return MX::op(d[i][j].d[0][p], d[i][j + (1 << i)].d[0][p]); });
-                        }
-                }
+			d[i + 1].resize(k);
+			for (i32 j = 0; j < k; ++j) {
+				d[i + 1][j].build(w, [&](i32 p) -> X { return MX::op(d[i][j].d[0][p], d[i][j + (1 << i)].d[0][p]); });
+			}
+		}
 	}
 
 	X prod(i32 xl, i32 xr, i32 yl, i32 yr) const {
