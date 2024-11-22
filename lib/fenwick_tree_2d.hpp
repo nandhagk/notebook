@@ -35,8 +35,8 @@ struct fenwick_tree_2d {
 	}
 
 	void build(const std::vector<std::vector<X>> &v) {
-		const i32 h = static_cat<i32>(v.size());
-		const i32 w = static_cat<i32>(v[0].size());
+		const i32 h = static_cast<i32>(v.size());
+		const i32 w = static_cast<i32>(v[0].size());
 
 		build(h, w, [&](i32 i, i32 j) -> X { return v[i][j]; });
 	}

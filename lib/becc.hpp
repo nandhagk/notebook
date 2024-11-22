@@ -9,7 +9,7 @@
 inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
 	const i32 n = static_cast<i32>(g.size());
 
-        std::vector<i32> dep(n, -1), cnt(n), par(n), vs;
+        std::vector<i32> dep(n, -1), cnt(n), par(n), ids(n), vs;
         vs.reserve(n);
 
         const auto dfs = [&](auto &&self, i32 u) -> void {
@@ -40,9 +40,7 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
                 dfs(dfs, u);
         }
 
-        std::vector<i32> ids(n);
         i32 group{};
-
         for (const i32 u : vs) {
                 if (dep[u] && cnt[u]) {
                         ids[u] = ids[par[u]];

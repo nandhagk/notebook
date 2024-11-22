@@ -1,16 +1,15 @@
-#ifndef LIB_BIPARTITE_HPP
-#define LIB_BIPARTITE_HPP 1
+#ifndef LIB_BIPARTITION_HPP
+#define LIB_BIPARTITION_HPP 1
 
 #include <vector>
 #include <queue>
-#include <cassert>
+#include <optional>
 
 #include <lib/prelude.hpp>
 
-inline std::pair<bool, std::vector<i32>> bipartition(const std::vector<std::vector<i32>> &g) {
+inline std::optional<std::vector<i32>> bipartition(const std::vector<std::vector<i32>> &g) {
         const i32 n = static_cast<i32>(g.size());
 
-        bool is_bipartite = true;
         std::vector<i32> color(n, -1);
 
         std::queue<i32> q;
@@ -28,14 +27,14 @@ inline std::pair<bool, std::vector<i32>> bipartition(const std::vector<std::vect
                                 if (color[s] == -1) {
                                         color[s] = color[v] ^ 1;
                                         q.push(s);
-                                } else {
-                                        is_bipartite &= color[s] != color[v];
+                                } else if (color[s] == color[v]) {
+                                        return std::nullopt;
                                 }
                         }
                 }
         }
 
-        return {is_bipartite, color};
+        return color;
 }
 
-#endif // LIB_BIPARTITE_HPP
+#endif // LIB_BIPARTITION_HPP
