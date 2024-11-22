@@ -13,7 +13,6 @@ struct monoid_add_sz {
         static constexpr X op(const X &x, const X &y) {
                 const auto [a, b] = x;
 		const auto [p, q] = y;
-
 		return {a + p, b + q};
         }
 
@@ -28,7 +27,7 @@ struct monoid_add_sz {
         }
 
         static constexpr X unit() {
-                return {0, 0};
+                return {T(0), 0};
         }
 
 	static constexpr X from_element(const T& t) {

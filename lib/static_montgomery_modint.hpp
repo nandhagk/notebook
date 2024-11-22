@@ -43,7 +43,7 @@ struct static_montgomery_modint_base {
 	}
 
 	constexpr U val() const {
-		U p = reduce(v);
+		const U p = reduce(v);
 		return p >= mod() ? p - mod() : p;
 	}
 
@@ -60,17 +60,17 @@ struct static_montgomery_modint_base {
 	}
 
 	constexpr mint& operator+=(const mint& rhs) & {
-		if (S(v += rhs.val() - 2 * m) < 0) v += 2 * mod();
+		if (S(v += rhs.v - 2 * mod()) < 0) v += 2 * mod();
 		return *this;
 	}
 
 	constexpr mint& operator-=(const mint& rhs) & {
-		if (S(v -= rhs.val()) < 0) v += 2 * mod();
+		if (S(v -= rhs.v) < 0) v += 2 * mod();
 		return *this;
 	}
 
 	constexpr mint& operator*=(const mint& rhs) & {
-		v = reduce(V(v) * rhs.val());
+		v = reduce(V(v) * rhs.v);
 		return *this;
 	}
 
