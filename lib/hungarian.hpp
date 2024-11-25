@@ -12,7 +12,7 @@ std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
 	const i32 m = static_cast<i32>(cost[0].size());
 
 	std::vector<i32> row_mate(n, -1), col_mate(m, -1);
-	std::vector<T> pi(n, 0);
+	std::vector<T> pi(m, 0);
 
 	const auto residual = [&](i32 r, i32 c) { return cost[r][c] - pi[c]; };
 
