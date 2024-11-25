@@ -31,7 +31,6 @@ std::optional<Z> sqrt(Z a) {
         }
 
         return r;
-
 }
 
 template <typename U, typename T, is_unsigned_integral_t<U>* = nullptr, is_integral_t<T>* = nullptr>
