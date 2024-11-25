@@ -25,7 +25,7 @@ struct monoid_mnss_sz {
         }
 
         static constexpr X unit() {
-                return from_element(inf<T>);
+                return {inf<T>, inf<T>, inf<T>, inf<T>, 0};
         }
 
         static constexpr bool commutative = false;
