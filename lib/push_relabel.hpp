@@ -11,6 +11,9 @@ template <typename T>
 inline T push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 s, i32 t) {
         const i32 n = static_cast<i32>(g.size());
 
+        assert(0 <= s && s < n);
+        assert(0 <= t && t < n);
+
         i32 k{};
         std::vector<std::vector<std::tuple<i32, i32, T>>> h(n);
         for (i32 u = 0; u < n; ++u) {
@@ -87,12 +90,6 @@ inline T push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 
 
                         ++cnt[lvl[u]];
                         enqueue(u);
-                }
-        }
-
-        for (i32 u = 0; u < n; ++u) {
-                for (const auto &[v, i, cap] : h[u]) {
-                        debug(u, v, cap - flow[i]);
                 }
         }
 
