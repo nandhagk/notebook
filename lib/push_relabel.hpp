@@ -8,7 +8,7 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
-inline std::vector<T> push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 s, i32 t) {
+inline T push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 s, i32 t) {
         const i32 n = static_cast<i32>(g.size());
 
         i32 k{};
@@ -52,7 +52,7 @@ inline std::vector<T> push_relabel(const std::vector<std::vector<std::pair<i32, 
                 active[u] = false;
                 for (const auto &[v, i, cap] : h[u]) {
                         const auto d = std::min(excess[u], cap - flow[i]);
-                        if (d != 0 && lvl[u] == lvl[v] + 1) {
+                        if (d > 0 && lvl[u] == lvl[v] + 1) {
                                 flow[i] += d;
                                 flow[i ^ 1] -= d;
 
@@ -90,7 +90,13 @@ inline std::vector<T> push_relabel(const std::vector<std::vector<std::pair<i32, 
                 }
         }
 
-        return excess;
+        for (i32 u = 0; u < n; ++u) {
+                for (const auto &[v, i, cap] : h[u]) {
+                        debug(u, v, cap - flow[i]);
+                }
+        }
+
+        return excess[t];
 };
 
 #endif // LIB_PUSH_RELABEL_HPP
