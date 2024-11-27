@@ -89,15 +89,9 @@ struct segment_tree {
                 X vl = MX::unit();
                 X vr = MX::unit();
 
-                l += size;
-                r += size;
-
-                while (l < r) {
+                for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
                         if (l & 1) vl = MX::op(vl, d[l++]);
                         if (r & 1) vr = MX::op(d[--r], vr);
-
-                        l >>= 1;
-                        r >>= 1;
                 }
 
                 return MX::op(vl, vr);

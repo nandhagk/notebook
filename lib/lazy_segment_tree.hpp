@@ -99,20 +99,21 @@ struct lazy_segment_tree {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return MX::unit();
-		l += size, r += size;
+
+		l += size;
+		r += size;
 
 		for (i32 i = log; i >= 1; i--) {
 			if (((l >> i) << i) != l) push(l >> i);
 			if (((r >> i) << i) != r) push((r - 1) >> i);
 		}
 
-		X xl = MX::unit(), xr = MX::unit();
-		while (l < r) {
+		X xl = MX::unit();
+		X xr = MX::unit();
+
+		for (; l < r; l >>= 1, r >>= 1) {
 			if (l & 1) xl = MX::op(xl, d[l++]);
 			if (r & 1) xr = MX::op(d[--r], xr);
-
-			l >>= 1;
-			r >>= 1;
 		}
 
 		return MX::op(xl, xr);
@@ -126,23 +127,20 @@ struct lazy_segment_tree {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return;
-		l += size, r += size;
+
+		l += size;
+		r += size;
 
 		for (i32 i = log; i >= 1; i--) {
 			if (((l >> i) << i) != l) push(l >> i);
 			if (((r >> i) << i) != r) push((r - 1) >> i);
 		}
 
-		i32 l2 = l, r2 = r;
-		while (l < r) {
-			if (l & 1) apply_at(l++, a);
-			if (r & 1) apply_at(--r, a);
-
-			l >>= 1;
-			r >>= 1;
+		for (i32 p = l, q = r; p < q; p >>= 1, q >>= 1) {
+			if (p & 1) apply_at(p++, a);
+			if (q & 1) apply_at(--q, a);
 		}
 
-		l = l2, r = r2;
 		for (i32 i = 1; i <= log; i++) {
 			if (((l >> i) << i) != l) update(l >> i);
 			if (((r >> i) << i) != r) update((r - 1) >> i);
@@ -213,7 +211,9 @@ struct lazy_segment_tree {
 
 private:
 	void apply_at(i32 k, const A& a) {
-		d[k] = AM::act(d[k], a);
+		const i32 sz = 1 << (log - topbit(k));
+
+		d[k] = AM::act(d[k], a, sz);
 		if (k < size) z[k] = MA::op(z[k], a);
 	}
 

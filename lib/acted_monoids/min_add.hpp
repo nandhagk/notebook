@@ -12,7 +12,7 @@ struct acted_monoid_max_add {
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X act(const X &x, const A &a) {
+	static constexpr X act(const X &x, const A &a, i32) {
 		return x == MX::unit() ? x : x + a;
 	}
 };

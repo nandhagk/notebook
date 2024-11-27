@@ -1,5 +1,5 @@
-#ifndef LIB_LAZY_RBST_HPP
-#define LIB_LAZY_RBST_HPP 1
+#ifndef LIB_TREAP_HPP
+#define LIB_TREAP_HPP 1
 
 #include <vector>
 #include <cassert>
@@ -7,25 +7,19 @@
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 
-template <typename ActedMonoid>
-struct lazy_rbst {
-        using AM = ActedMonoid;
-
-        using MX = typename AM::MX;
-        using MA = typename AM::MA;
-
+template <typename Monoid>
+struct treap {
+        using MX = Monoid;
         using X = typename MX::ValueT;
-        using A = typename MA::ValueT;
 
         struct node {
                 node *l, *r;
                 X val, sum;
-                A lz;
                 bool rev;
                 u32 sz;
 
                 explicit node(const X &x):
-                        l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+                        l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
                 node():
                         node(MX::unit()) {}
@@ -38,15 +32,15 @@ struct lazy_rbst {
         i32 n, pid;
         node* pool;
 
-        lazy_rbst():
+        treap():
                 pool{nullptr} {}
 
-        explicit lazy_rbst(i32 m):
-                lazy_rbst() {
+        explicit treap(i32 m):
+                treap() {
                 build(m);
         }
 
-        ~lazy_rbst() {
+        ~treap() {
                 reset();
         }
                 
@@ -117,24 +111,12 @@ struct lazy_rbst {
                 return t;
         }
 
-        void all_apply(node* t, const A& a) {
-                t->val = AM::act(t->val, a);
-                t->sum = AM::act(t->sum, a);
-                t->lz = MA::op(t->lz, a);
-        }
-
         void toggle(node* t) {
                 std::swap(t->l, t->r);
                 t->rev ^= true;
         }
 
         void push(node* &t) {
-                if (t->lz != MA::unit()) {
-                        if (t->l != nullptr) all_apply(t->l, t->lz);
-                        if (t->r != nullptr) all_apply(t->r, t->lz);
-                        t->lz = MA::unit();
-                }
-
                 if (t->rev) {
                         if (t->l != nullptr) toggle(t->l);
                         if (t->r != nullptr) toggle(t->r);
@@ -145,7 +127,7 @@ struct lazy_rbst {
         node* merge(node* l, node* r) {
                 if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
-                if ((MT() % (l->sz + r->sz)) < l->sz) {
+                if (MT() % (l->sz + r->sz) < l->sz) {
                         push(l);
                         l->r = merge(l->r, r);
                         return update(l);
@@ -157,11 +139,11 @@ struct lazy_rbst {
         }
 
         std::pair<node*, node*> split(node* &root, i32 k) {
-                if (root == nullptr) return {nullptr, nullptr};
-                push(root);
+                if (k >= size(root)) return {root, nullptr};
 
-                if (k > size(root->l)) {
-                        auto [l, r] = split(root->r, k - size(root->l) - 1);
+                push(root);
+                if (const i32 lsz = size(root->l); k > lsz) {
+                        auto [l, r] = split(root->r, k - lsz - 1);
                         root->r = l;
                         return {update(root), r};
                 } else {
@@ -171,11 +153,18 @@ struct lazy_rbst {
                 }
         }
 
+
         void insert(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p <= size(root));
 
+                insert(root, p, make_node(x));
+        }
+
+        void insert(node* &root, i32 p, node* t) {
+                assert(0 <= p && p <= size(root));
+
                 auto [l, r] = split(root, p);
-                root = merge(l, merge(make_node(x), r));
+                root = merge(l, merge(t, r));
         }
 
         void erase(node* &root, i32 p) {
@@ -192,20 +181,8 @@ struct lazy_rbst {
                 auto [l, r] = split(root, p);
                 auto [a, b] = split(r, 1);
 
-                *a = node(x);
+                a->val = x;
                 root = merge(l, merge(a, b));
-        }
-
-        void apply(node* &root, i32 l, i32 r, const A& a) {
-                assert(0 <= l && l <= r && r <= size(root));
-
-                if (l == r) return;
-
-                auto [x, y] = split(root, l);
-                auto [p, q] = split(y, r - l);
-
-                all_apply(p, a);
-                root = merge(x, merge(p, q));
         }
 
         X prod(node* &root, i32 l, i32 r) {
@@ -252,4 +229,4 @@ struct lazy_rbst {
         }
 };
 
-#endif // LIB_LAZY_RBST_HPP
+#endif // LIB_TREAP_HPP
