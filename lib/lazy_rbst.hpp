@@ -1,5 +1,5 @@
-#ifndef LIB_LAZY_TREAP_HPP
-#define LIB_LAZY_TREAP_HPP 1
+#ifndef LIB_LAZY_RBST_HPP
+#define LIB_LAZY_RBST_HPP 1
 
 #include <vector>
 #include <cassert>
@@ -8,7 +8,7 @@
 #include <lib/random.hpp>
 
 template <typename ActedMonoid>
-struct lazy_treap {
+struct lazy_rbst {
         using AM = ActedMonoid;
 
         using MX = typename AM::MX;
@@ -38,15 +38,15 @@ struct lazy_treap {
         i32 n, pid;
         node* pool;
 
-        lazy_treap():
+        lazy_rbst():
                 pool{nullptr} {}
 
-        explicit lazy_treap(i32 m):
-                lazy_treap() {
+        explicit lazy_rbst(i32 m):
+                lazy_rbst() {
                 build(m);
         }
 
-        ~lazy_treap() {
+        ~lazy_rbst() {
                 reset();
         }
                 
@@ -128,7 +128,7 @@ struct lazy_treap {
                 t->rev ^= true;
         }
 
-        void push(node* &t) {
+        void push(node* t) {
                 if (t->lz != MA::unit()) {
                         if (t->l != nullptr) all_apply(t->l, t->lz);
                         if (t->r != nullptr) all_apply(t->r, t->lz);
@@ -235,6 +235,24 @@ struct lazy_treap {
                 return prod(root, p, p + 1);
         }
 
+        void dump(node* root, std::vector<X> &v) {
+                if (root == nullptr) return;
+
+                push(root);
+                dump(root->l, v);
+                v.push_back(root->val);
+                dump(root->r, v);
+        }
+
+        std::vector<X> get_all(node* &root) {
+                std::vector<X> v(size(root));
+                dump(root, v);
+
+                return v;
+        }
+
+
+
         void multiply(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p < size(root));
 
@@ -258,4 +276,4 @@ struct lazy_treap {
         }
 };
 
-#endif // LIB_LAZY_TREAP_HPP
+#endif // LIB_LAZY_RBST_HPP

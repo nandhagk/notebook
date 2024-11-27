@@ -1,5 +1,5 @@
-#ifndef LIB_TREAP_HPP
-#define LIB_TREAP_HPP 1
+#ifndef LIB_RBST_HPP
+#define LIB_RBST_HPP 1
 
 #include <vector>
 #include <cassert>
@@ -8,7 +8,7 @@
 #include <lib/random.hpp>
 
 template <typename Monoid>
-struct treap {
+struct rbst {
         using MX = Monoid;
         using X = typename MX::ValueT;
 
@@ -32,15 +32,15 @@ struct treap {
         i32 n, pid;
         node* pool;
 
-        treap():
+        rbst():
                 pool{nullptr} {}
 
-        explicit treap(i32 m):
-                treap() {
+        explicit rbst(i32 m):
+                rbst() {
                 build(m);
         }
 
-        ~treap() {
+        ~rbst() {
                 reset();
         }
                 
@@ -116,7 +116,7 @@ struct treap {
                 t->rev ^= true;
         }
 
-        void push(node* &t) {
+        void push(node* t) {
                 if (t->rev) {
                         if (t->l != nullptr) toggle(t->l);
                         if (t->r != nullptr) toggle(t->r);
@@ -206,6 +206,22 @@ struct treap {
                 return prod(root, p, p + 1);
         }
 
+        void dump(node* root, std::vector<X> &v) {
+                if (root == nullptr) return;
+
+                push(root);
+                dump(root->l, v);
+                v.push_back(root->val);
+                dump(root->r, v);
+        }
+
+        std::vector<X> get_all(node* &root) {
+                std::vector<X> v(size(root));
+                dump(root, v);
+
+                return v;
+        }
+
         void multiply(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p < size(root));
 
@@ -229,4 +245,4 @@ struct treap {
         }
 };
 
-#endif // LIB_TREAP_HPP
+#endif // LIB_RBST_HPP

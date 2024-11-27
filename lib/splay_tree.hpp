@@ -269,6 +269,22 @@ struct splay_tree {
                 return root->val;
         }
 
+        void dump(node* root, std::vector<X> &v) {
+                if (root == nullptr) return;
+
+                push(root);
+                dump(root->l, v);
+                v.push_back(root->val);
+                dump(root->r, v);
+        }
+
+        std::vector<X> get_all(node* &root) {
+                std::vector<X> v(size(root));
+                dump(root, v);
+
+                return v;
+        }
+
         void multiply(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p < size(root));
 
