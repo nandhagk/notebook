@@ -8,38 +8,38 @@
 #include <lib/prelude.hpp>
 
 struct sieve {
-        i64 n;
-        std::vector<i64> lp, pr;
+        i32 n;
+        std::vector<i32> lp, pr;
 
         sieve() {}
-
-        explicit sieve(i64 m) {
+        explicit sieve(i32 m) {
                 build(m);
         }
 
-        void build(i64 m) {
+        void build(i32 m) {
                 n = m;
+                pr.clear();
                 lp.resize(n + 1);
 
-                for (i64 i = 2; i <= n; ++i) {
+                for (i32 i = 2; i <= n; ++i) {
                         if (lp[i] == 0) {
                                 lp[i] = i;
                                 pr.push_back(i);
                         }
 
-                        for (i64 j = 0; i * pr[j] <= n; ++j) {
+                        for (i32 j = 0; i * pr[j] <= n; ++j) {
                                 lp[i * pr[j]] = pr[j];
                                 if (pr[j] == lp[i]) break;
                         }
                 }
         }
 
-        std::vector<std::pair<i64, i32>> factorize(i64 k) const {
+        std::vector<std::pair<i32, i32>> factorize(i32 k) const {
                 assert(k <= n);
 
-                std::vector<std::pair<i64, i32>> f;
+                std::vector<std::pair<i32, i32>> f;
                 while (k != 1) {
-                        i64 p = lp[k];
+                        i32 p = lp[k];
 
                         i32 c{};
                         do { 
@@ -53,17 +53,19 @@ struct sieve {
                 return f;
         }
 
-        i64 totient(i64 k) const {
+        i32 totient(i32 k) const {
+                assert(k <= n);
+
                 for (const auto &[p, _] : factorize(k)) k -= k / p;
                 return k;
         }
 
-        std::vector<i64> totient() const {
-                std::vector<i64> to(n + 1);
+        std::vector<i32> totient() const {
+                std::vector<i32> to(n + 1);
                 std::iota(to.begin(), to.end(), 0);
 
-                for (const i64 p : pr) {
-                        for (i64 j = p; j <= n; j += p) {
+                for (const i32 p : pr) {
+                        for (i32 j = p; j <= n; j += p) {
                                 to[j] -= to[j] / p;
                         }
                 }

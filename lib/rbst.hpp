@@ -153,7 +153,6 @@ struct rbst {
                 }
         }
 
-
         void insert(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p <= size(root));
 

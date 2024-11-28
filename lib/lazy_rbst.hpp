@@ -251,8 +251,6 @@ struct lazy_rbst {
                 return v;
         }
 
-
-
         void multiply(node* &root, i32 p, const X &x) {
                 assert(0 <= p && p < size(root));
 
