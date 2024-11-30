@@ -67,6 +67,7 @@ struct hld_segment_tree {
         }
 
         X prod_subtree(i32 u) {
+		static_assert(MX::commutative);
                 return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
         }
 

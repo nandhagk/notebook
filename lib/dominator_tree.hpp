@@ -5,7 +5,6 @@
 #include <numeric>
 
 #include <lib/prelude.hpp>
-#include <lib/graph.hpp>
 
 template <typename Graph>
 inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {

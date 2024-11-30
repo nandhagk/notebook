@@ -6,7 +6,7 @@
 #include <optional>
 
 #include <lib/prelude.hpp>
-#include <lib/graph.hpp>
+#include <lib/csr_graph.hpp>
 #include <lib/scc.hpp>
 
 struct two_sat {

@@ -27,8 +27,8 @@ struct hld {
 	}
 
 	template <typename Graph>
-	void build(const Graph& t, i32 root) {
-		n = static_cast<i32>(t.size());
+	void build(const Graph& g, i32 root) {
+		n = static_cast<i32>(g.size());
 		time = 0;
 
 		sz.assign(n, 1);
@@ -40,10 +40,10 @@ struct hld {
 		start.assign(n, 0);
 
 		par[root] = -1;
-		dfs_sz(t, root);
+		dfs_sz(g, root);
 
 		start[root] = root;
-		dfs_hld(t, root);
+		dfs_hld(g, root);
 	}
 
 	bool is_ancestor(i32 u, i32 v) const {

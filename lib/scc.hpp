@@ -5,7 +5,8 @@
 #include <algorithm>
 
 #include <lib/prelude.hpp>
-#include <lib/graph.hpp>
+#include <lib/csr_graph.hpp>
+#include <lib/dense_graph.hpp>
 
 template <typename Graph>
 inline std::pair<i32, std::vector<i32>> scc(const Graph &g) {
@@ -70,6 +71,21 @@ inline csr_graph<simple_edge> scc_dag(const Graph &g, const std::vector<i32> &id
 	es.erase(std::unique(es.begin(), es.end()), es.end());
 
 	return csr_graph(k, es);
+}
+
+inline dense_graph scc_dag(const dense_graph &g, const std::vector<i32> &ids) {
+	const i32 n = static_cast<i32>(g.size());
+	const i32 k = *std::max_element(ids.begin(), ids.end()) + 1;
+
+	dense_graph h(k);
+	for (i32 u = 0; u < n; ++u) {
+		for (const i32 v : g[u]) {
+			if (ids[u] == ids[v]) continue;
+			h.add_edge(ids[u], ids[v]);
+		}
+	}
+	
+	return h;
 }
 
 #endif // LIB_SCC_HPP

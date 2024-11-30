@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <lib/prelude.hpp>
-#include <lib/graph.hpp>
+#include <lib/csr_graph.hpp>
 
 template <typename Graph>
 inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Graph &g) {
@@ -80,7 +80,7 @@ inline std::tuple<i32, std::vector<i32>, csr_graph<simple_edge>> block_cut_tree(
         }
  
         std::vector<std::pair<i32, simple_edge>> es;
-        es.reserve(2 * g.m);
+        es.reserve(2 * (group + ccs.size()));
 
         for (const auto &cc : ccs) {
                 for (const i32 u : cc) {

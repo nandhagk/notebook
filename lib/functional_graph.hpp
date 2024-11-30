@@ -6,13 +6,13 @@
 
 #include <lib/prelude.hpp>
 #include <lib/dsu.hpp>
-#include <lib/graph.hpp>
+#include <lib/csr_graph.hpp>
 #include <lib/hld.hpp>
 
 struct functional_graph {
         i32 n;
         std::vector<i32> to, root;
-        hld<csr_graph<simple_edge>> h;
+        hld h;
 
         functional_graph() {}
         explicit functional_graph(const std::vector<i32> &t) {
