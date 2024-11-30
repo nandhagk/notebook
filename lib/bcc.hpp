@@ -2,9 +2,12 @@
 #define LIB_BCC_HPP 1
 
 #include <vector>
-#include <lib/prelude.hpp>
 
-inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const std::vector<std::vector<i32>> &g) {
+#include <lib/prelude.hpp>
+#include <lib/graph.hpp>
+
+template <typename Graph>
+inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Graph &g) {
         const i32 n = static_cast<i32>(g.size());
 
         std::vector<i32> seen, tin(n, -1), low(n);
@@ -63,8 +66,9 @@ inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const std
 	return {std::move(c), std::move(ccs)};
 }
 
-inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> block_cut_tree(
-        const std::vector<std::vector<i32>> &g, 
+template <typename Graph>
+inline std::tuple<i32, std::vector<i32>, csr_graph<simple_edge>> block_cut_tree(
+        const Graph &g, 
         const std::vector<bool> &c, 
         const std::vector<std::vector<i32>> &ccs) {
         const i32 n = static_cast<i32>(g.size());
@@ -75,7 +79,9 @@ inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> block_cut_tree
                 if (c[u]) ids[u] = group++;
         }
  
-        std::vector<std::vector<i32>> h(group + ccs.size());
+        std::vector<std::pair<i32, simple_edge>> es;
+        es.reserve(2 * g.m);
+
         for (const auto &cc : ccs) {
                 for (const i32 u : cc) {
                         if (!c[u]) {
@@ -83,14 +89,14 @@ inline std::pair<std::vector<i32>, std::vector<std::vector<i32>>> block_cut_tree
                                 continue;
                         }
 
-                        h[ids[u]].push_back(group);
-                        h[group].push_back(ids[u]);
+                        es.emplace_back(ids[u], group);
+                        es.emplace_back(group, ids[u]);
                 }
  
                 ++group;
         }
 
-        return {std::move(ids), std::move(h)};
+        return {group, std::move(ids), csr_graph(group, es)};
 }
 
 #endif // LIB_BCC_HPP

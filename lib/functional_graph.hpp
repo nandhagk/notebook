@@ -6,12 +6,13 @@
 
 #include <lib/prelude.hpp>
 #include <lib/dsu.hpp>
+#include <lib/graph.hpp>
 #include <lib/hld.hpp>
 
 struct functional_graph {
         i32 n;
         std::vector<i32> to, root;
-        hld h;
+        hld<csr_graph<simple_edge>> h;
 
         functional_graph() {}
         explicit functional_graph(const std::vector<i32> &t) {
@@ -62,7 +63,8 @@ struct functional_graph {
                 to = t;
                 root.assign(n, 0);
 
-                std::vector<std::vector<i32>> g(n + 1);
+                std::vector<std::pair<i32, simple_edge>> es;
+                es.reserve(2 * n);
 
                 dsu dsu(n);
                 for (i32 u = 0; u < n; ++u) {
@@ -79,14 +81,15 @@ struct functional_graph {
 
                 for (i32 u = 0; u < n; ++u) {
                         if (root[u] == u) {
-                                g[u].push_back(n);
-                                g[n].push_back(u);
+                                es.emplace_back(u, n);
+                                es.emplace_back(n, u);
                         } else {
-                                g[to[u]].push_back(u);
-                                g[u].push_back(to[u]);
+                                es.emplace_back(to[u], u);
+                                es.emplace_back(u, to[u]);
                         }
                 }
 
+                csr_graph<simple_edge> g(n + 1, es);
                 h.build(g, n);
         }
 };

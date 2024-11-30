@@ -7,8 +7,8 @@
 #include <lib/scc.hpp>
 
 // https://codeforces.com/blog/entry/80391?#comment-667198
-inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(
-	const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
+template <typename Graph>
+inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const Graph &g, const std::vector<i32> &ids) {
 	const auto h = scc_dag(g, ids);
 
 	const i32 n = static_cast<i32>(g.size());
@@ -23,16 +23,16 @@ inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(
 
 	std::vector<bool> seen(k, false);
 	const auto dfs = [&](auto &&self, i32 u) -> i32 {
-		if (h[u].empty()) return u;
-
+		bool flag = false;
 		for (const i32 v : h[u]) {
+			flag = true;
 			if (seen[v]) continue;
 
 			seen[v] = true;
 			if (const i32 zero_out = self(self, v); zero_out != -1) return zero_out; 
 		}
 
-		return -1;
+		return flag ? -1 : u;
 	};
 
 	std::vector<std::pair<i32, i32>> es;

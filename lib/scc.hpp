@@ -3,9 +3,12 @@
 
 #include <vector>
 #include <algorithm>
-#include <lib/prelude.hpp>
 
-inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
+#include <lib/prelude.hpp>
+#include <lib/graph.hpp>
+
+template <typename Graph>
+inline std::pair<i32, std::vector<i32>> scc(const Graph &g) {
 	const i32 n = static_cast<i32>(g.size());
 
 	std::vector<i32> seen, low(n), tin(n, -1), ids(n);
@@ -45,28 +48,28 @@ inline std::vector<i32> scc(const std::vector<std::vector<i32>> &g) {
 	}
 
 	for (auto& id : ids) id = group - 1 - id;
-	return ids;
+	return {group, std::move(ids)};
 }
 
-inline std::vector<std::vector<i32>> scc_dag(
-	const std::vector<std::vector<i32>> &g, const std::vector<i32> &ids) {
+template <typename Graph>
+inline csr_graph<simple_edge> scc_dag(const Graph &g, const std::vector<i32> &ids) {
 	const i32 n = static_cast<i32>(g.size());
 	const i32 k = *std::max_element(ids.begin(), ids.end()) + 1;
 
-	std::vector<std::vector<i32>> h(k);
+	std::vector<std::pair<i32, simple_edge>> es;
+	es.reserve(g.m);
+
 	for (i32 u = 0; u < n; ++u) {
 		for (const i32 v : g[u]) {
 			if (ids[u] == ids[v]) continue;
-			h[ids[u]].push_back(ids[v]);
+			es.emplace_back(ids[u], ids[v]);
 		}
 	}
 
-	for (i32 u = 0; u < k; ++u) {
-		std::sort(h[u].begin(), h[u].end());
-		h[u].erase(std::unique(h[u].begin(), h[u].end()), h[u].end());
-	}
+	std::sort(es.begin(), es.end());
+	es.erase(std::unique(es.begin(), es.end()), es.end());
 
-	return h;
+	return csr_graph(k, es);
 }
 
 #endif // LIB_SCC_HPP

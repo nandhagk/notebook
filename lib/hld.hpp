@@ -8,23 +8,26 @@
 #include <lib/prelude.hpp>
 
 struct hld {
-	using Tree = std::vector<std::vector<i32>>;
-
 	i32 n, time;
 	std::vector<i32> sz, tin, depth, par, tour, best, start;
 
 	hld() {}
-	explicit hld(const Tree& t): hld(t, 0) {}
 
-	hld(const Tree& t, i32 root) {
-		build(t, root);
+	template <typename Graph>
+	explicit hld(const Graph& g): hld(g, 0) {}
+
+	template <typename Graph>
+	hld(const Graph& g, i32 root) {
+		build(g, root);
 	}
 
-	void build(const Tree& t) {
-		build(t, 0);
+	template <typename Graph>
+	void build(const Graph& g) {
+		build(g, 0);
 	}
 
-	void build(const Tree& t, i32 root) {
+	template <typename Graph>
+	void build(const Graph& t, i32 root) {
 		n = static_cast<i32>(t.size());
 		time = 0;
 
@@ -144,7 +147,8 @@ struct hld {
 	}
 
 private:
-	void dfs_sz(const Tree& g, i32 u) {
+	template <typename Graph>
+	void dfs_sz(const Graph& g, i32 u) {
 		i32 &x = best[u];
 		const i32 t = par[u];
 
@@ -161,7 +165,8 @@ private:
 		}
 	}
 
-	void dfs_hld(const Tree& g, i32 u) {
+	template <typename Graph>
+	void dfs_hld(const Graph& g, i32 u) {
 		tour[time] = u;
 		tin[u] = time++;
 

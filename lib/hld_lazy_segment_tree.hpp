@@ -6,7 +6,7 @@
 #include <lib/lazy_segment_tree.hpp>
 #include <lib/monoids/reverse_monoid.hpp>
 
-template <class ActedMonoid>
+template <typename ActedMonoid>
 struct hld_lazy_segment_tree {
 	using AM = ActedMonoid;
 
@@ -38,11 +38,11 @@ struct hld_lazy_segment_tree {
 	}
 
 	template <typename F>
-	hld_lazy_segment_tree(const hld& g, F f): h(g) {
+	hld_lazy_segment_tree(const hld &g, F f): h(g) {
 		build(f);
 	}
 
-	explicit hld_lazy_segment_tree(const hld& g, const std::vector<X> &v): h(g) {
+	explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v): h(g) {
 		build(v);
 	}
 
