@@ -82,6 +82,21 @@ struct graph {
                 return n;
         }
 
+        graph<E> reverse() const {
+                graph<E> h(n);
+
+                for (i32 u = 0; u < n; ++u) {
+                        for (auto e : operator[](u)) {
+                                const i32 v = e.to();
+
+                                e.v = u;
+                                h.add_edge(v, e);
+                        }
+                }
+
+                return h;
+        }
+
         i32 n, m;
         std::vector<i32> deg, indeg, outdeg;
         std::vector<std::vector<E>> adj;
@@ -148,6 +163,22 @@ struct csr_graph {
                 return edge_range(elist.data() + start[u], outdeg[u]);
         }
 
+        csr_graph<E> reverse() const {
+                std::vector<std::pair<i32, E>> es;
+                es.reserve(m);
+
+                for (i32 u = 0; u < n; ++u) {
+                        for (auto e : operator[](u)) {
+                                const i32 v = e.to();
+
+                                e.v = u;
+                                es.emplace_back(v, e);
+                        }
+                }
+
+                return csr_graph(n, es);
+        }
+
         i32 n, m;
         std::vector<i32> deg, indeg, outdeg, start;
         std::vector<E> elist;
@@ -187,6 +218,9 @@ struct dense_graph {
 
         struct edge_range {
                 const std::tr2::dynamic_bitset<> &e;
+
+                explicit edge_range(const std::tr2::dynamic_bitset<> &es):
+                        e{es} {}
 
                 struct edge_iterator {
                         const std::tr2::dynamic_bitset<> &e;
@@ -236,6 +270,20 @@ struct dense_graph {
                         return edge_iterator(e, e.size());
                 }
         };
+
+        edge_range operator[](i32 u) const {
+                return edge_range(adj[u]);
+        }
+
+        dense_graph reverse() const {
+                dense_graph h(n);
+
+                for (i32 u = 0; u < n; ++u) {
+                        for (const i32 v : operator[](u)) h.add_edge(v, u);
+                }
+
+                return h;
+        }
 
         i32 n, m;
         std::vector<i32> deg, indeg, outdeg;

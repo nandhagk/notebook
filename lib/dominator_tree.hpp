@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <numeric>
+
 #include <lib/prelude.hpp>
+#include <lib/graph.hpp>
 
 template <typename Graph>
 inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {
@@ -27,12 +29,7 @@ inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {
         dfs(dfs, root);
         const i32 k = static_cast<i32>(seen.size());
 
-        std::vector<std::vector<i32>> h(n);
-        for (i32 u = 0; u < n; ++u) {
-                for (const i32 v : g[u]) {
-                        h[v].push_back(u);
-                }
-        }
+        const auto h = g.reverse();
 
         std::vector<i32> sdom(n), mi(n), anc(n, -1), us(n);
         std::iota(mi.begin(), mi.end(), 0);
