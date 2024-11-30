@@ -58,7 +58,7 @@ struct dsu {
                 return -d[find(u)];
         }
 
-        std::vector<i32> ids() {
+        std::pair<i32, std::vector<i32>> ids() {
                 std::vector<std::vector<i32>> cc(n);
                 for (i32 u = 0; u < n; ++u) cc[find(u)].push_back(u);
 
@@ -72,7 +72,8 @@ struct dsu {
                         ++group;
                 }
 
-                return ids;
+                assert(group == ccs);
+                return {group, std::move(ids)};
         }
 };
 

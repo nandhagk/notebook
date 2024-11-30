@@ -6,7 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
+template <typename Graph>
+inline std::pair<i32, std::vector<i32>> becc(const Graph &g) {
 	const i32 n = static_cast<i32>(g.size());
 
         std::vector<i32> dep(n, -1), cnt(n), par(n), ids(n), vs;
@@ -49,7 +50,7 @@ inline std::vector<i32> becc(const std::vector<std::vector<i32>> &g) {
                 }
         }
 
-        return ids;
+        return {group, std::move(ids)};
 }
 
 #endif // LIB_BECC_HPP
