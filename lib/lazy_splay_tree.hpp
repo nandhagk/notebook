@@ -226,7 +226,7 @@ struct lazy_splay_tree {
                 return a;
         }
 
-        void insert(node* &root, i32 p, const X &x) {
+        void insert(node* &root, i32 p, X x) {
                 insert(root, p, make_node(x));
         }
 
@@ -258,7 +258,7 @@ struct lazy_splay_tree {
                 root = merge(root->l, root->r);
         }
 
-        void set(node* &root, i32 p, const X &x) {
+        void set(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 root = splay(root, p);
@@ -314,7 +314,7 @@ struct lazy_splay_tree {
                 return v;
         }
 
-        void multiply(node* &root, i32 p, const X &x) {
+        void multiply(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 root = splay(root, p);

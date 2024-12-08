@@ -18,7 +18,7 @@ struct rbst {
                 bool rev;
                 u32 sz;
 
-                explicit node(const X &x):
+                explicit node(X x):
                         l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
                 node():
@@ -153,7 +153,7 @@ struct rbst {
                 }
         }
 
-        void insert(node* &root, i32 p, const X &x) {
+        void insert(node* &root, i32 p, X x) {
                 assert(0 <= p && p <= size(root));
 
                 insert(root, p, make_node(x));
@@ -174,7 +174,7 @@ struct rbst {
                 root = merge(l, b);
         }
 
-        void set(node* &root, i32 p, const X &x) {
+        void set(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 auto [l, r] = split(root, p);
@@ -221,7 +221,7 @@ struct rbst {
                 return v;
         }
 
-        void multiply(node* &root, i32 p, const X &x) {
+        void multiply(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 set(root, p, MX::op(get(p), x));
