@@ -16,7 +16,6 @@ struct segment_tree_2d {
 	std::vector<X> d;
 
 	segment_tree_2d() {}
-
 	segment_tree_2d(i32 h, i32 w) {
 		build(h, w);
 	}

@@ -16,7 +16,6 @@ struct fenwick_tree {
 	std::vector<X> d;
 
 	fenwick_tree() {}
-
 	explicit fenwick_tree(i32 m) {
 		build(m);
 	}

@@ -16,7 +16,6 @@ struct sparse_table {
         std::vector<std::vector<X>> d;
 
         sparse_table() {}
-
         explicit sparse_table(i32 m) {
                 build(m);
         }
