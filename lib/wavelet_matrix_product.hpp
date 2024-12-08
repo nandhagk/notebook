@@ -140,11 +140,11 @@ struct wavelet_matrix_product {
                         --d;
                         const i32 c = (p + q) / 2;
 
-                        const i32 l0 = bv[d].rank0(l);
-                        const i32 r0 = bv[d].rank0(r);
+                        const i32 l0 = bv[d].rank0(L);
+                        const i32 r0 = bv[d].rank0(R);
 
-                        const i32 l1 = l + md[d] - l0;
-                        const i32 r1 = r + md[d] - r0;
+                        const i32 l1 = L + md[d] - l0;
+                        const i32 r1 = R + md[d] - r0;
 
                         self(self, d, l0, r0, p, c);
                         self(self, d, l1, r1, c, q);
