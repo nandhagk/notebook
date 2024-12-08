@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <numeric>
 #include <cassert>
+#include <optional>
 
 #include <lib/prelude.hpp>
 #include <lib/bit_vector.hpp>
@@ -126,20 +127,24 @@ struct wavelet_matrix {
                 return rv[p];
         }
 
-        T next(i32 l, i32 r, T a) const {
+        std::optional<T> next(i32 l, i32 r, T a) const {
                 const auto it = std::upper_bound(rv.begin(), rv.end(), a);
                 if (it == rv.end()) return a;
 
                 const i32 k = count(l, r, *it);
-                return k == r - l ? a : kth(l, r, k);
+                if (k == r - l) return std::nullopt;
+
+                return kth(l, r, k);
         }
 
-        T prev(i32 l, i32 r, T a) const {
+        std::optional<T> prev(i32 l, i32 r, T a) const {
                 const auto it = std::lower_bound(rv.begin(), rv.end(), a);
                 if (it == rv.begin()) return a;
 
                 const i32 k = count(l, r, *it);
-                return k == 0 ? a : kth(l, r, k - 1);
+                if (k == 0) return std::nullopt;
+
+                return kth(l, r, k - 1);
         }
 };
 

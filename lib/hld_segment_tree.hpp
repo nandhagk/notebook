@@ -47,21 +47,19 @@ struct hld_segment_tree {
                 return st.get(h.tin[u]);
         }
 
-        void set(i32 u, const X &x) {
+        void set(i32 u, X x) {
                 st.set(h.tin[u], x);
                 if constexpr (!MX::commutative) rst.set(h.tin[u], x);
         }
 
-        void multiply(i32 u, const X &x) {
+        void multiply(i32 u, X x) {
                 st.multiply(h.tin[u], x);
                 if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
         }
 
         X prod_path(i32 u, i32 v) {
                 X x = MX::unit();
-                for (const auto &[s, t] : h.decompose(u, v)) {
-                        x = MX::op(x, prod(s, t));
-                }
+                for (const auto &[s, t] : h.decompose(u, v)) x = MX::op(x, prod(s, t));
 
                 return x;
         }

@@ -44,7 +44,7 @@ struct hld_dual_segment_tree {
 		return st.get(h.tin[u]);
 	}
 
-	void set(i32 u, const A &x) {
+	void set(i32 u, A x) {
 		st.set(h.tin[u], x);
 	}
 

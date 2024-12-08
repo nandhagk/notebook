@@ -120,6 +120,10 @@ struct segment_tree_2d {
 		}
 	}
 
+	void multiply(i32 p, i32 q, X x) {
+		set(p, q, MX::op(get(p, q), x));
+	}
+
 private:
 	inline i32 idx(i32 i, i32 j) const {
 		return i * 2 * W + j;

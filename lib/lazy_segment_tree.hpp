@@ -61,7 +61,7 @@ struct lazy_segment_tree {
 		d[k] = MX::op(d[2 * k], d[2 * k + 1]); 
 	}
 
-	void set(i32 p, const X& x) {
+	void set(i32 p, X x) {
 		assert(0 <= p && p < n);
 
 		p += size;
@@ -71,7 +71,7 @@ struct lazy_segment_tree {
 		for (i32 i = 1; i <= log; i++) update(p >> i);
 	}
 
-	void multiply(i32 p, const X& x) {
+	void multiply(i32 p, X x) {
 		assert(0 <= p && p < n);
 
 		p += size;
@@ -123,7 +123,7 @@ struct lazy_segment_tree {
 		return d[1]; 
 	}
 
-	void apply(i32 l, i32 r, const A& a) {
+	void apply(i32 l, i32 r, A a) {
 		assert(0 <= l && l <= r && r <= n);
 
 		if (l == r) return;
@@ -210,7 +210,7 @@ struct lazy_segment_tree {
 	}
 
 private:
-	void apply_at(i32 k, const A& a) {
+	void apply_at(i32 k, A a) {
 		const i32 sz = 1 << (log - topbit(k));
 
 		d[k] = AM::act(d[k], a, sz);

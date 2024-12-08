@@ -60,7 +60,7 @@ struct rbst {
                 return nullptr;
         }
 
-        node* make_node(const X& x) {
+        node* make_node(X x) {
                 assert(pid < n);
 
                 return &(pool[pid++] = node(x));

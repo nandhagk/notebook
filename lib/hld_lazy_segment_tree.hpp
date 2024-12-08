@@ -64,12 +64,12 @@ struct hld_lazy_segment_tree {
 		return st.get(h.tin[u]);
 	}
 
-	void set(i32 u, const X &x) {
+	void set(i32 u, X x) {
 		st.set(h.tin[u], x);
 		if constexpr (!MX::commutative) rst.set(h.tin[u], x);
 	}
 
-	void multiply(i32 u, const X &x) {
+	void multiply(i32 u, X x) {
 		st.multiply(h.tin[u], x);
 		if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
 	}

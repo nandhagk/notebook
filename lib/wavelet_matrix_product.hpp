@@ -10,16 +10,16 @@
 #include <lib/bit_vector.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename T, typename StaticRangeProduct, is_commutative_monoid_t<typename StaticRangeProduct::MX>* = nullptr>
+template <typename T, typename RangeProduct, is_commutative_monoid_t<typename RangeProduct::MX>* = nullptr>
 struct wavelet_matrix_product {
-        using MX = typename StaticRangeProduct::MX;
+        using MX = typename RangeProduct::MX;
         using X = typename MX::ValueT;
 
         i32 n, size, log;
         std::vector<T> rv;
         std::vector<i32> md;
         std::vector<bit_vector> bv;
-        std::vector<StaticRangeProduct> sg;
+        std::vector<RangeProduct> sg;
 
         wavelet_matrix_product() {}
         explicit wavelet_matrix_product(const std::vector<T> &v, std::vector<X> s) {
@@ -181,6 +181,58 @@ struct wavelet_matrix_product {
 
                 x = MX::op(x, sg[0].prod(l, l + k));
                 return {rv[p], x};
+        }
+
+        void set(i32 p, X x) {
+                assert(0 <= p && p < n);
+
+                i32 l = p;
+                i32 r = p + 1;
+
+                sg[log].set(l, x);
+                for (i32 d = log - 1; d >= 0; --d) {
+                        const i32 l0 = bv[d].rank0(l);
+                        const i32 r0 = bv[d].rank0(r);
+
+                        const i32 l1 = l + md[d] - l0;
+                        const i32 r1 = r + md[d] - r0;
+                        
+                        if (l0 < r0) {
+                                l = l0;
+                                r = r0;
+                        } else if (l0 == r0) {
+                                l = l1;
+                                r = r1;
+                        }
+
+                        sg[d].set(l, x);
+                }
+        }
+
+        void multiply(i32 p, X x) {
+                assert(0 <= p && p < n);
+
+                i32 l = p;
+                i32 r = p + 1;
+
+                sg[log].multiply(l, x);
+                for (i32 d = log - 1; d >= 0; --d) {
+                        const i32 l0 = bv[d].rank0(l);
+                        const i32 r0 = bv[d].rank0(r);
+
+                        const i32 l1 = l + md[d] - l0;
+                        const i32 r1 = r + md[d] - r0;
+                        
+                        if (l0 < r0) {
+                                l = l0;
+                                r = r0;
+                        } else if (l0 == r0) {
+                                l = l1;
+                                r = r1;
+                        }
+
+                        sg[d].multiply(l, x);
+                }
         }
 };
 

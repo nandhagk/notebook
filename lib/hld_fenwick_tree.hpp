@@ -44,11 +44,11 @@ struct hld_fenwick_tree {
                 return ft.get(h.tin[u]);
         }
 
-        void set(i32 u, const X &x) {
+        void set(i32 u, X x) {
                 ft.set(h.tin[u], x);
         }
 
-        void multiply(i32 u, const X &x) {
+        void multiply(i32 u, X x) {
                 ft.multiply(h.tin[u], x);
         }
 

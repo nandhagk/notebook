@@ -45,7 +45,7 @@ struct functional_graph {
                 assert(0 <= k);
 
                 const i32 d = h.depth[u];
-                if (k <= d - 1) return h.jump(u, k);
+                if (k <= d - 1) return *h.jump(u, k);
 
                 u = root[u];
                 k -= d - 1;
@@ -54,7 +54,7 @@ struct functional_graph {
                 const i32 c = h.depth[b];
 
                 k %= c;
-                return k == 0 ? u : h.jump(b, k - 1);
+                return k == 0 ? u : *h.jump(b, k - 1);
         }
 
         void build(const std::vector<i32> &t) {

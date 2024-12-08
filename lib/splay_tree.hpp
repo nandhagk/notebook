@@ -17,7 +17,7 @@ struct splay_tree {
                 bool rev;
                 u32 sz;
 
-                explicit node(const X &x):
+                explicit node(X x):
                         l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
                 node():
@@ -208,7 +208,7 @@ struct splay_tree {
                 return a;
         }
 
-        void insert(node* &root, i32 p, const X &x) {
+        void insert(node* &root, i32 p, X x) {
                 insert(root, p, make_node(x));
         }
 
@@ -240,7 +240,7 @@ struct splay_tree {
                 root = merge(root->l, root->r);
         }
 
-        void set(node* &root, i32 p, const X &x) {
+        void set(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 root = splay(root, p);
@@ -285,7 +285,7 @@ struct splay_tree {
                 return v;
         }
 
-        void multiply(node* &root, i32 p, const X &x) {
+        void multiply(node* &root, i32 p, X x) {
                 assert(0 <= p && p < size(root));
 
                 root = splay(root, p);

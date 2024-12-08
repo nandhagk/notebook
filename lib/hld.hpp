@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <optional>
 
 #include <lib/prelude.hpp>
 
@@ -53,11 +54,11 @@ struct hld {
 		return tin[u] <= tin[v] && tin[u] + sz[u] > tin[v];
 	}
 
-	i32 jump(i32 u, i32 k) const {
+	std::optional<i32> jump(i32 u, i32 k) const {
 		assert(0 <= u && u < n);
 		assert(0 <= k);
 
-		if (depth[u] < k) return -1;
+		if (depth[u] < k) return std::nullopt;
 
 		while (u != -1) {
 			const i32 s = start[u];
@@ -99,7 +100,7 @@ struct hld {
 		return lca(u, v) == s || (is_ancestor(s, u) ^ is_ancestor(s, v));
 	}
 
-	i32 jump(i32 u, i32 v, i32 k) const {
+	std::optional<i32> jump(i32 u, i32 v, i32 k) const {
 		assert(0 <= u && u < n);
 		assert(0 <= v && v < n);
 		assert(0 <= k);
@@ -112,7 +113,7 @@ struct hld {
 		const i32 r = dv - dx;
 
 		if (l + r < k) {
-			return -1;
+			return std::nullopt;
 		} else if (k < l) {
 			return jump(u, k);
 		} else {

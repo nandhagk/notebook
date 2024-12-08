@@ -23,7 +23,7 @@ struct lazy_splay_tree {
                 bool rev;
                 u32 sz;
 
-                explicit node(const X &x):
+                explicit node(X x):
                         l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
                 node():
@@ -65,7 +65,7 @@ struct lazy_splay_tree {
                 return nullptr;
         }
 
-        node* make_node(const X& x) {
+        node* make_node(X x) {
                 assert(pid < n);
 
                 return &(pool[pid++] = node(x));
@@ -114,7 +114,7 @@ struct lazy_splay_tree {
                 }
         }
 
-        void all_apply(node* t, const A& a) {
+        void all_apply(node* t, A a) {
                 t->val = AM::act(t->val, a, 1);
                 t->sum = AM::act(t->sum, a, t->sz);
                 t->lz = MA::op(t->lz, a);
@@ -267,7 +267,7 @@ struct lazy_splay_tree {
                 update(root);
         }
 
-        void apply(node* &root, i32 l, i32 r, const A& a) {
+        void apply(node* &root, i32 l, i32 r, A a) {
                 assert(0 <= l && l <= r && r <= size(root));
 
                 if (l == r) return;
