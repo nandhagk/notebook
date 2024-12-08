@@ -1,5 +1,5 @@
-#ifndef LIB_WAVELET_MATRIX_SEGMENT_TREE_HPP
-#define LIB_WAVELET_MATRIX_SEGMENT_TREE_HPP 1
+#ifndef LIB_WAVELET_MATRIX_PRODUCT_HPP
+#define LIB_WAVELET_MATRIX_PRODUCT_HPP 1
 
 #include <vector>
 #include <algorithm>
@@ -9,21 +9,20 @@
 #include <lib/prelude.hpp>
 #include <lib/bit_vector.hpp>
 #include <lib/type_traits.hpp>
-#include <lib/segment_tree.hpp>
 
-template <typename T, typename Monoid, is_commutative_monoid_t<Monoid>* = nullptr>
-struct wavelet_matrix_segment_tree {
-        using MX = Monoid;
+template <typename T, typename StaticRangeProduct, is_commutative_monoid_t<typename StaticRangeProduct::MX>* = nullptr>
+struct wavelet_matrix_product {
+        using MX = typename StaticRangeProduct::MX;
         using X = typename MX::ValueT;
 
         i32 n, size, log;
         std::vector<T> rv;
         std::vector<i32> md;
         std::vector<bit_vector> bv;
-        std::vector<segment_tree<Monoid>> sg;
+        std::vector<StaticRangeProduct> sg;
 
-        wavelet_matrix_segment_tree() {}
-        explicit wavelet_matrix_segment_tree(const std::vector<T> &v, std::vector<X> s) {
+        wavelet_matrix_product() {}
+        explicit wavelet_matrix_product(const std::vector<T> &v, std::vector<X> s) {
                 build(v, std::move(s));
         }
 
@@ -117,7 +116,7 @@ struct wavelet_matrix_segment_tree {
         }
 
         std::pair<i32, X> count(i32 l, i32 r, T a, T b) const {
-                if constexpr (has_inv_v<Monoid>) {
+                if constexpr (has_inv_v<MX>) {
                         const auto [c1, x1] = count(l, r, a);
                         const auto [c2, x2] = count(l, r, b);
                         return {c2 - c1, MX::op(MX::inv(x1), x2)};
@@ -185,4 +184,4 @@ struct wavelet_matrix_segment_tree {
         }
 };
 
-#endif // LIB_WAVELET_MATRIX_SEGMENT_TREE_HPP
+#endif // LIB_WAVELET_MATRIX_PRODUCT_HPP
