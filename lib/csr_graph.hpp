@@ -82,6 +82,9 @@ struct csr_graph {
                 const E* es;
                 usize size;
 
+                edge_range(const E* e, usize sz):
+                        es{e}, size{sz} {}
+
                 const E* begin() {
                         return &es[0];
                 }
