@@ -4,17 +4,16 @@
 #include <lib/monoids/affine.hpp>
 #include <lib/monoids/assign.hpp>
 
-template <typename T, typename monoid_affine<T>::X E>
+template <typename T>
 struct acted_monoid_affine_assign {
 	using MX = monoid_affine<T>;
-	using MA = monoid_assign<typename MX::ValueT, E>;
+	using MA = monoid_assign<T>;
 
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
 	static constexpr X act(X x, A a, i32 sz) {
-		if (a == MA::unit()) return x;
-		return MX::pow(a, sz);
+		return a ? MX::pow(*a, sz) : x;
 	}
 };
 

@@ -1,17 +1,19 @@
 #ifndef LIB_MONOID_ASSIGN_HPP
 #define LIB_MONOID_ASSIGN_HPP 1
 
-template <class T, T E>
+#include <optional>
+
+template <typename T>
 struct monoid_assign {
-        using X = T;
-        using ValueT = T;
+        using X = std::optional<T>;
+        using ValueT = X;
 
         static constexpr X op(X x, X y) {
-                return y == E ? x : y;
+                return y == std::nullopt ? x : y;
         }
 
         static constexpr X unit() {
-                return E;
+                return std::nullopt;
         }
 
         static constexpr bool commutative = false;
