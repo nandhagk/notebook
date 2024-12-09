@@ -85,7 +85,7 @@ struct rect_fenwick_tree {
 
 private:
 	inline i32 id(T x) const {
-		const auto cmp = [](const pt& a, const auto &b) { return a.first < b.first; };
+		const auto cmp = [](const pt& a, const pt& b) { return a.first < b.first; };
 		return static_cast<i32>(std::lower_bound(pts.begin(), pts.end(), pt{x, T()}, cmp) - pts.begin());
 	}
 
