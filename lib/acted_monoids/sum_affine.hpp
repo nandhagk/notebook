@@ -12,7 +12,7 @@ struct acted_monoid_sum_affine {
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X act(const X &x, const A &a, i32 sz) {
+	static constexpr X act(X x, A a, i32 sz) {
 		const auto [b, c] = a;
 		return x * b + c * sz;
 	}

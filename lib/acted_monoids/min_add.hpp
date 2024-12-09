@@ -5,14 +5,14 @@
 #include <lib/monoids/min.hpp>
 
 template <typename T>
-struct acted_monoid_max_add {
+struct acted_monoid_min_add {
 	using MX = monoid_min<T>;
 	using MA = monoid_add<T>;
 
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X act(const X &x, const A &a, i32) {
+	static constexpr X act(X x, A a, i32) {
 		return x == MX::unit() ? x : x + a;
 	}
 };

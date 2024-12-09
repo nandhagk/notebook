@@ -8,15 +8,15 @@ struct monoid_mul {
         using X = T;
         using ValueT = T;
 
-        static constexpr X op(const X &x, const X &y) {
+        static constexpr X op(X x, X y) {
                 return x * y;
         }
 
-        static constexpr X inv(const X &x) {
+        static constexpr X inv(X x) {
                 return X(1) / x;
         }
 
-        static constexpr X pow(const X &x, i64 n) {
+        static constexpr X pow(X x, i64 n) {
                 X z = 1;
 
                 X y = x;

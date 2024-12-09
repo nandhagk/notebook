@@ -6,7 +6,7 @@ struct monoid_reverse_monoid {
         using X = typename Monoid::ValueT;
         using ValueT = X;
 
-        static constexpr X op(const X &x, const X &y) {
+        static constexpr X op(X x, X y) {
                 return Monoid::op(y, x);
         }
 

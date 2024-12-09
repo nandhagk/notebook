@@ -12,7 +12,7 @@ struct acted_monoid_affine_assign {
 	using X = typename MX::ValueT;
 	using A = typename MA::ValueT;
 
-	static constexpr X act(const X &x, const A &a, i32 sz) {
+	static constexpr X act(X x, A a, i32 sz) {
 		if (a == MA::unit()) return x;
 		return MX::pow(a, sz);
 	}

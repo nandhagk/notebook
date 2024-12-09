@@ -10,7 +10,7 @@ struct monoid_mxss {
         using X = std::tuple<T, T, T, T>;
         using ValueT = X;
 
-        static constexpr X op(const X &x, const X &y) {
+        static constexpr X op(X x, X y) {
                 if (x == unit()) return y;
                 if (y == unit()) return x;
 
