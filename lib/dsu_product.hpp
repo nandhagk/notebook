@@ -67,7 +67,7 @@ struct dsu_product {
                 x[u] = MX::op(x[u], s);
         }
 
-        X prod(i32 u) const {
+        X prod(i32 u) {
                 assert(0 <= u && u < n);
 
                 return x[find(u)];
