@@ -279,9 +279,10 @@ struct splay_tree {
         }
 
         std::vector<X> get_all(node* &root) {
-                std::vector<X> v(size(root));
-                dump(root, v);
+                std::vector<X> v;
+                v.reserve(size(root));
 
+                dump(root, v);
                 return v;
         }
 
