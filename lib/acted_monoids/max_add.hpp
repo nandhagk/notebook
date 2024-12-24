@@ -4,17 +4,14 @@
 #include <lib/monoids/add.hpp>
 #include <lib/monoids/max.hpp>
 
-template <typename T>
-struct acted_monoid_max_add {
-	using MX = monoid_max<T>;
-	using MA = monoid_add<T>;
+template <typename T> struct acted_monoid_max_add {
+    using MX = monoid_max<T>;
+    using MA = monoid_add<T>;
 
-	using X = typename MX::ValueT;
-	using A = typename MA::ValueT;
+    using X = typename MX::ValueT;
+    using A = typename MA::ValueT;
 
-	static constexpr X act(X x, A a, i32) {
-		return x == MX::unit() ? x : x + a;
-	}
+    static constexpr X act(X x, A a, i32) { return x == MX::unit() ? x : x + a; }
 };
 
 #endif // LIB_ACTED_MONOID_MAX_ADD_HPP

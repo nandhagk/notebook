@@ -16,7 +16,7 @@ using f32 = float;
 using f64 = double;
 using f80 = long double;
 
-template <class T> inline constexpr T inf = 0;
+template <typename T> inline constexpr T inf = 0;
 
 template <> inline constexpr i32 inf<i32> = 1'010'000'000;
 template <> inline constexpr u32 inf<u32> = inf<i32>;

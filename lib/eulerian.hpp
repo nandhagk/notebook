@@ -1,9 +1,9 @@
 #ifndef LIB_EULERIAN_HPP
 #define LIB_EULERIAN_HPP 1
 
-#include <vector>
 #include <algorithm>
 #include <optional>
+#include <vector>
 
 #include <lib/prelude.hpp>
 

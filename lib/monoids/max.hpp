@@ -4,20 +4,15 @@
 #include <algorithm>
 #include <lib/prelude.hpp>
 
-template <class T>
-struct monoid_max {
-        using X = T;
-        using ValueT = T;
+template <typename T> struct monoid_max {
+    using X = T;
+    using ValueT = T;
 
-        static constexpr X op(X x, X y) {
-                return std::max(x, y);
-        }
+    static constexpr X op(X x, X y) { return std::max(x, y); }
 
-        static constexpr X unit() {
-                return -inf<X>;
-        }
+    static constexpr X unit() { return -inf<X>; }
 
-        static constexpr bool commutative = true;
+    static constexpr bool commutative = true;
 };
 
 #endif // LIB_MONOID_MAX_HPP

@@ -1,278 +1,259 @@
 #ifndef LIB_LAZY_RBST_HPP
 #define LIB_LAZY_RBST_HPP 1
 
-#include <vector>
 #include <cassert>
+#include <vector>
 
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 
-template <typename ActedMonoid>
-struct lazy_rbst {
-        using AM = ActedMonoid;
+template <typename ActedMonoid> struct lazy_rbst {
+    using AM = ActedMonoid;
 
-        using MX = typename AM::MX;
-        using MA = typename AM::MA;
+    using MX = typename AM::MX;
+    using MA = typename AM::MA;
 
-        using X = typename MX::ValueT;
-        using A = typename MA::ValueT;
+    using X = typename MX::ValueT;
+    using A = typename MA::ValueT;
 
-        struct node {
-                node *l, *r;
-                X val, sum;
-                A lz;
-                bool rev;
-                u32 sz;
+    struct node {
+        node *l, *r;
+        X val, sum;
+        A lz;
+        bool rev;
+        u32 sz;
 
-                explicit node(X x):
-                        l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        explicit node(X x) : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
-                node():
-                        node(MX::unit()) {}
-        };
+        node() : node(MX::unit()) {}
+    };
 
-        i32 size(node* t) const {
-                return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+
+    i32 n, pid;
+    node *pool;
+
+    lazy_rbst() : pool{nullptr} {}
+
+    explicit lazy_rbst(i32 m) : lazy_rbst() { build(m); }
+
+    ~lazy_rbst() { reset(); }
+
+    void build(i32 m) {
+        reset();
+
+        n = m;
+        pool = new node[n];
+    }
+
+    void reset() {
+        pid = 0;
+        delete[] pool;
+    }
+
+    node *make_node() { return nullptr; }
+
+    node *make_node(X x) {
+        assert(pid < n);
+
+        return &(pool[pid++] = node(x));
+    }
+
+    node *make_nodes(i32 p) {
+        return make_nodes(p, [](i32) -> X { return MX::unit(); });
+    }
+
+    node *make_nodes(const std::vector<X> &v) {
+        return make_nodes(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
+    }
+
+    template <typename F> node *make_nodes(i32 p, F f) { return assign(0, p, f); }
+
+    template <typename F> node *assign(i32 l, i32 r, F f) {
+        if (l == r) return make_node();
+        if (l + 1 == r) return make_node(f(l));
+
+        const i32 m = (l + r) / 2;
+
+        node *t = make_node(f(m));
+        t->l = assign(l, m, f);
+        t->r = assign(m + 1, r, f);
+
+        update(t);
+        return t;
+    }
+
+    node *update(node *t) {
+        t->sz = 1;
+        t->sum = t->val;
+
+        if (t->l != nullptr) {
+            t->sz += t->l->sz;
+            t->sum = MX::op(t->l->sum, t->sum);
         }
 
-        i32 n, pid;
-        node* pool;
-
-        lazy_rbst():
-                pool{nullptr} {}
-
-        explicit lazy_rbst(i32 m):
-                lazy_rbst() {
-                build(m);
+        if (t->r != nullptr) {
+            t->sz += t->r->sz;
+            t->sum = MX::op(t->sum, t->r->sum);
         }
 
-        ~lazy_rbst() {
-                reset();
-        }
-                
-        void build(i32 m) {
-                reset();
+        return t;
+    }
 
-                n = m;
-                pool = new node[n];
-        }
+    void all_apply(node *t, A a) {
+        t->val = AM::act(t->val, a, 1);
+        t->sum = AM::act(t->sum, a, t->sz);
+        t->lz = MA::op(t->lz, a);
+    }
 
-        void reset() {
-                pid = 0;
-                delete [] pool;
-        }
+    void toggle(node *t) {
+        std::swap(t->l, t->r);
+        t->rev ^= true;
+    }
 
-        node* make_node() {
-                return nullptr;
-        }
-
-        node* make_node(X x) {
-                assert(pid < n);
-
-                return &(pool[pid++] = node(x));
+    void push(node *t) {
+        if (t->lz != MA::unit()) {
+            if (t->l != nullptr) all_apply(t->l, t->lz);
+            if (t->r != nullptr) all_apply(t->r, t->lz);
+            t->lz = MA::unit();
         }
 
-        node* make_nodes(i32 p) {
-                return make_nodes(p, [](i32) -> X { return MX::unit(); });
+        if (t->rev) {
+            if (t->l != nullptr) toggle(t->l);
+            if (t->r != nullptr) toggle(t->r);
+            t->rev = false;
         }
+    }
 
-        node* make_nodes(const std::vector<X> &v) {
-                return make_nodes(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
+    node *merge(node *l, node *r) {
+        if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
+
+        if ((MT() % (l->sz + r->sz)) < l->sz) {
+            push(l);
+            l->r = merge(l->r, r);
+            return update(l);
+        } else {
+            push(r);
+            r->l = merge(l, r->l);
+            return update(r);
         }
+    }
 
-        template <typename F>
-        node* make_nodes(i32 p, F f) {
-                return assign(0, p, f);
+    std::pair<node *, node *> split(node *&root, i32 k) {
+        if (k >= size(root)) return {root, nullptr};
+
+        push(root);
+        if (const i32 lsz = size(root->l); k > lsz) {
+            auto [l, r] = split(root->r, k - lsz - 1);
+            root->r = l;
+            return {update(root), r};
+        } else {
+            auto [l, r] = split(root->l, k);
+            root->l = r;
+            return {l, update(root)};
         }
+    }
 
-        template <typename F>
-        node* assign(i32 l, i32 r, F f) {
-                if (l == r) return make_node();
-                if (l + 1 == r) return make_node(f(l));
+    void insert(node *&root, i32 p, X x) {
+        assert(0 <= p && p <= size(root));
 
-                const i32 m = (l + r) / 2;
+        insert(root, p, make_node(x));
+    }
 
-                node* t = make_node(f(m));
-                t->l = assign(l, m, f);
-                t->r = assign(m + 1, r, f);
+    void insert(node *&root, i32 p, node *t) {
+        assert(0 <= p && p <= size(root));
 
-                update(t);
-                return t;
-        }
+        auto [l, r] = split(root, p);
+        root = merge(l, merge(t, r));
+    }
 
-        node* update(node* t) {
-                t->sz = 1;
-                t->sum = t->val;
+    void erase(node *&root, i32 p) {
+        assert(0 <= p && p < size(root));
 
-                if (t->l != nullptr) {
-                        t->sz += t->l->sz;
-                        t->sum = MX::op(t->l->sum, t->sum);
-                }
+        auto [l, r] = split(root, p);
+        auto [_, b] = split(r, 1);
+        root = merge(l, b);
+    }
 
-                if (t->r != nullptr) {
-                        t->sz += t->r->sz;
-                        t->sum = MX::op(t->sum, t->r->sum);
-                }
+    void set(node *&root, i32 p, X x) {
+        assert(0 <= p && p < size(root));
 
-                return t;
-        }
+        auto [l, r] = split(root, p);
+        auto [a, b] = split(r, 1);
 
-        void all_apply(node* t, A a) {
-                t->val = AM::act(t->val, a, 1);
-                t->sum = AM::act(t->sum, a, t->sz);
-                t->lz = MA::op(t->lz, a);
-        }
+        *a = node(x);
+        root = merge(l, merge(a, b));
+    }
 
-        void toggle(node* t) {
-                std::swap(t->l, t->r);
-                t->rev ^= true;
-        }
+    void apply(node *&root, i32 l, i32 r, A a) {
+        assert(0 <= l && l <= r && r <= size(root));
 
-        void push(node* t) {
-                if (t->lz != MA::unit()) {
-                        if (t->l != nullptr) all_apply(t->l, t->lz);
-                        if (t->r != nullptr) all_apply(t->r, t->lz);
-                        t->lz = MA::unit();
-                }
+        if (l == r) return;
 
-                if (t->rev) {
-                        if (t->l != nullptr) toggle(t->l);
-                        if (t->r != nullptr) toggle(t->r);
-                        t->rev = false;
-                }
-        }
+        auto [x, y] = split(root, l);
+        auto [p, q] = split(y, r - l);
 
-        node* merge(node* l, node* r) {
-                if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
+        all_apply(p, a);
+        root = merge(x, merge(p, q));
+    }
 
-                if ((MT() % (l->sz + r->sz)) < l->sz) {
-                        push(l);
-                        l->r = merge(l->r, r);
-                        return update(l);
-                } else {
-                        push(r);
-                        r->l = merge(l, r->l);
-                        return update(r);
-                }
-        }
+    X prod(node *&root, i32 l, i32 r) {
+        assert(0 <= l && l <= r && r <= size(root));
 
-        std::pair<node*, node*> split(node* &root, i32 k) {
-                if (k >= size(root)) return {root, nullptr};
+        if (l == r) return MX::unit();
 
-                push(root);
-                if (const i32 lsz = size(root->l); k > lsz) {
-                        auto [l, r] = split(root->r, k - lsz - 1);
-                        root->r = l;
-                        return {update(root), r};
-                } else {
-                        auto [l, r] = split(root->l, k);
-                        root->l = r;
-                        return {l, update(root)};
-                }
-        }
+        auto [x, y] = split(root, l);
+        auto [p, q] = split(y, r - l);
 
-        void insert(node* &root, i32 p, X x) {
-                assert(0 <= p && p <= size(root));
+        push(p);
+        X v = p->sum;
 
-                insert(root, p, make_node(x));
-        }
+        root = merge(x, merge(p, q));
+        return v;
+    }
 
-        void insert(node* &root, i32 p, node* t) {
-                assert(0 <= p && p <= size(root));
+    X get(node *&root, i32 p) {
+        assert(0 <= p && p < size(root));
 
-                auto [l, r] = split(root, p);
-                root = merge(l, merge(t, r));
-        }
+        return prod(root, p, p + 1);
+    }
 
-        void erase(node* &root, i32 p) {
-                assert(0 <= p && p < size(root));
+    void dump(node *root, std::vector<X> &v) {
+        if (root == nullptr) return;
 
-                auto [l, r] = split(root, p);
-                auto [_, b] = split(r, 1);
-                root = merge(l, b);
-        }
+        push(root);
+        dump(root->l, v);
+        v.push_back(root->val);
+        dump(root->r, v);
+    }
 
-        void set(node* &root, i32 p, X x) {
-                assert(0 <= p && p < size(root));
+    std::vector<X> get_all(node *&root) {
+        std::vector<X> v;
+        v.reserve(size(root));
 
-                auto [l, r] = split(root, p);
-                auto [a, b] = split(r, 1);
+        dump(root, v);
+        return v;
+    }
 
-                *a = node(x);
-                root = merge(l, merge(a, b));
-        }
+    void multiply(node *&root, i32 p, X x) {
+        assert(0 <= p && p < size(root));
 
-        void apply(node* &root, i32 l, i32 r, A a) {
-                assert(0 <= l && l <= r && r <= size(root));
+        set(root, p, MX::op(get(p), x));
+    }
 
-                if (l == r) return;
+    void reverse(node *&root) { toggle(root); }
 
-                auto [x, y] = split(root, l);
-                auto [p, q] = split(y, r - l);
+    void reverse(node *&root, i32 l, i32 r) {
+        assert(0 <= l && l <= r && r <= size(root));
 
-                all_apply(p, a);
-                root = merge(x, merge(p, q));
-        }
+        if (l + 1 >= r) return;
 
-        X prod(node* &root, i32 l, i32 r) {
-                assert(0 <= l && l <= r && r <= size(root));
+        auto [x, y] = split(root, r);
+        auto [p, q] = split(x, l);
 
-                if (l == r) return MX::unit();
-
-                auto [x, y] = split(root, l);
-                auto [p, q] = split(y, r - l);
-
-                push(p);
-                X v = p->sum;
-
-                root = merge(x, merge(p, q));
-                return v;
-        }
-
-        X get(node* &root, i32 p) {
-                assert(0 <= p && p < size(root));
-
-                return prod(root, p, p + 1);
-        }
-
-        void dump(node* root, std::vector<X> &v) {
-                if (root == nullptr) return;
-
-                push(root);
-                dump(root->l, v);
-                v.push_back(root->val);
-                dump(root->r, v);
-        }
-
-        std::vector<X> get_all(node* &root) {
-                std::vector<X> v;
-                v.reserve(size(root));
-
-                dump(root, v);
-                return v;
-        }
-
-        void multiply(node* &root, i32 p, X x) {
-                assert(0 <= p && p < size(root));
-
-                set(root, p, MX::op(get(p), x));
-        }
-
-        void reverse(node* &root) {
-                toggle(root);
-        }
-
-        void reverse(node* &root, i32 l, i32 r) {
-                assert(0 <= l && l <= r && r <= size(root));
-
-                if (l + 1 >= r) return;
-
-                auto [x, y] = split(root, r);
-                auto [p, q] = split(x, l);
-
-                reverse(q);
-                root = merge(merge(p, q), y);
-        }
+        reverse(q);
+        root = merge(merge(p, q), y);
+    }
 };
 
 #endif // LIB_LAZY_RBST_HPP

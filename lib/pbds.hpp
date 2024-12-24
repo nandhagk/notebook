@@ -6,22 +6,17 @@
 
 #include <lib/hash.hpp>
 
-template <class Key, class Value, class Hash = hash<Key>>
-using hash_map = __gnu_pbds::gp_hash_table<Key,
-						Value,
-						Hash,
-						std::equal_to<Key>,
-						__gnu_pbds::direct_mask_range_hashing<>,
-						__gnu_pbds::linear_probe_fn<>,
-						__gnu_pbds::hash_standard_resize_policy<__gnu_pbds::hash_exponential_size_policy<>,
-											__gnu_pbds::hash_load_check_resize_trigger<>,
-											true>>;
+template <typename Key, typename Value, typename Hash = hash<Key>>
+using hash_map = __gnu_pbds::gp_hash_table<
+    Key, Value, Hash, std::equal_to<Key>, __gnu_pbds::direct_mask_range_hashing<>, __gnu_pbds::linear_probe_fn<>,
+    __gnu_pbds::hash_standard_resize_policy<__gnu_pbds::hash_exponential_size_policy<>,
+                                            __gnu_pbds::hash_load_check_resize_trigger<>, true>>;
 
-template <class Key, class Hash = hash<Key>>
-using hash_set = hash_map<Key, __gnu_pbds::null_type, Hash>;
+template <typename Key, typename Hash = hash<Key>> using hash_set = hash_map<Key, __gnu_pbds::null_type, Hash>;
 
 template <class Key, class Value, class Compare = std::less<Key>>
-using indexed_map = __gnu_pbds::tree<Key, Value, Compare, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>;
+using indexed_map =
+    __gnu_pbds::tree<Key, Value, Compare, __gnu_pbds::rb_tree_tag, __gnu_pbds::tree_order_statistics_node_update>;
 
 template <class Key, class Compare = std::less<Key>>
 using indexed_set = indexed_map<Key, __gnu_pbds::null_type, Compare>;
