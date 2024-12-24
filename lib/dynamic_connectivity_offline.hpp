@@ -6,10 +6,8 @@
 #include <lib/prelude.hpp>
 #include <lib/pbds.hpp>
 
-template <typename UnionFind, typename F = std::function<void(UnionFind&, i32)>>
+template <typename RollbackDSU, typename F = std::function<void(RollbackDSU&, i32)>>
 struct dynamic_connectivity_offline {
-        using UF = UnionFind;
-        
 private:
         i32 n;
         hash_map<i64, i32> e;
@@ -26,7 +24,7 @@ private:
 
                 if (l + 1 == r) {
                         while (k < static_cast<i32>(q.size()) && q[k].first == l) {
-                                q[k++].second(uf, j++);
+                                q[k++].second(dsu, j++);
                         }
 
                         return;
@@ -36,26 +34,26 @@ private:
 
                 i32 cnt{};
                 for (i32 i = mid; i < r; ++i) {
-                        if (u[i].link_time <= l && uf.merge(u[i].a, u[i].b)) ++cnt;
+                        if (u[i].link_time <= l && dsu.merge(u[i].a, u[i].b)) ++cnt;
                 }
 
                 solve(l, mid, j, k);
-                uf.rollback(cnt);
+                dsu.rollback(cnt);
 
                 cnt = 0;
                 for (i32 i = l; i <= mid; ++i) {
-                        if (r <= u[i].cut_time && uf.merge(u[i].a, u[i].b)) ++cnt;
+                        if (r <= u[i].cut_time && dsu.merge(u[i].a, u[i].b)) ++cnt;
                 }
 
                 solve(mid, r, j, k);
-                uf.rollback(cnt);
+                dsu.rollback(cnt);
         }
 
 public:
-        UF uf;
+        RollbackDSU dsu;
 
         dynamic_connectivity_offline(i32 m):
-                n{m}, uf(n) {}
+                n{m}, dsu(n) {}
 
         void link(i32 a, i32 b) {
                 assert(0 <= a && a < n);
