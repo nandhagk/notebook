@@ -76,7 +76,7 @@ template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr> struct arbi
         return is;
     }
 
-  private:
+private:
     U v;
     static barrett<U> bt;
 };

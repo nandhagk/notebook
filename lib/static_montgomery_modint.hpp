@@ -94,7 +94,7 @@ template <typename U, U m, is_unsigned_integral_t<U> * = nullptr> struct static_
         return is;
     }
 
-  private:
+private:
     U v;
     inline static constexpr bool is_prime = is_prime_v<U, m>;
 };

@@ -98,7 +98,7 @@ template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct fenwic
         return prod(x, x + 1, y, y + 1);
     }
 
-  private:
+private:
     inline i32 idx(i32 i, i32 j) const { return (i - 1) * W + (j - 1); }
 
     void multiplyx(i32 x, i32 y, X v) {

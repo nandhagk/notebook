@@ -60,7 +60,7 @@ template <typename T, typename RangeProduct> struct rect_wavelet_matrix_product 
         wm.multiply(p, v);
     }
 
-  private:
+private:
     inline i32 id(T x, T y) const {
         return static_cast<i32>(std::lower_bound(pts.begin(), pts.end(), pt{x, y}) - pts.begin());
     }

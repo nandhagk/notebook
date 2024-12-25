@@ -88,7 +88,7 @@ struct barrett_32 {
 
     constexpr u32 mul(u32 a, u32 b) const { return modulo(u64(a) * b); }
 
-  private:
+private:
     u32 m;
     u64 im;
 };
@@ -116,7 +116,7 @@ struct barrett_64 {
 
     constexpr u64 mul(u64 a, u64 b) const { return modulo(u128(a) * b); }
 
-  private:
+private:
     u64 m;
     u128 mh{}, ml{};
 };

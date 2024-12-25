@@ -63,15 +63,9 @@ template <typename Monoid, is_commutative_monoid_t<Monoid> * = nullptr> struct s
 
         X r = MX::unit();
 
-        xl += H;
-        xr += H;
-
-        while (xl < xr) {
+        for (xl += H, xr += H; xl < xr; xl >>= 1, xr >>= 1) {
             if (xl & 1) r = MX::op(r, prod(xl++, yl, yr));
             if (xr & 1) r = MX::op(prod(--xr, yl, yr), r);
-
-            xl >>= 1;
-            xr >>= 1;
         }
 
         return r;
@@ -100,21 +94,15 @@ template <typename Monoid, is_commutative_monoid_t<Monoid> * = nullptr> struct s
 
     void multiply(i32 p, i32 q, X x) { set(p, q, MX::op(get(p, q), x)); }
 
-  private:
+private:
     inline i32 idx(i32 i, i32 j) const { return i * 2 * W + j; }
 
     X prod(i32 x, i32 yl, i32 yr) const {
         X r = MX::unit();
 
-        yl += W;
-        yr += W;
-
-        while (yl < yr) {
+        for (yl += W, yr += W; yl < yr; yl >>= 1, yr >>= 1) {
             if (yl & 1) r = MX::op(r, d[idx(x, yl++)]);
             if (yr & 1) r = MX::op(d[idx(x, --yr)], r);
-
-            yl >>= 1;
-            yr >>= 1;
         }
 
         return r;

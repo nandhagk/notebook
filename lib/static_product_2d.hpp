@@ -59,7 +59,7 @@ template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct static
         return x;
     }
 
-  private:
+private:
     inline i32 idx(i32 x, i32 y) const { return (W + 1) * x + y; }
 };
 

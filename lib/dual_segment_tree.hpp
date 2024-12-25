@@ -84,7 +84,7 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct dual_segment_
         }
     }
 
-  private:
+private:
     void all_apply(i32 k, A a) { z[k] = MA::op(z[k], a); }
 
     void push(i32 k) {

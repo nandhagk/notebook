@@ -5,3 +5,4 @@ AllowShortIfStatementsOnASingleLine: Always
 AllowShortLoopsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
 RemoveBracesLLVM: true
+AccessModifierOffset: -4

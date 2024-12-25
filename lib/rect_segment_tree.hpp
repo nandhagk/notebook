@@ -82,7 +82,7 @@ template <typename T, typename Monoid, is_commutative_monoid_t<Monoid> * = nullp
 
     X get(T x, T y) const { return prod(x, x + 1, y + 1); }
 
-  private:
+private:
     void set(i32 v, const pt &p, X x) {
         const i32 i =
             static_cast<i32>(std::lower_bound(rs[v].begin(), rs[v].end(), pt{p.second, p.first}) - rs[v].begin());

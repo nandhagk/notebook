@@ -8,7 +8,7 @@
 
 template <typename RollbackDSU, typename F = std::function<void(RollbackDSU &, i32)>>
 struct dynamic_connectivity_offline {
-  private:
+private:
     i32 n;
     hash_map<i64, i32> e;
     std::vector<std::pair<i32, F>> q;
@@ -45,7 +45,7 @@ struct dynamic_connectivity_offline {
         dsu.rollback(cnt);
     }
 
-  public:
+public:
     RollbackDSU dsu;
 
     dynamic_connectivity_offline(i32 m) : n{m}, dsu(n) {}

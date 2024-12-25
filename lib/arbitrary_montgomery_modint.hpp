@@ -93,7 +93,7 @@ template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr> struct arbi
         return is;
     }
 
-  private:
+private:
     U v;
     inline static U m, r, n2;
 };

@@ -134,7 +134,7 @@ struct hld {
         return up;
     }
 
-  private:
+private:
     template <typename Graph> void dfs_sz(const Graph &g, i32 u) {
         i32 &x = best[u];
         const i32 t = par[u];

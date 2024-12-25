@@ -190,7 +190,7 @@ template <typename ActedMonoid> struct lazy_segment_tree {
         return 0;
     }
 
-  private:
+private:
     void apply_at(i32 k, A a) {
         const i32 sz = 1 << (log - topbit(k));
 
