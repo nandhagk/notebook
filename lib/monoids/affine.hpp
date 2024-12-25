@@ -4,7 +4,8 @@
 #include <lib/prelude.hpp>
 #include <utility>
 
-template <typename T> struct monoid_affine {
+template <typename T>
+struct monoid_affine {
     using X = std::pair<T, T>;
     using ValueT = X;
 

@@ -6,7 +6,8 @@
 #include <numeric>
 #include <vector>
 
-template <typename T> std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
+template <typename T>
+std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
     const i32 n = static_cast<i32>(cost.size());
     const i32 m = static_cast<i32>(cost[0].size());
 

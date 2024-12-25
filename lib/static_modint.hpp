@@ -7,14 +7,17 @@
 #include <lib/miller_rabin.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, U m, is_unsigned_integral_t<U> * = nullptr> struct static_modint_base {
+template <typename U, U m, is_unsigned_integral_t<U> * = nullptr>
+struct static_modint_base {
     using mint = static_modint_base;
 
     constexpr static_modint_base() : v(0) {}
 
-    template <typename T, is_unsigned_integral_t<T> * = nullptr> constexpr static_modint_base(T x) : v(U(x % mod())) {}
+    template <typename T, is_unsigned_integral_t<T> * = nullptr>
+    constexpr static_modint_base(T x) : v(U(x % mod())) {}
 
-    template <typename T, is_signed_integral_t<T> * = nullptr> constexpr static_modint_base(T x) {
+    template <typename T, is_signed_integral_t<T> * = nullptr>
+    constexpr static_modint_base(T x) {
         using S = make_signed<U>;
 
         S u = S(x % S(mod()));
@@ -84,9 +87,11 @@ private:
     inline static constexpr bool is_prime = is_prime_v<U, m>;
 };
 
-template <u32 m> using static_modint_32 = static_modint_base<u32, m>;
+template <u32 m>
+using static_modint_32 = static_modint_base<u32, m>;
 
-template <u64 m> using static_modint_64 = static_modint_base<u64, m>;
+template <u64 m>
+using static_modint_64 = static_modint_base<u64, m>;
 
 using modint998244353 = static_modint_32<998'244'353>;
 using modint1000000007 = static_modint_32<1'000'000'007>;

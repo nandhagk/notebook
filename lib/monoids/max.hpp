@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <lib/prelude.hpp>
 
-template <typename T> struct monoid_max {
+template <typename T>
+struct monoid_max {
     using X = T;
     using ValueT = T;
 

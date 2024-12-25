@@ -8,7 +8,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct rollback_dsu_product {
+template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr>
+struct rollback_dsu_product {
     using MX = Monoid;
     using X = typename MX::ValueT;
 

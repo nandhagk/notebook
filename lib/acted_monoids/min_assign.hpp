@@ -4,7 +4,8 @@
 #include <lib/monoids/assign.hpp>
 #include <lib/monoids/min.hpp>
 
-template <typename T> struct acted_monoid_min_assign {
+template <typename T>
+struct acted_monoid_min_assign {
     using MX = monoid_min<T>;
     using MA = monoid_assign<T>;
 

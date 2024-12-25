@@ -5,7 +5,8 @@
 #include <lib/math.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, is_unsigned_integral_t<U> * = nullptr> inline U totient(U n) {
+template <typename U, is_unsigned_integral_t<U> * = nullptr>
+inline U totient(U n) {
     U r = n;
     for (const auto &[p, _] : factorize(n)) r -= r / p;
 

@@ -10,7 +10,8 @@
 #include <lib/lazy_segment_tree.hpp>
 #include <lib/prelude.hpp>
 
-template <typename T> struct rectangle_union {
+template <typename T>
+struct rectangle_union {
     std::vector<T> xs, ys;
 
     rectangle_union() {}

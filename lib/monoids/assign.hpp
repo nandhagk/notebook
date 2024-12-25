@@ -3,7 +3,8 @@
 
 #include <optional>
 
-template <typename T> struct monoid_assign {
+template <typename T>
+struct monoid_assign {
     using X = std::optional<T>;
     using ValueT = X;
 

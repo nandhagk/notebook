@@ -5,7 +5,8 @@
 #include <lib/hld.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Monoid> struct hld_dual_segment_tree {
+template <typename Monoid>
+struct hld_dual_segment_tree {
     using MA = Monoid;
     using A = typename MA::ValueT;
 
@@ -15,7 +16,10 @@ template <typename Monoid> struct hld_dual_segment_tree {
 
     explicit hld_dual_segment_tree(const hld &g) : h(g) { build(); }
 
-    template <typename F> hld_dual_segment_tree(const hld &g, F f) : h(g) { build(f); }
+    template <typename F>
+    hld_dual_segment_tree(const hld &g, F f) : h(g) {
+        build(f);
+    }
 
     explicit hld_dual_segment_tree(const hld &g, const std::vector<A> &v) : h(g) { build(v); }
 
@@ -27,7 +31,10 @@ template <typename Monoid> struct hld_dual_segment_tree {
         build([&](i32 u) -> A { return v[h.tour[u]]; });
     }
 
-    template <typename F> void build(F f) { st.build(h.n, f); }
+    template <typename F>
+    void build(F f) {
+        st.build(h.n, f);
+    }
 
     A get(i32 u) { return st.get(h.tin[u]); }
 

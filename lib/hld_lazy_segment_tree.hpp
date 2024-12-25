@@ -6,7 +6,8 @@
 #include <lib/monoids/reverse_monoid.hpp>
 #include <lib/prelude.hpp>
 
-template <typename ActedMonoid> struct hld_lazy_segment_tree {
+template <typename ActedMonoid>
+struct hld_lazy_segment_tree {
     using AM = ActedMonoid;
 
     using MX = typename AM::MX;
@@ -32,7 +33,10 @@ template <typename ActedMonoid> struct hld_lazy_segment_tree {
 
     explicit hld_lazy_segment_tree(const hld &g) : h(g) { build(); }
 
-    template <typename F> hld_lazy_segment_tree(const hld &g, F f) : h(g) { build(f); }
+    template <typename F>
+    hld_lazy_segment_tree(const hld &g, F f) : h(g) {
+        build(f);
+    }
 
     explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
 
@@ -44,7 +48,8 @@ template <typename ActedMonoid> struct hld_lazy_segment_tree {
         build([&](i32 u) -> X { return v[h.tour[u]]; });
     }
 
-    template <typename F> void build(F f) {
+    template <typename F>
+    void build(F f) {
         st.build(h.n, f);
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }

@@ -3,7 +3,8 @@
 
 #include <numeric>
 
-template <typename T> struct monoid_gcd {
+template <typename T>
+struct monoid_gcd {
     using X = T;
     using ValueT = T;
 

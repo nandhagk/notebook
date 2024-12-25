@@ -8,7 +8,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename U, is_unsigned_integral_t<U> * = nullptr> struct binary_trie {
+template <typename U, is_unsigned_integral_t<U> * = nullptr>
+struct binary_trie {
     static constexpr i32 W = std::numeric_limits<U>::digits;
 
     struct node {

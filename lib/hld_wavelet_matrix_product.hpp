@@ -6,7 +6,8 @@
 #include <lib/type_traits.hpp>
 #include <lib/wavelet_matrix_product.hpp>
 
-template <typename T, typename RangeProduct> struct hld_wavelet_matrix_product {
+template <typename T, typename RangeProduct>
+struct hld_wavelet_matrix_product {
     const hld &h;
     wavelet_matrix_product<T, RangeProduct> wm;
 

@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct segment_tree {
+template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
+struct segment_tree {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -19,7 +20,10 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct segment_tree 
 
     explicit segment_tree(const std::vector<X> &v) { build(v); }
 
-    template <typename F> segment_tree(i32 m, F f) { build(m, f); }
+    template <typename F>
+    segment_tree(i32 m, F f) {
+        build(m, f);
+    }
 
     void build(i32 m) {
         build(m, [](i32) -> X { return MX::unit(); });
@@ -29,7 +33,8 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct segment_tree 
         build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }
 
-    template <typename F> void build(i32 m, F f) {
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
 
         log = 1;
@@ -86,7 +91,8 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct segment_tree 
 
     X prod_all() const { return d[1]; }
 
-    template <typename F> i32 max_right(F f, i32 l) const {
+    template <typename F>
+    i32 max_right(F f, i32 l) const {
         assert(0 <= l && l <= n && f(MX::unit()));
 
         if (l == n) return n;
@@ -112,7 +118,8 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct segment_tree 
         return n;
     }
 
-    template <typename F> i32 min_left(F f, i32 r) const {
+    template <typename F>
+    i32 min_left(F f, i32 r) const {
         assert(0 <= r && r <= n && f(MX::unit()));
 
         if (r == 0) return 0;

@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/static_montgomery_modint.hpp>
 
-template <typename Z> std::vector<Z> arbitrary_convolution(std::vector<Z> l, std::vector<Z> r) {
+template <typename Z>
+std::vector<Z> arbitrary_convolution(std::vector<Z> l, std::vector<Z> r) {
     static constexpr i64 MOD1 = 754974721; // 2^24
     static constexpr i64 MOD2 = 167772161; // 2^25
     static constexpr i64 MOD3 = 469762049; // 2^26

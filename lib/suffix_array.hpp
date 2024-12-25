@@ -171,7 +171,8 @@ inline std::vector<i32> suffix_array(const std::vector<i32> &s, i32 upper) {
     return sa;
 }
 
-template <typename T> std::vector<i32> suffix_array(const std::vector<T> &s) {
+template <typename T>
+std::vector<i32> suffix_array(const std::vector<T> &s) {
     const i32 n = static_cast<i32>(s.size());
 
     std::vector<i32> idx(n);
@@ -201,7 +202,8 @@ inline std::vector<i32> suffix_array(const std::string &s) {
 // T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
 // Linear-Time Longest-Common-Prefix Computation in Suffix
 // Arrays and Its Applications
-template <typename T> std::vector<i32> lcp_array(const std::vector<T> &s, const std::vector<i32> &sa) {
+template <typename T>
+std::vector<i32> lcp_array(const std::vector<T> &s, const std::vector<i32> &sa) {
     const i32 n = static_cast<i32>(s.size());
     assert(n >= 1);
 

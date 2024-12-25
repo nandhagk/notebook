@@ -4,7 +4,8 @@
 #include <lib/prelude.hpp>
 #include <utility>
 
-template <typename T, typename S> struct monoid_max_cnt {
+template <typename T, typename S>
+struct monoid_max_cnt {
     using X = std::pair<T, S>;
     using ValueT = X;
 

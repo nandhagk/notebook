@@ -8,7 +8,8 @@
 #include <lib/random.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Z> std::optional<Z> sqrt(Z a) {
+template <typename Z>
+std::optional<Z> sqrt(Z a) {
     if (a == 0) return 0;
     if (Z::mod() == 2) return 1;
 

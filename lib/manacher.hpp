@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> std::pair<std::vector<i32>, std::vector<i32>> manacher(const std::vector<T> &s) {
+template <typename T>
+std::pair<std::vector<i32>, std::vector<i32>> manacher(const std::vector<T> &s) {
     const i32 n = static_cast<i32>(s.size());
 
     // odd[i] = length of palindrome centered at i

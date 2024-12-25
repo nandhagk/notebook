@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename SparseTable> struct segment_tree_sparse_table {
+template <typename SparseTable>
+struct segment_tree_sparse_table {
     using MX = typename SparseTable::MX;
     using X = typename MX::ValueT;
 
@@ -20,7 +21,10 @@ template <typename SparseTable> struct segment_tree_sparse_table {
 
     explicit segment_tree_sparse_table(const std::vector<std::vector<X>> &v) { build(v); }
 
-    template <typename F> segment_tree_sparse_table(i32 h, i32 w, F f) { build(h, w, f); }
+    template <typename F>
+    segment_tree_sparse_table(i32 h, i32 w, F f) {
+        build(h, w, f);
+    }
 
     void build(i32 h, i32 w) {
         build(h, w, [](i32, i32) -> X { return MX::unit(); });
@@ -33,7 +37,8 @@ template <typename SparseTable> struct segment_tree_sparse_table {
         build(h, w, [&](i32 i, i32 j) -> X { return v[i][j]; });
     }
 
-    template <typename F> void build(i32 h, i32 w, F f) {
+    template <typename F>
+    void build(i32 h, i32 w, F f) {
         H = h;
         W = w;
 

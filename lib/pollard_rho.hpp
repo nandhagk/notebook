@@ -8,7 +8,8 @@
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 
-template <typename U, is_unsigned_integral_t<U> * = nullptr> inline U pollard_rho(U n) {
+template <typename U, is_unsigned_integral_t<U> * = nullptr>
+inline U pollard_rho(U n) {
     if (n % 2 == 0) return 2;
     if (is_prime(n)) return n;
 

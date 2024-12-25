@@ -6,14 +6,17 @@
 #include <lib/math.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr> struct arbitrary_modint_base {
+template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr>
+struct arbitrary_modint_base {
     using mint = arbitrary_modint_base;
 
     constexpr arbitrary_modint_base() : v(0) {}
 
-    template <typename T, is_unsigned_integral_t<T> * = nullptr> arbitrary_modint_base(T x) : v(U(x % mod())) {}
+    template <typename T, is_unsigned_integral_t<T> * = nullptr>
+    arbitrary_modint_base(T x) : v(U(x % mod())) {}
 
-    template <typename T, is_signed_integral_t<T> * = nullptr> arbitrary_modint_base(T x) {
+    template <typename T, is_signed_integral_t<T> * = nullptr>
+    arbitrary_modint_base(T x) {
         using S = make_signed<U>;
 
         S u = S(x % S(mod()));
@@ -81,12 +84,16 @@ private:
     static barrett<U> bt;
 };
 
-template <i32 id> using arbitrary_modint_32 = arbitrary_modint_base<u32, id>;
+template <i32 id>
+using arbitrary_modint_32 = arbitrary_modint_base<u32, id>;
 
-template <> inline barrett<u32> arbitrary_modint_32<-1>::bt = 998'244'353;
+template <>
+inline barrett<u32> arbitrary_modint_32<-1>::bt = 998'244'353;
 
-template <i32 id> using arbitrary_modint_64 = arbitrary_modint_base<u64, id>;
+template <i32 id>
+using arbitrary_modint_64 = arbitrary_modint_base<u64, id>;
 
-template <> inline barrett<u64> arbitrary_modint_64<-1>::bt = (u64(1) << 61) - 1;
+template <>
+inline barrett<u64> arbitrary_modint_64<-1>::bt = (u64(1) << 61) - 1;
 
 #endif // LIB_ARBITRARY_MODINT_HPP

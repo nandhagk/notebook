@@ -4,7 +4,8 @@
 #include <lib/prelude.hpp>
 #include <utility>
 
-template <typename T, typename S> struct monoid_min_cnt {
+template <typename T, typename S>
+struct monoid_min_cnt {
     using X = std::pair<T, S>;
     using ValueT = X;
 

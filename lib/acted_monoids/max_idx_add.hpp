@@ -4,7 +4,8 @@
 #include <lib/monoids/add.hpp>
 #include <lib/monoids/max_idx.hpp>
 
-template <typename T> struct acted_monoid_max_idx_add {
+template <typename T>
+struct acted_monoid_max_idx_add {
     using MX = monoid_max_idx<T>;
     using MA = monoid_add<T>;
 

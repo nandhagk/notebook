@@ -6,14 +6,17 @@
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 
-template <typename T, typename D = void> struct hash {};
+template <typename T, typename D = void>
+struct hash {};
 
-template <typename T> inline void hash_combine(u64 &seed, const T &v) {
+template <typename T>
+inline void hash_combine(u64 &seed, const T &v) {
     hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b97f4a7c15 + (seed << 12) + (seed >> 4);
 };
 
-template <typename T> struct hash<T, typename std::enable_if<std::is_integral<T>::value>::type> {
+template <typename T>
+struct hash<T, typename std::enable_if<std::is_integral<T>::value>::type> {
     u64 operator()(T _x) const {
         u64 x = _x;
         x += 0x9e3779b97f4a7c15 + FIXED_RANDOM;
@@ -23,7 +26,8 @@ template <typename T> struct hash<T, typename std::enable_if<std::is_integral<T>
     }
 };
 
-template <typename T> struct hash<T, std::void_t<decltype(std::begin(std::declval<T>()))>> {
+template <typename T>
+struct hash<T, std::void_t<decltype(std::begin(std::declval<T>()))>> {
     u64 operator()(const T &a) const {
         u64 value = FIXED_RANDOM;
         for (const auto &x : a) hash_combine(value, x);
@@ -31,7 +35,8 @@ template <typename T> struct hash<T, std::void_t<decltype(std::begin(std::declva
     }
 };
 
-template <typename... T> struct hash<std::tuple<T...>> {
+template <typename... T>
+struct hash<std::tuple<T...>> {
     u64 operator()(const std::tuple<T...> &a) const {
         u64 value = FIXED_RANDOM;
         std::apply([&value](T const &...args) { (hash_combine(value, args), ...); }, a);
@@ -39,7 +44,8 @@ template <typename... T> struct hash<std::tuple<T...>> {
     }
 };
 
-template <typename T, typename U> struct hash<std::pair<T, U>> {
+template <typename T, typename U>
+struct hash<std::pair<T, U>> {
     u64 operator()(const std::pair<T, U> &a) const {
         u64 value = FIXED_RANDOM;
         hash_combine(value, a.first);

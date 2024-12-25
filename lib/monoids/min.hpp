@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <lib/prelude.hpp>
 
-template <typename T> struct monoid_min {
+template <typename T>
+struct monoid_min {
     using X = T;
     using ValueT = T;
 

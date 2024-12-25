@@ -1,7 +1,8 @@
 #ifndef LIB_MONOID_OR_HPP
 #define LIB_MONOID_OR_HPP 1
 
-template <typename T> struct monoid_or {
+template <typename T>
+struct monoid_or {
     using X = T;
     using ValueT = T;
 

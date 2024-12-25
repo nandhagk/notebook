@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct sparse_table {
+template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
+struct sparse_table {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -19,7 +20,10 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct sparse_table 
 
     explicit sparse_table(const std::vector<X> &v) { build(v); }
 
-    template <typename F> sparse_table(i32 m, F f) { build(m, f); }
+    template <typename F>
+    sparse_table(i32 m, F f) {
+        build(m, f);
+    }
 
     void build(i32 m) {
         build(m, [](i32) -> X { return MX::unit(); });
@@ -29,7 +33,8 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct sparse_table 
         build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }
 
-    template <typename F> void build(i32 m, F f) {
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
 
         log = 1;

@@ -4,7 +4,8 @@
 #include <lib/monoids/assign.hpp>
 #include <lib/monoids/mxss.hpp>
 
-template <typename T> struct acted_monoid_mxss_assign {
+template <typename T>
+struct acted_monoid_mxss_assign {
     using MX = monoid_mxss<T>;
     using MA = monoid_assign<T>;
 

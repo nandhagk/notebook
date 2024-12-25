@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph> inline std::pair<i32, std::vector<i32>> ccc(const Graph &g) {
+template <typename Graph>
+inline std::pair<i32, std::vector<i32>> ccc(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> ids(n, -1), rem(n), flg(n);

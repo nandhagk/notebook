@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph> inline std::optional<std::vector<i32>> bipartition(const Graph &g) {
+template <typename Graph>
+inline std::optional<std::vector<i32>> bipartition(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> color(n, -1);

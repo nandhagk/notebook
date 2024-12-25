@@ -5,7 +5,8 @@
 #include <lib/prelude.hpp>
 #include <tuple>
 
-template <typename T> struct monoid_mnss {
+template <typename T>
+struct monoid_mnss {
     using X = std::tuple<T, T, T, T>;
     using ValueT = X;
 

@@ -6,7 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> std::vector<i32> kmp(const std::vector<T> &s) {
+template <typename T>
+std::vector<i32> kmp(const std::vector<T> &s) {
     const i32 n = static_cast<i32>(s.size());
 
     std::vector<i32> k(n);

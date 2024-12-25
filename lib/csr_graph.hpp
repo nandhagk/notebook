@@ -17,7 +17,8 @@ struct simple_edge {
     operator int() const { return v; }
 };
 
-template <typename W> struct weighted_edge {
+template <typename W>
+struct weighted_edge {
     using CostT = W;
 
     i32 v;
@@ -31,7 +32,8 @@ template <typename W> struct weighted_edge {
     operator int() const { return v; }
 };
 
-template <typename Edge> struct csr_graph {
+template <typename Edge>
+struct csr_graph {
     using E = Edge;
 
     csr_graph() {}

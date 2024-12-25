@@ -6,7 +6,8 @@
 #include <lib/csr_graph.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Graph> inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Graph &g) {
+template <typename Graph>
+inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> seen, tin(n, -1), low(n);

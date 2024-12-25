@@ -3,7 +3,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> struct monoid_mul {
+template <typename T>
+struct monoid_mul {
     using X = T;
     using ValueT = T;
 

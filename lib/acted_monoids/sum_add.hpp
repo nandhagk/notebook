@@ -3,7 +3,8 @@
 
 #include <lib/monoids/add.hpp>
 
-template <typename T> struct acted_monoid_sum_add {
+template <typename T>
+struct acted_monoid_sum_add {
     using MX = monoid_add<T>;
     using MA = monoid_add<T>;
 

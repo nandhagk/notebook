@@ -6,7 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph> inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {
+template <typename Graph>
+inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> par(n, -1), tin(n, -1), seen;

@@ -4,7 +4,8 @@
 #include <lib/prelude.hpp>
 #include <utility>
 
-template <typename T> struct monoid_max_idx {
+template <typename T>
+struct monoid_max_idx {
     using X = std::pair<T, i32>;
     using ValueT = X;
 

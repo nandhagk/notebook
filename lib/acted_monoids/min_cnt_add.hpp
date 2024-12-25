@@ -4,7 +4,8 @@
 #include <lib/monoids/add.hpp>
 #include <lib/monoids/min_cnt.hpp>
 
-template <typename T, typename S> struct acted_monoid_min_cnt_add {
+template <typename T, typename S>
+struct acted_monoid_min_cnt_add {
     using MX = monoid_min_cnt<T, S>;
     using MA = monoid_add<T>;
 

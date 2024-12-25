@@ -6,7 +6,8 @@
 #include <lib/prelude.hpp>
 #include <lib/sparse_table.hpp>
 
-template <typename Monoid> struct hld_sparse_table {
+template <typename Monoid>
+struct hld_sparse_table {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -17,7 +18,10 @@ template <typename Monoid> struct hld_sparse_table {
 
     explicit hld_sparse_table(const hld &g) : h(g) { build(); }
 
-    template <typename F> hld_sparse_table(const hld &g, F f) : h(g) { build(f); }
+    template <typename F>
+    hld_sparse_table(const hld &g, F f) : h(g) {
+        build(f);
+    }
 
     explicit hld_sparse_table(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
 
@@ -29,7 +33,8 @@ template <typename Monoid> struct hld_sparse_table {
         build([&](i32 u) -> X { return v[h.tour[u]]; });
     }
 
-    template <typename F> void build(F f) {
+    template <typename F>
+    void build(F f) {
         st.build(h.n, f);
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }

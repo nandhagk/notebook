@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Z> void ntt(std::vector<Z> &a, bool inv) {
+template <typename Z>
+void ntt(std::vector<Z> &a, bool inv) {
     static std::array<Z, 30> dw{}, iw{};
     if (dw[0] == 0) {
         Z root = 2;
@@ -54,7 +55,8 @@ template <typename Z> void ntt(std::vector<Z> &a, bool inv) {
     }
 }
 
-template <typename Z> std::vector<Z> convolution(std::vector<Z> l, std::vector<Z> r) {
+template <typename Z>
+std::vector<Z> convolution(std::vector<Z> l, std::vector<Z> r) {
     if (l.empty() || r.empty()) return {};
 
     const i32 n = static_cast<i32>(l.size());

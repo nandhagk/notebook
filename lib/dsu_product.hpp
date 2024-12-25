@@ -8,7 +8,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_commutative_monoid_t<Monoid> * = nullptr> struct dsu_product {
+template <typename Monoid, is_commutative_monoid_t<Monoid> * = nullptr>
+struct dsu_product {
     using MX = Monoid;
     using X = typename MX::ValueT;
 

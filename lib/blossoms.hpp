@@ -8,7 +8,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph> inline std::vector<i32> blossoms(const Graph &g) {
+template <typename Graph>
+inline std::vector<i32> blossoms(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     i32 time{};

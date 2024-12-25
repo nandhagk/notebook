@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> std::vector<i32> z_algorithm(const std::vector<T> &s) {
+template <typename T>
+std::vector<i32> z_algorithm(const std::vector<T> &s) {
     const i32 n = static_cast<i32>(s.size());
     if (n == 0) return {};
 

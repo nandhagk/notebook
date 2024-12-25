@@ -4,7 +4,8 @@
 #include <lib/monoids/add.hpp>
 #include <lib/monoids/affine.hpp>
 
-template <typename T> struct acted_monoid_sum_affine {
+template <typename T>
+struct acted_monoid_sum_affine {
     using MX = monoid_add<T>;
     using MA = monoid_affine<T>;
 

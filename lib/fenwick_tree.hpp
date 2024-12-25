@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct fenwick_tree {
+template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr>
+struct fenwick_tree {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -19,7 +20,10 @@ template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct fenwic
 
     explicit fenwick_tree(const std::vector<X> &v) { build(v); }
 
-    template <typename F> fenwick_tree(i32 m, F f) { build(m, f); }
+    template <typename F>
+    fenwick_tree(i32 m, F f) {
+        build(m, f);
+    }
 
     void build(i32 m) {
         build(m, [](i32) -> X { return MX::unit(); });
@@ -29,7 +33,8 @@ template <typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct fenwic
         build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }
 
-    template <typename F> void build(i32 m, F f) {
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
         d.assign(n, MX::unit());
 

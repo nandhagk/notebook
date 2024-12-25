@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 
-template <typename Monoid> struct rbst {
+template <typename Monoid>
+struct rbst {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -61,9 +62,13 @@ template <typename Monoid> struct rbst {
         return make_nodes(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }
 
-    template <typename F> node *make_nodes(i32 p, F f) { return assign(0, p, f); }
+    template <typename F>
+    node *make_nodes(i32 p, F f) {
+        return assign(0, p, f);
+    }
 
-    template <typename F> node *assign(i32 l, i32 r, F f) {
+    template <typename F>
+    node *assign(i32 l, i32 r, F f) {
         if (l == r) return make_node();
         if (l + 1 == r) return make_node(f(l));
 

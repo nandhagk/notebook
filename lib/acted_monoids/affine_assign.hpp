@@ -4,7 +4,8 @@
 #include <lib/monoids/affine.hpp>
 #include <lib/monoids/assign.hpp>
 
-template <typename T> struct acted_monoid_affine_assign {
+template <typename T>
+struct acted_monoid_affine_assign {
     using MX = monoid_affine<T>;
     using MA = monoid_assign<T>;
 

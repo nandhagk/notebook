@@ -24,7 +24,8 @@ inline void print(std::vector<bool> &v) { /* Overloaded this because stl optimiz
     for (auto &&i : v) std::cerr << (f++ ? "," : "") << (i ? "T" : "F");
     std::cerr << "}";
 }
-template <typename T> void print(T &&x) {
+template <typename T>
+void print(T &&x) {
     if constexpr (is_iterable<T>) {
         if (std::size(x) && is_iterable<decltype(*(begin(x)))>) { /* Iterable
                                                                      inside
@@ -64,7 +65,8 @@ template <typename T> void print(T &&x) {
         std::cerr << x;
     }
 }
-template <typename T, typename... V> void printer(const char *names, T &&head, V &&...tail) {
+template <typename T, typename... V>
+void printer(const char *names, T &&head, V &&...tail) {
     int i = 0;
     for (int bracket = 0; names[i] != '\0' and (names[i] != ',' or bracket > 0); i++)
         if (names[i] == '(' or names[i] == '<' or names[i] == '{') bracket++;

@@ -6,3 +6,4 @@ AllowShortLoopsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
 RemoveBracesLLVM: true
 AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: Yes

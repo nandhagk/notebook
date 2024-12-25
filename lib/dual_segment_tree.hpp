@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct dual_segment_tree {
+template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
+struct dual_segment_tree {
     using MA = Monoid;
     using A = typename MA::ValueT;
 
@@ -19,7 +20,10 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct dual_segment_
 
     explicit dual_segment_tree(const std::vector<A> &v) { build(v); }
 
-    template <typename F> dual_segment_tree(i32 m, F f) { build(m, f); }
+    template <typename F>
+    dual_segment_tree(i32 m, F f) {
+        build(m, f);
+    }
 
     void build(i32 m) {
         build(m, [](i32) -> A { return MA::unit(); });
@@ -29,7 +33,8 @@ template <typename Monoid, is_monoid_t<Monoid> * = nullptr> struct dual_segment_
         build(static_cast<i32>(v.size()), [&](i32 i) -> A { return v[i]; });
     }
 
-    template <typename F> void build(i32 m, F f) {
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
 
         log = 1;

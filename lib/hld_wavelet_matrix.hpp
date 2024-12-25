@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 #include <lib/wavelet_matrix.hpp>
 
-template <typename T> struct hld_wavelet_matrix {
+template <typename T>
+struct hld_wavelet_matrix {
     const hld &h;
     wavelet_matrix<T> wm;
 

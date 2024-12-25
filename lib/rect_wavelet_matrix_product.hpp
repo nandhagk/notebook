@@ -9,7 +9,8 @@
 #include <lib/type_traits.hpp>
 #include <lib/wavelet_matrix_product.hpp>
 
-template <typename T, typename RangeProduct> struct rect_wavelet_matrix_product {
+template <typename T, typename RangeProduct>
+struct rect_wavelet_matrix_product {
     using MX = typename RangeProduct::MX;
     using X = typename MX::ValueT;
 

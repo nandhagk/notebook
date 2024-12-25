@@ -6,7 +6,8 @@
 #include <lib/prelude.hpp>
 #include <lib/segment_tree.hpp>
 
-template <typename Monoid> struct hld_segment_tree {
+template <typename Monoid>
+struct hld_segment_tree {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
@@ -17,7 +18,10 @@ template <typename Monoid> struct hld_segment_tree {
 
     explicit hld_segment_tree(const hld &g) : h(g) { build(); }
 
-    template <typename F> hld_segment_tree(const hld &g, F f) : h(g) { build(f); }
+    template <typename F>
+    hld_segment_tree(const hld &g, F f) : h(g) {
+        build(f);
+    }
 
     explicit hld_segment_tree(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
 
@@ -29,7 +33,8 @@ template <typename Monoid> struct hld_segment_tree {
         build([&](i32 u) -> X { return v[h.tour[u]]; });
     }
 
-    template <typename F> void build(F f) {
+    template <typename F>
+    void build(F f) {
         st.build(h.n, f);
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }

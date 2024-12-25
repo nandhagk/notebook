@@ -7,7 +7,8 @@
 #include <lib/pollard_rho.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, is_unsigned_integral_t<U> * = nullptr> inline std::vector<std::pair<U, i32>> factorize(U m) {
+template <typename U, is_unsigned_integral_t<U> * = nullptr>
+inline std::vector<std::pair<U, i32>> factorize(U m) {
     std::vector<U> ps;
 
     const auto dfs = [&](auto &&self, U n) -> void {

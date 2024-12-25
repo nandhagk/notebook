@@ -12,7 +12,8 @@ using hash_map = __gnu_pbds::gp_hash_table<
     __gnu_pbds::hash_standard_resize_policy<__gnu_pbds::hash_exponential_size_policy<>,
                                             __gnu_pbds::hash_load_check_resize_trigger<>, true>>;
 
-template <typename Key, typename Hash = hash<Key>> using hash_set = hash_map<Key, __gnu_pbds::null_type, Hash>;
+template <typename Key, typename Hash = hash<Key>>
+using hash_set = hash_map<Key, __gnu_pbds::null_type, Hash>;
 
 template <class Key, class Value, class Compare = std::less<Key>>
 using indexed_map =

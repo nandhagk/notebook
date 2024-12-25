@@ -10,7 +10,8 @@
 #include <lib/bit_vector.hpp>
 #include <lib/prelude.hpp>
 
-template <typename T> struct wavelet_matrix {
+template <typename T>
+struct wavelet_matrix {
     i32 n, size, log;
     std::vector<T> rv;
     std::vector<i32> md;

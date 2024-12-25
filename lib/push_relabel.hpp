@@ -7,7 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> inline T push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 s, i32 t) {
+template <typename T>
+inline T push_relabel(const std::vector<std::vector<std::pair<i32, T>>> &g, i32 s, i32 t) {
     const i32 n = static_cast<i32>(g.size());
 
     assert(0 <= s && s < n);

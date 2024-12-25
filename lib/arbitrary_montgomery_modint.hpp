@@ -7,7 +7,8 @@
 #include <lib/math.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr> struct arbitrary_montgomery_modint_base {
+template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr>
+struct arbitrary_montgomery_modint_base {
     using mint = arbitrary_montgomery_modint_base;
 
     using V = make_double<U>;
@@ -98,8 +99,10 @@ private:
     inline static U m, r, n2;
 };
 
-template <i32 id> using arbitrary_montgomery_modint_32 = arbitrary_montgomery_modint_base<u32, id>;
+template <i32 id>
+using arbitrary_montgomery_modint_32 = arbitrary_montgomery_modint_base<u32, id>;
 
-template <i32 id> using arbitrary_montgomery_modint_64 = arbitrary_montgomery_modint_base<u64, id>;
+template <i32 id>
+using arbitrary_montgomery_modint_64 = arbitrary_montgomery_modint_base<u64, id>;
 
 #endif // LIB_ARBITRARY_MONTGOMERY_MODINT_HPP

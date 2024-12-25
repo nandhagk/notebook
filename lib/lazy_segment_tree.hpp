@@ -6,7 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename ActedMonoid> struct lazy_segment_tree {
+template <typename ActedMonoid>
+struct lazy_segment_tree {
     using AM = ActedMonoid;
 
     using MX = typename AM::MX;
@@ -24,7 +25,10 @@ template <typename ActedMonoid> struct lazy_segment_tree {
 
     explicit lazy_segment_tree(const std::vector<X> &v) { build(v); }
 
-    template <typename F> lazy_segment_tree(i32 m, F f) { build(m, f); }
+    template <typename F>
+    lazy_segment_tree(i32 m, F f) {
+        build(m, f);
+    }
 
     void build(i32 m) {
         build(m, [](i32) -> X { return MX::unit(); });
@@ -34,7 +38,8 @@ template <typename ActedMonoid> struct lazy_segment_tree {
         build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }
 
-    template <typename F> void build(i32 m, F f) {
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
 
         log = 1;
@@ -134,7 +139,8 @@ template <typename ActedMonoid> struct lazy_segment_tree {
         }
     }
 
-    template <typename F> i32 max_right(const F f, i32 l) {
+    template <typename F>
+    i32 max_right(const F f, i32 l) {
         assert(0 <= l && l <= n);
         assert(f(MX::unit()));
 
@@ -161,7 +167,8 @@ template <typename ActedMonoid> struct lazy_segment_tree {
         return n;
     }
 
-    template <typename F> i32 min_left(const F f, i32 r) {
+    template <typename F>
+    i32 min_left(const F f, i32 r) {
         assert(0 <= r && r <= n);
         assert(f(MX::unit()));
 

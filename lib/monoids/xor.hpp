@@ -3,7 +3,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename T> struct monoid_xor {
+template <typename T>
+struct monoid_xor {
     using X = T;
     using ValueT = T;
 

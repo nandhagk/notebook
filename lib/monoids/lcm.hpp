@@ -3,7 +3,8 @@
 
 #include <numeric>
 
-template <typename T> struct monoid_lcm {
+template <typename T>
+struct monoid_lcm {
     using X = T;
     using ValueT = T;
 

@@ -8,7 +8,8 @@
 #include <lib/miller_rabin.hpp>
 #include <lib/prelude.hpp>
 
-template <typename U, U m, is_unsigned_integral_t<U> * = nullptr> struct static_montgomery_modint_base {
+template <typename U, U m, is_unsigned_integral_t<U> * = nullptr>
+struct static_montgomery_modint_base {
     using mint = static_montgomery_modint_base;
 
     using V = make_double<U>;
@@ -99,9 +100,11 @@ private:
     inline static constexpr bool is_prime = is_prime_v<U, m>;
 };
 
-template <u32 m> using static_montgomery_modint_32 = static_montgomery_modint_base<u32, m>;
+template <u32 m>
+using static_montgomery_modint_32 = static_montgomery_modint_base<u32, m>;
 
-template <u64 m> using static_montgomery_modint_64 = static_montgomery_modint_base<u64, m>;
+template <u64 m>
+using static_montgomery_modint_64 = static_montgomery_modint_base<u64, m>;
 
 using montgomerymodint998244353 = static_montgomery_modint_32<998'244'353>;
 using montgomerymodint1000000007 = static_montgomery_modint_32<1'000'000'007>;

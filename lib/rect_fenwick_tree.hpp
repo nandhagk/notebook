@@ -8,7 +8,8 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename T, typename Monoid, is_abelian_group_t<Monoid> * = nullptr> struct rect_fenwick_tree {
+template <typename T, typename Monoid, is_abelian_group_t<Monoid> * = nullptr>
+struct rect_fenwick_tree {
     using MX = Monoid;
     using X = typename MX::ValueT;
 
