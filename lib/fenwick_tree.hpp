@@ -13,6 +13,7 @@ struct fenwick_tree {
     using X = typename MX::ValueT;
 
     i32 n;
+    X t;
     std::vector<X> d;
 
     fenwick_tree() {}
@@ -36,6 +37,7 @@ struct fenwick_tree {
     template <typename F>
     void build(i32 m, F f) {
         n = m;
+        t = MX::unit();
         d.assign(n, MX::unit());
 
         for (i32 i = 0; i < n; ++i) d[i] = f(i);
@@ -43,7 +45,11 @@ struct fenwick_tree {
             const i32 j = i + (i & -i);
             if (j <= n) d[j - 1] = MX::op(d[i - 1], d[j - 1]);
         }
+
+        t = prod(n);
     }
+
+    X prod_all() const { return t; }
 
     X prod(i32 r) const {
         assert(0 <= r && r <= n);
@@ -76,6 +82,7 @@ struct fenwick_tree {
     void multiply(i32 p, X x) {
         assert(0 <= p && p < n);
 
+        t = MX::op(t, x);
         for (++p; p <= n; p += p & -p) d[p - 1] = MX::op(d[p - 1], x);
     }
 
