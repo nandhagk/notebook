@@ -36,26 +36,29 @@ struct static_distinct_offline {
         }
 
         nxt.assign(n, -1);
-        first.reserve(n);
+        first.assign(n, 0);
 
         std::vector<i32> last(n, -1);
         for (i32 i = 0; i < n; ++i) {
             if (last[b[i]] != -1) nxt[last[b[i]]] = i;
             else
-                first.push_back(i);
+                ++first[i];
 
             last[b[i]] = i;
         }
     }
 
-    void query(i32 l, i32 r) { qs.emplace_back(l, r, q++); }
+    void query(i32 l, i32 r) {
+        assert(0 <= l && l <= r && r <= n);
+
+        qs.emplace_back(l, r, q++);
+    }
 
     std::vector<i32> solve() {
         std::vector<i32> out(q);
         std::sort(qs.begin(), qs.end());
 
-        fenwick_tree<monoid_add<i32>> ft(n);
-        for (const i32 i : first) ft.multiply(i, 1);
+        fenwick_tree<monoid_add<i32>> ft(first);
 
         i32 i = 0;
         for (const auto &[l, r, j] : qs) {

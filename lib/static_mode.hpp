@@ -2,6 +2,7 @@
 #define LIB_STATIC_MODE_HPP 1
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <vector>
 
@@ -56,6 +57,8 @@ struct static_mode {
     }
 
     std::pair<T, i32> prod(i32 l, i32 r) const {
+        assert(0 <= l && l <= r && r <= n);
+
         const i32 L = (l + sq - 1) / sq, R = r / sq;
         std::pair<i32, i32> m;
 
