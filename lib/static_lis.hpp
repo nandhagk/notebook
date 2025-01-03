@@ -229,7 +229,7 @@ struct static_lis {
         wm.build(row);
     }
 
-    i32 query(i32 l, i32 r) const {
+    i32 prod(i32 l, i32 r) const {
         assert(0 <= l && l <= r && r <= n);
 
         return r - l - wm.count(l, n, r);

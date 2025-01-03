@@ -55,7 +55,7 @@ struct static_mode {
         }
     }
 
-    std::pair<T, i32> mode(i32 l, i32 r) const {
+    std::pair<T, i32> prod(i32 l, i32 r) const {
         const i32 L = (l + sq - 1) / sq, R = r / sq;
         std::pair<i32, i32> m;
 
