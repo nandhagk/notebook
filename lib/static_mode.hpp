@@ -1,5 +1,5 @@
-#ifndef LIB_STATIC_RANGE_MODE_HPP
-#define LIB_STATIC_RANGE_MODE_HPP 1
+#ifndef LIB_STATIC_MODE_HPP
+#define LIB_STATIC_MODE_HPP 1
 
 #include <algorithm>
 #include <cmath>
@@ -8,15 +8,15 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
-struct static_range_mode {
+struct static_mode {
     i32 n, sq;
     std::vector<T> cmp;
     std::vector<i32> val, rank;
     std::vector<std::vector<i32>> pos;
     std::vector<std::vector<std::pair<i32, i32>>> large;
 
-    static_range_mode() {}
-    explicit static_range_mode(const std::vector<T> &v) { build(v); }
+    static_mode() {}
+    explicit static_mode(const std::vector<T> &v) { build(v); }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());
@@ -87,4 +87,4 @@ struct static_range_mode {
     }
 };
 
-#endif // LIB_STATIC_RANGE_MODE_HPP
+#endif // LIB_STATIC_MODE_HPP
