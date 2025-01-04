@@ -93,7 +93,7 @@ struct wavelet_matrix {
         return cnt;
     }
 
-    i32 count(i32 l, i32 r, T a, T b) const { return count(l, r, a) - count(l, r, b); }
+    i32 count(i32 l, i32 r, T a, T b) const { return count(l, r, b) - count(l, r, a); }
 
     T kth(i32 l, i32 r, i32 k) const {
         assert(0 <= l && l <= r && r <= n);
