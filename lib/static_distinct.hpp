@@ -44,7 +44,7 @@ struct static_distinct {
     i32 prod(i32 l, i32 r) const {
         assert(0 <= l && l <= r && r <= n);
 
-        return wm.count(l, r, r, n + 1);
+        return r - l - wm.count(l, r, r);
     }
 };
 
