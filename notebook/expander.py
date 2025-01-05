@@ -32,6 +32,7 @@ STD_HEADERS = (
     "random",
     "numeric",
     "queue",
+    "deque",
     "stack",
     "set",
     "map",
