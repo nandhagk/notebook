@@ -28,7 +28,7 @@ struct swag {
 
     i32 size() const { return static_cast<i32>(q.size()); }
 
-    X prod_all() { return MX::op(sum_left.back(), sum_right.back()); }
+    X prod_all() const { return MX::op(sum_left.back(), sum_right.back()); }
 
     void push_back(X x) {
         q.push_back(x);
@@ -41,18 +41,19 @@ struct swag {
         if (sum_right.size() > 1) {
             sum_right.pop_back();
             q.pop_back();
+
             return;
         }
 
-        i32 new_r_size = (size() + 1) / 2;
-        i32 new_l_size = size() - new_r_size;
+        const i32 new_r_size = (size() + 1) / 2;
+        const i32 new_l_size = size() - new_r_size;
         q.pop_back();
         
-        for (i32 i = new_l_size; i < size(); i++)
+        for (i32 i = new_l_size; i < size(); ++i)
             sum_right.push_back(MX::op(sum_right.back(), q[i]));
 
         sum_left.resize(new_l_size + 1);
-        for (i32 i = 0; i < new_l_size; i++)
+        for (i32 i = 0; i < new_l_size; ++i)
             sum_left[i + 1] = MX::op(q[new_l_size - 1 - i], sum_left[i]);
     }
 
@@ -67,17 +68,18 @@ struct swag {
         if (sum_left.size() > 1) {
             sum_left.pop_back();
             q.pop_front();
+
             return;
         }
 
-        i32 new_l_size = (size() + 1) / 2;
-        i32 new_r_size = size() - new_l_size;
+        const i32 new_l_size = (size() + 1) / 2;
+        const i32 new_r_size = size() - new_l_size;
 
-        for (i32 i = 0; i < new_l_size - 1; i++)
+        for (i32 i = 0; i < new_l_size - 1; ++i)
             sum_left.push_back(MX::op(q[new_l_size - 1 - i], sum_left[i]));
 
         sum_right.resize(new_r_size + 1);
-        for (i32 i = 0; i < new_r_size; i++)
+        for (i32 i = 0; i < new_r_size; ++i)
             sum_right[i + 1] = MX::op(sum_right[i], q[new_l_size + i]);
 
         q.pop_front();
