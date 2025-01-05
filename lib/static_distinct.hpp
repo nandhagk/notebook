@@ -1,9 +1,9 @@
 #ifndef LIB_STATIC_DISTINCT_HPP
 #define LIB_STATIC_DISTINCT_HPP 1
 
-#include <vector>
 #include <algorithm>
 #include <numeric>
+#include <vector>
 
 #include <lib/prelude.hpp>
 #include <lib/wavelet_matrix.hpp>
