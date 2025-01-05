@@ -11,7 +11,7 @@
 
 template <typename T>
 struct static_distinct_offline {
-    i32 n, q;
+    i32 n;
     std::vector<i32> nxt, first;
     std::vector<std::tuple<i32, i32, i32>> qs;
 
@@ -20,7 +20,7 @@ struct static_distinct_offline {
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());
-        q = 0;
+        qs.clear();
 
         std::vector<i32> vi(n);
         std::iota(vi.begin(), vi.end(), 0);
@@ -51,11 +51,12 @@ struct static_distinct_offline {
     void query(i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= n);
 
-        qs.emplace_back(l, r, q++);
+        const i32 q = static_cast<i32>(qs.size());
+        qs.emplace_back(l, r, q);
     }
 
     std::vector<i32> solve() {
-        std::vector<i32> out(q);
+        std::vector<i32> out(qs.size());
         std::sort(qs.begin(), qs.end());
 
         fenwick_tree<monoid_add<i32>> ft(first);
