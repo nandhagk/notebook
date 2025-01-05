@@ -13,7 +13,9 @@ struct priority_deque {
     explicit priority_deque(const std::vector<T> &v) { build(v); }
 
     template <typename F>
-    priority_deque(i32 n, F f) { build(n, f); }
+    priority_deque(i32 n, F f) {
+        build(n, f);
+    }
 
     i32 size() const { return static_cast<i32>(d.size()); }
     bool empty() const { return d.empty(); }
@@ -32,7 +34,7 @@ struct priority_deque {
         for (i32 i = n - 1; i >= 0; --i) down(i);
     }
 
-    void push(T x) { 
+    void push(T x) {
         d.push_back(x);
         up();
     }
@@ -86,7 +88,7 @@ private:
                 i = j;
             }
         } else {
-            for(;;) {
+            for (;;) {
                 if (d[i - 1] > d[i]) std::swap(d[i - 1], d[i]);
 
                 i32 j = i, l = 2 * i + 1, r = 2 * i + 3;

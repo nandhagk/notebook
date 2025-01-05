@@ -12,7 +12,7 @@ constexpr i32 bit_ceil_log(i32 n) {
     return x;
 }
 
-template<typename ActedMonoid, u32 MAXIDX>
+template <typename ActedMonoid, u32 MAXIDX>
 struct persistent_lazy_segment_tree {
     using AM = ActedMonoid;
 
@@ -27,24 +27,24 @@ struct persistent_lazy_segment_tree {
     static constexpr u32 log = bit_ceil_log(MAXIDX);
     static constexpr i32 nullid = -1;
 
-    template<u32 dep, typename = void>
+    template <u32 dep, typename = void>
     struct node {};
 
-    template<u32 dep>
-    struct node <dep, std::enable_if_t<dep == log>> {
+    template <u32 dep>
+    struct node<dep, std::enable_if_t<dep == log>> {
         X val;
         node() : val(MX::unit()) {}
     };
 
-    template<u32 dep>
-    struct node <dep, std::enable_if_t<dep != log>> {
+    template <u32 dep>
+    struct node<dep, std::enable_if_t<dep != log>> {
         i32 lch, rch;
         A lzl, lzr;
         X val;
         node() : lch(nullid), rch(nullid), lzl(MA::unit()), lzr(MA::unit()), val(MX::unit()) {}
     };
 
-    template<u32 dep>
+    template <u32 dep>
     struct node_vector {
         static std::vector<node<dep>> V;
         static i32 copy_node(i32 id = nullid) {
@@ -64,20 +64,20 @@ struct persistent_lazy_segment_tree {
         }
     };
 
-    template<u32 dep>
+    template <u32 dep>
     struct node_ref {
         i32 id;
         node_ref(i32 _id) : id(_id) {}
-        node<dep>& operator * () { return node_vector<dep>::V[id]; }
+        node<dep> &operator*() { return node_vector<dep>::V[id]; }
     };
 
-    template<u32 dep, u32 len, std::enable_if_t<dep == log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static void all_apply(i32 id, A lz) {
         node_ref<dep> v(id);
         (*v).val = AM::act((*v).val, lz, len);
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep != log> * = nullptr>
     static void all_apply(i32 id, A lz) {
         node_ref<dep> v(id);
         (*v).val = AM::act((*v).val, lz, len);
@@ -85,14 +85,14 @@ struct persistent_lazy_segment_tree {
         (*v).lzr = MA::op((*v).lzr, lz);
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep == log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static i32 set(i32 id, u32, X x, A) {
         id = node_vector<dep>::copy_node(id);
         node_vector<dep>::V[id].val = x;
         return id;
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep != log> * = nullptr>
     static i32 set(i32 id, u32 k, X x, A lz) {
         id = node_vector<dep>::copy_node(id);
         node_ref<dep> v(id);
@@ -112,7 +112,7 @@ struct persistent_lazy_segment_tree {
         return id;
     }
 
-    template<u32 dep>
+    template <u32 dep>
     static X get(i32 id, u32 k, A lz) {
         if (id == nullid) return AM::act(MX::unit(), lz, 1);
         node_ref<dep> v(id);
@@ -120,26 +120,22 @@ struct persistent_lazy_segment_tree {
             return AM::act((*v).val, lz, 1);
         } else {
             i32 dir = (k >> (log - dep - 1)) & 1;
-            if (dir == 0) {
-                return get<dep + 1>((*v).lch, k, MA::op((*v).lzl, lz));
-            } else {
+            if (dir == 0) return get<dep + 1>((*v).lch, k, MA::op((*v).lzl, lz));
+            else
                 return get<dep + 1>((*v).rch, k, MA::op((*v).lzr, lz));
-            }
         }
     }
-    
-    template<u32 dep, u32 len, std::enable_if_t<dep == log>* = nullptr>
+
+    template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static i32 apply(i32 id, u32 l, u32 r, u32 L, u32 R, A lz, A lz2) {
         id = node_vector<dep>::copy_node(id);
-        if (r <= L || R <= l) {
-            all_apply<dep, len>(id, lz);
-        } else {
+        if (r <= L || R <= l) all_apply<dep, len>(id, lz);
+        else
             all_apply<dep, len>(id, MA::op(lz, lz2));
-        }
         return id;
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep != log> * = nullptr>
     static i32 apply(i32 id, u32 l, u32 r, u32 L, u32 R, A lz, A lz2) {
         id = node_vector<dep>::copy_node(id);
         all_apply<dep, len>(id, lz);
@@ -169,24 +165,24 @@ struct persistent_lazy_segment_tree {
         return id;
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep == log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static X prod(i32 id, u32 l, u32 r, u32 L, u32 R, A lz) {
         if (r <= L || R <= l) return MX::unit();
         return AM::act(node_vector<dep>::get_val(id), lz, len);
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep != log> * = nullptr>
     static X prod(i32 id, u32 l, u32 r, u32 L, u32 R, A lz) {
         if (r <= L || R <= l) return MX::unit();
         if (l <= L && R <= r) return AM::act(node_vector<dep>::get_val(id), lz, len);
         if (id == nullid) return AM::act(MX::unit(), lz, std::min(R, r) - std::max(L, l));
         node_ref<dep> v(id);
         u32 M = (L + R) / 2;
-        return MX::op(prod<dep + 1, len / 2>((*v).lch, l, r, L, M, MA::op((*v).lzl, lz)), 
-                prod<dep + 1, len / 2>((*v).rch, l, r, M, R, MA::op((*v).lzr, lz)));
+        return MX::op(prod<dep + 1, len / 2>((*v).lch, l, r, L, M, MA::op((*v).lzl, lz)),
+                      prod<dep + 1, len / 2>((*v).rch, l, r, M, R, MA::op((*v).lzr, lz)));
     }
 
-    template<u32 dep, std::enable_if_t<dep == log>* = nullptr>
+    template <u32 dep, std::enable_if_t<dep == log> * = nullptr>
     i32 build(const std::vector<X> &V, u32 L, u32) {
         if (L >= V.size()) return nullid;
         i32 id = node_vector<dep>::copy_node();
@@ -194,7 +190,7 @@ struct persistent_lazy_segment_tree {
         return id;
     }
 
-    template<u32 dep, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, std::enable_if_t<dep != log> * = nullptr>
     i32 build(const std::vector<X> &V, u32 L, u32 R) {
         if (L >= V.size()) return nullid;
         i32 id = node_vector<dep>::copy_node();
@@ -206,7 +202,7 @@ struct persistent_lazy_segment_tree {
         return id;
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep == log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static i32 copy(i32 id1, i32 id2, u32 l, u32 r, u32 L, u32 R, A lz1, A lz2) {
         if (r <= L || R <= l) {
             id1 = node_vector<dep>::copy_node(id1);
@@ -219,7 +215,7 @@ struct persistent_lazy_segment_tree {
         }
     }
 
-    template<u32 dep, u32 len, std::enable_if_t<dep != log>* = nullptr>
+    template <u32 dep, u32 len, std::enable_if_t<dep != log> * = nullptr>
     static i32 copy(i32 id1, i32 id2, u32 l, u32 r, u32 L, u32 R, A lz1, A lz2) {
         if (r <= L || R <= l) {
             id1 = node_vector<dep>::copy_node(id1);
@@ -260,8 +256,8 @@ struct persistent_lazy_segment_tree {
 
     i32 rootid;
     persistent_lazy_segment_tree(i32 _rootid) : rootid(_rootid) {}
-  
-  public:
+
+public:
     persistent_lazy_segment_tree() : rootid(nullid) {}
     explicit persistent_lazy_segment_tree(const std::vector<X> &V) : rootid(build<0>(V, 0, 1 << log)) {}
 
@@ -270,31 +266,23 @@ struct persistent_lazy_segment_tree {
         return self_t(id);
     }
 
-    X get(u32 k) const {
-        return get<0>(rootid, k, MA::unit());
-    }
+    X get(u32 k) const { return get<0>(rootid, k, MA::unit()); }
 
     self_t apply(u32 l, u32 r, A lz) const {
         i32 id = apply<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit(), lz);
         return self_t(id);
     }
-    
-    X prod(u32 l, u32 r) const {
-        return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit());
-    }
 
-    X operator [] (u32 k) const {
-        return get(k);
-    }
+    X prod(u32 l, u32 r) const { return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit()); }
 
     self_t copy(self_t S, u32 l, u32 r) const {
         return copy<0, (u32)1 << log>(rootid, S.rootid, l, r, 0, (u32)1 << log, MA::unit(), MA::unit());
     }
 };
 
-template<typename ActedMonoid, u32 MAXIDX>
-template<u32 dep>
-std::vector<typename persistent_lazy_segment_tree<ActedMonoid, MAXIDX>::template node<dep>> 
-persistent_lazy_segment_tree<ActedMonoid, MAXIDX>::node_vector<dep>::V;
+template <typename ActedMonoid, u32 MAXIDX>
+template <u32 dep>
+std::vector<typename persistent_lazy_segment_tree<ActedMonoid, MAXIDX>::template node<dep>>
+    persistent_lazy_segment_tree<ActedMonoid, MAXIDX>::node_vector<dep>::V;
 
 #endif // LIB_PERSISTENT_LAZY_SEGMENT_TREE_HPP
