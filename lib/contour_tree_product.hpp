@@ -82,7 +82,6 @@ struct contour_tree_product {
             i32 c = -1;
             const auto get_centroid = [&](auto &&self, i32 u, i32 p) -> void {
                 sub_sz[u] = 1;
-
                 for (const i32 v : nodes[u].adj) {
                     if (v == p) continue;
 
@@ -99,8 +98,6 @@ struct contour_tree_product {
             };
 
             get_centroid(get_centroid, r, -1);
-
-            assert(c != -1);
             for (const i32 v : nodes[c].adj) {
                 const i32 comp_sz = sub_sz[v];
 
@@ -202,19 +199,6 @@ struct contour_tree_product {
     }
 
     X get(i32 u) const { return nodes[ord[u]].d; }
-
-    void set(i32 u, X x) {
-        assert(0 <= u && u < n);
-
-        u = ord[u];
-        nodes[u].d = x;
-
-        i32 v = par[u];
-        for (i32 i = 0; i < nodes[u].info; ++i) {
-            const auto &[b, dist] = info[u][i];
-            subtrees[std::exchange(v, par[v])][b].set(dist, x);
-        }
-    }
 
     void multiply(i32 u, X x) {
         assert(0 <= u && u < n);
