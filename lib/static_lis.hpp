@@ -13,7 +13,7 @@ static constexpr i32 NONE = -1;
 inline std::vector<i32> inverse(const std::vector<i32> &p) {
     const i32 n = static_cast<i32>(p.size());
     std::vector<i32> q(n, NONE);
-    for (i32 i = 0; i < n; i++)
+    for (i32 i = 0; i < n; ++i)
         if (p[i] != NONE) q[p[i]] = i;
     return q;
 }
@@ -35,7 +35,7 @@ inline void unit_monge_dmul(const i32 n, iter stack, const iter a, const iter b)
         const iter b_h = stack + 2 * len;
         const iter b_m = stack + 3 * len;
         const auto split = [=](const iter v, iter v_h, iter v_m) {
-            for (i32 i = 0; i < n; i++) {
+            for (i32 i = 0; i < n; ++i) {
                 if (f(v[i])) {
                     *v_h = g(v[i]);
                     ++v_h;
@@ -48,7 +48,7 @@ inline void unit_monge_dmul(const i32 n, iter stack, const iter a, const iter b)
         split(b, b_h, b_m);
         const iter c = stack + 4 * len;
         unit_monge_dmul(len, c, a_h, b_h);
-        for (i32 i = 0; i < len; i++) {
+        for (i32 i = 0; i < len; ++i) {
             const i32 row = a_m[i];
             const i32 col = b_m[c[i]];
             c_row[row] = col;
@@ -111,7 +111,7 @@ inline std::vector<i32> subunit_monge_dmul(std::vector<i32> a, std::vector<i32> 
     std::swap(b, b_inv);
     std::vector<i32> a_map, b_map;
 
-    for (i32 i = n - 1; i >= 0; i--) {
+    for (i32 i = n - 1; i >= 0; --i) {
         if (a[i] != NONE) {
             a_map.push_back(i);
             a[n - static_cast<i32>(a_map.size())] = a[i];
@@ -122,7 +122,7 @@ inline std::vector<i32> subunit_monge_dmul(std::vector<i32> a, std::vector<i32> 
 
     {
         i32 cnt = 0;
-        for (i32 i = 0; i < n; i++) {
+        for (i32 i = 0; i < n; ++i) {
             if (a_inv[i] == NONE) {
                 a[cnt] = i;
                 cnt += 1;
@@ -130,7 +130,7 @@ inline std::vector<i32> subunit_monge_dmul(std::vector<i32> a, std::vector<i32> 
         }
     }
 
-    for (i32 i = 0; i < n; i++) {
+    for (i32 i = 0; i < n; ++i) {
         if (b[i] != NONE) {
             b[b_map.size()] = b[i];
             b_map.push_back(i);
@@ -139,7 +139,7 @@ inline std::vector<i32> subunit_monge_dmul(std::vector<i32> a, std::vector<i32> 
 
     {
         i32 cnt = static_cast<i32>(b_map.size());
-        for (i32 i = 0; i < n; i++) {
+        for (i32 i = 0; i < n; ++i) {
             if (b_inv[i] == NONE) {
                 b[cnt] = i;
                 cnt += 1;
@@ -160,7 +160,7 @@ inline std::vector<i32> subunit_monge_dmul(std::vector<i32> a, std::vector<i32> 
     unit_monge_dmul(n, c.begin(), a.begin(), b.begin());
 
     std::vector<i32> c_pad(n, NONE);
-    for (i32 i = 0; i < static_cast<i32>(a_map.size()); i++) {
+    for (i32 i = 0; i < static_cast<i32>(a_map.size()); ++i) {
         const i32 t = c[n - static_cast<i32>(a_map.size()) + i];
         if (t < static_cast<i32>(b_map.size())) c_pad[a_map[i]] = b_map[t];
     }
@@ -181,7 +181,7 @@ inline std::vector<i32> seaweed_doubling(const std::vector<i32> &p) {
     lo_map.reserve(n);
     hi_map.reserve(n);
 
-    for (i32 i = 0; i < n; i++) {
+    for (i32 i = 0; i < n; ++i) {
         const i32 e = p[i];
         if (e < mid) {
             lo.push_back(e);
@@ -198,8 +198,8 @@ inline std::vector<i32> seaweed_doubling(const std::vector<i32> &p) {
     std::iota(lo_pad.begin(), lo_pad.end(), 0);
     std::iota(hi_pad.begin(), hi_pad.end(), 0);
 
-    for (i32 i = 0; i < mid; i++) lo_pad[lo_map[i]] = lo[i] == NONE ? NONE : lo_map[lo[i]];
-    for (i32 i = 0; mid + i < n; i++) hi_pad[hi_map[i]] = hi[i] == NONE ? NONE : hi_map[hi[i]];
+    for (i32 i = 0; i < mid; ++i) lo_pad[lo_map[i]] = lo[i] == NONE ? NONE : lo_map[lo[i]];
+    for (i32 i = 0; mid + i < n; ++i) hi_pad[hi_map[i]] = hi[i] == NONE ? NONE : hi_map[hi[i]];
 
     return subunit_monge_dmul(std::move(lo_pad), std::move(hi_pad));
 }
