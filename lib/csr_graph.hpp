@@ -66,17 +66,19 @@ struct csr_graph {
 
     struct edge_range {
         const E *es;
-        usize size;
+        usize sz;
 
-        edge_range(const E *e, usize sz) : es{e}, size{sz} {}
+        edge_range(const E *e, usize size) : es{e}, sz{size} {}
 
         const E *begin() { return &es[0]; }
 
-        const E *end() { return &es[size]; }
+        const E *end() { return &es[sz]; }
 
         const E *begin() const { return &es[0]; }
 
-        const E *end() const { return &es[size]; }
+        const E *end() const { return &es[sz]; }
+
+        usize size() const { return sz; }
     };
 
     edge_range operator[](i32 u) const { return edge_range(elist.data() + start[u], outdeg[u]); }

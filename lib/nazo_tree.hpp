@@ -3,8 +3,8 @@
 
 #include <algorithm>
 #include <array>
-#include <string>
 #include <optional>
+#include <string>
 
 #include <lib/prelude.hpp>
 
@@ -12,7 +12,7 @@ template <i32 D>
 struct nazo_tree {
 private:
     static_assert(1 <= D && D <= 4); // 64, 4096, 262144, 16777216
-    
+
     static constexpr i32 len_block = 64;
     static constexpr i32 node_count = (1 << (6 * D)) / (len_block - 1); // 1 + 64 + 64^2 ... 64^(D-1)
     static constexpr i32 inf = 1 << (6 * D);
@@ -23,7 +23,7 @@ public:
     nazo_tree() {}
     explicit nazo_tree(const std::string &s, char one = '1') { build(s, one); }
 
-    void build(const std::string& s, char one = '1') {
+    void build(const std::string &s, char one = '1') {
         flag.fill(0);
         i32 n = std::min((i32)s.size(), 1 << (6 * D));
         for (i32 i = 0; i < n; i++) {
@@ -73,7 +73,7 @@ public:
         while (k--) {
             const i32 dir = k % len_block;
             k /= len_block;
-            
+
             if (const u64 f = (flag[k] >> dir) >> 1; f) {
                 k = (k * len_block) + dir + 2 + __builtin_ctzll(f);
                 while (k < node_count) k = (k * len_block) + __builtin_ctzll(flag[k]) + 1;

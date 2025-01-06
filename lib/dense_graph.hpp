@@ -71,6 +71,8 @@ struct dense_graph {
         edge_iterator begin() const { return edge_iterator(e, e.find_first()); }
 
         edge_iterator end() const { return edge_iterator(e, e.size()); }
+
+        usize size() const { return e.size(); }
     };
 
     edge_range operator[](i32 u) const { return edge_range(adj[u]); }
