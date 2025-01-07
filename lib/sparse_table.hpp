@@ -25,10 +25,6 @@ struct sparse_table {
         build(m, f);
     }
 
-    void build(i32 m) {
-        build(m, [](i32) -> X { return MX::unit(); });
-    }
-
     void build(const std::vector<X> &v) {
         build(static_cast<i32>(v.size()), [&](i32 i) -> X { return v[i]; });
     }

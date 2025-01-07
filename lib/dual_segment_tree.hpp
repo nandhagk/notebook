@@ -76,7 +76,7 @@ struct dual_segment_tree {
         l += size;
         r += size;
 
-        if (!MA::commutative) {
+        if constexpr (!MA::commutative) {
             for (i32 i = log; i >= 1; i--) {
                 if (((l >> i) << i) != l) push(l >> i);
                 if (((r >> i) << i) != r) push((r - 1) >> i);

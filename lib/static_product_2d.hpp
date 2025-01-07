@@ -24,10 +24,6 @@ struct static_product_2d {
         build(h, w, f);
     }
 
-    void build(i32 h, i32 w) {
-        build(h, w, [](i32, i32) -> X { return MX::unit(); });
-    }
-
     void build(const std::vector<std::vector<X>> &v) {
         const i32 h = static_cast<i32>(v.size());
         const i32 w = static_cast<i32>(v[0].size());
