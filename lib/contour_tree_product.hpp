@@ -71,7 +71,7 @@ struct contour_tree_product {
         const i32 s = std::uniform_int_distribution<i32>(0, n - 1)(MT);
         reorder(s);
 
-        i32 new_node = n;
+        i32 w = n;
         std::vector<i32> sub_sz(2 * n), ctr(2 * n, -1);
 
         std::vector<i32> head(2 * n), tail(2 * n), link(2 * n);
@@ -148,6 +148,8 @@ struct contour_tree_product {
                 return z;
             };
 
+            const auto fill = [&](i32 i) -> X { return d[i]; };
+
             while (pq.size() >= 2) {
                 const i32 u = pq.top();
                 pq.pop();
@@ -157,24 +159,24 @@ struct contour_tree_product {
 
                 if (pq.empty()) {
                     par[ctr[u]] = par[ctr[v]] = c;
-                    subtrees[c][0].build(build_sequence(head[u], 0), [&](i32 i) -> X { return d[i]; });
-                    subtrees[c][1].build(build_sequence(head[v], 1), [&](i32 i) -> X { return d[i]; });
+                    subtrees[c][0].build(build_sequence(head[u], 0), fill);
+                    subtrees[c][1].build(build_sequence(head[v], 1), fill);
                     break;
                 }
 
-                sub_sz[new_node] = sub_sz[u] + sub_sz[v];
-                ctr[new_node] = new_node;
+                sub_sz[w] = sub_sz[u] + sub_sz[v];
+                ctr[w] = w;
 
-                par[ctr[u]] = par[ctr[v]] = new_node;
-                subtrees[new_node][0].build(build_sequence(head[u], 0), [&](i32 i) -> X { return d[i]; });
-                subtrees[new_node][1].build(build_sequence(head[v], 1), [&](i32 i) -> X { return d[i]; });
+                par[ctr[u]] = par[ctr[v]] = w;
+                subtrees[w][0].build(build_sequence(head[u], 0), fill);
+                subtrees[w][1].build(build_sequence(head[v], 1), fill);
 
-                head[new_node] = head[u];
-                tail[new_node] = tail[v];
+                head[w] = head[u];
+                tail[w] = tail[v];
                 link[tail[u]] = head[v];
 
-                pq.push(new_node);
-                ++new_node;
+                pq.push(w);
+                ++w;
             }
 
             if (!pq.empty()) {
@@ -182,7 +184,7 @@ struct contour_tree_product {
                 pq.pop();
 
                 par[ctr[u]] = c;
-                subtrees[c][0].build(build_sequence(head[u], 0), [&](i32 i) -> X { return d[i]; });
+                subtrees[c][0].build(build_sequence(head[u], 0), fill);
             }
 
             for (const i32 v : nodes[c].adj) nodes[v].adj.push_back(c);
@@ -191,10 +193,10 @@ struct contour_tree_product {
 
         rec(rec, 0, n);
 
-        par.resize(new_node);
+        par.resize(w);
         par.shrink_to_fit();
 
-        subtrees.resize(new_node);
+        subtrees.resize(w);
         subtrees.shrink_to_fit();
     }
 
@@ -212,6 +214,8 @@ struct contour_tree_product {
             subtrees[std::exchange(v, par[v])][b].multiply(dist, x);
         }
     }
+
+    X prod(i32 u, i32 d) const { return prod(u, d, d + 1); }
 
     X prod(i32 u, i32 dl, i32 dr) const {
         assert(0 <= u && u < n);
