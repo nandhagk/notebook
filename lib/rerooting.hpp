@@ -68,16 +68,15 @@ struct rerooting {
         for (i32 i = sz - 1; i > 0; --i) sumr[u][i - 1] = RR::sibling(sumr[u][i - 1], sumr[u][i]);
         for (i32 i = 1; i < sz; ++i) suml[u][i] = RR::sibling(suml[u][i], suml[u][i - 1]);
 
-        const V me = RR::parent(x[u], psum[u]);
         for (i32 i = 0; i < sz; ++i) {
             const i32 v = g[u][i];
             if (v == t) continue;
 
             const V left = i == 0 ? RR::unit() : suml[u][i - 1];
             const V right = i == sz - 1 ? RR::unit() : sumr[u][i + 1];
-            const V mid = RR::sibling(left, RR::sibling(me, right));
+            const V mid = RR::sibling(left, RR::sibling(psum[u], right));
 
-            psum[v] = RR::up(g[u][i], mid);
+            psum[v] = RR::up(g[u][i], RR::parent(x[u], mid));
             dfs_down(g, x, v, u);
         }
     }
