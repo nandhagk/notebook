@@ -48,6 +48,12 @@ struct sparse_table {
         }
     }
 
+    X get(i32 p) const {
+        assert(0 <= p && p < n);
+
+        return prod(p, p + 1);
+    }
+
     X prod(i32 l, i32 r) const {
         assert(0 <= l && l <= r && r <= n);
 

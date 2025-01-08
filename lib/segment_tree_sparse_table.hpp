@@ -53,16 +53,9 @@ struct segment_tree_sparse_table {
         assert(0 <= yl && yl <= yr && yr <= W);
 
         X r = MX::unit();
-
-        xl += H;
-        xr += H;
-
-        while (xl < xr) {
+        for (xl += H, xr += H; xl < xr; xl >>= 1, xr >>= 1) {
             if (xl & 1) r = MX::op(r, d[xl++].prod(yl, yr));
             if (xr & 1) r = MX::op(d[--xr].prod(yl, yr), r);
-
-            xl >>= 1;
-            xr >>= 1;
         }
 
         return r;
