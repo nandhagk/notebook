@@ -80,16 +80,6 @@ struct hld_lazy_segment_tree {
 
     X prod_all() { return st.prod_all(); }
 
-    X prod(i32 u, i32 v) {
-        const i32 a = h.tin[u];
-        const i32 b = h.tin[v];
-
-        if (a <= b) return st.prod(a, b + 1);
-        if constexpr (!MX::commutative) return rst.prod(b, a + 1);
-
-        return st.prod(b, a + 1);
-    }
-
     void apply_path(i32 u, i32 v, A a) {
         for (const auto &[s, t] : h.decompose(u, v)) {
             const auto &[x, y] = std::minmax(h.tin[s], h.tin[t]);
@@ -105,6 +95,17 @@ struct hld_lazy_segment_tree {
 
         st.apply(x, y, a);
         if constexpr (!MX::commutative) rst.apply(x, y, a);
+    }
+
+private:
+    X prod(i32 u, i32 v) {
+        const i32 a = h.tin[u];
+        const i32 b = h.tin[v];
+
+        if (a <= b) return st.prod(a, b + 1);
+        if constexpr (!MX::commutative) return rst.prod(b, a + 1);
+
+        return st.prod(b, a + 1);
     }
 };
 

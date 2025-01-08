@@ -20,12 +20,10 @@ struct hld_product {
 
     explicit hld_product(const hld &g) : h(g) { build(); }
 
-    template <typename F>
-    hld_product(const hld &g, F f) : h(g) {
-        build(f);
-    }
+    hld_product(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
 
-    explicit hld_product(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
+    template <typename F>
+    hld_product(const hld &g, F f) : h(g) { build(f); }
 
     void build() {
         build([](i32) -> X { return MX::unit(); });

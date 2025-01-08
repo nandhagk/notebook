@@ -1,27 +1,26 @@
-#ifndef LIB_DUAL_SEGMENT_TREE_HPP
-#define LIB_DUAL_SEGMENT_TREE_HPP 1
+#ifndef LIB_DUAL_HLD_PRODUCT_HPP
+#define LIB_DUAL_HLD_PRODUCT_HPP 1
 
-#include <lib/dual_segment_tree.hpp>
 #include <lib/hld.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Monoid>
-struct hld_dual_segment_tree {
-    using MA = Monoid;
+template <typename DualRangeProduct>
+struct dual_hld_product {
+    using MA = typename DualRangeProduct::MA;
     using A = typename MA::ValueT;
 
     const hld &h;
 
-    dual_segment_tree<Monoid> st;
+    DualRangeProduct st;
 
-    explicit hld_dual_segment_tree(const hld &g) : h(g) { build(); }
+    explicit dual_hld_product(const hld &g) : h(g) { build(); }
 
     template <typename F>
-    hld_dual_segment_tree(const hld &g, F f) : h(g) {
+    dual_hld_product(const hld &g, F f) : h(g) {
         build(f);
     }
 
-    explicit hld_dual_segment_tree(const hld &g, const std::vector<A> &v) : h(g) { build(v); }
+    explicit dual_hld_product(const hld &g, const std::vector<A> &v) : h(g) { build(v); }
 
     void build() {
         build([](i32) -> A { return MA::unit(); });
@@ -32,9 +31,7 @@ struct hld_dual_segment_tree {
     }
 
     template <typename F>
-    void build(F f) {
-        st.build(h.n, f);
-    }
+    void build(F f) { st.build(h.n, f); }
 
     A get(i32 u) { return st.get(h.tin[u]); }
 
@@ -55,4 +52,4 @@ struct hld_dual_segment_tree {
     }
 };
 
-#endif // LIB_DUAL_SEGMENT_TREE_HPP
+#endif // LIB_DUAL_HLD_PRODUCT_HPP
