@@ -36,7 +36,7 @@ struct dual_contour_tree_product {
     std::vector<i32> ord;
 
     dual_contour_tree_product() {}
-    
+
     template <typename Graph>
     explicit dual_contour_tree_product(const Graph &g) {
         build(g);

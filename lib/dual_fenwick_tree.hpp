@@ -1,8 +1,8 @@
 #ifndef LIB_DUAL_FENWICK_TREE_HPP
 #define LIB_DUAL_FENWICK_TREE_HPP 1
 
-#include <vector>
 #include <cassert>
+#include <vector>
 
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>

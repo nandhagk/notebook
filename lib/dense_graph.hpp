@@ -72,7 +72,7 @@ struct dense_graph {
 
         edge_iterator end() const { return edge_iterator(e, e.size()); }
 
-        usize size() const { return e.size(); }
+        usize size() const { return e.count(); }
     };
 
     edge_range operator[](i32 u) const { return edge_range(adj[u]); }

@@ -14,6 +14,8 @@ struct simple_edge {
 
     i32 to() const { return v; }
 
+    i32 weight() const { return 1; }
+
     operator int() const { return v; }
 };
 
@@ -29,6 +31,8 @@ struct weighted_edge {
 
     i32 to() const { return v; }
 
+    const W &weight() const { return w; }
+
     operator int() const { return v; }
 };
 
@@ -37,7 +41,7 @@ struct csr_graph {
     using E = Edge;
 
     csr_graph() {}
-    explicit csr_graph(i32 p, const std::vector<std::pair<i32, Edge>> &es) { build(p, es); }
+    csr_graph(i32 p, const std::vector<std::pair<i32, Edge>> &es) { build(p, es); }
 
     void build(i32 p, const std::vector<std::pair<i32, Edge>> &es) {
         n = p;
@@ -77,6 +81,8 @@ struct csr_graph {
         const E *begin() const { return &es[0]; }
 
         const E *end() const { return &es[sz]; }
+
+        const E &operator[](i32 i) const { return es[i]; }
 
         usize size() const { return sz; }
     };
