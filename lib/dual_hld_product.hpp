@@ -31,7 +31,9 @@ struct dual_hld_product {
     }
 
     template <typename F>
-    void build(F f) { st.build(h.n, f); }
+    void build(F f) {
+        st.build(h.n, f);
+    }
 
     A get(i32 u) { return st.get(h.tin[u]); }
 

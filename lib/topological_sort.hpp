@@ -1,20 +1,19 @@
 #ifndef LIB_TOPOLOGICAL_SORT_HPP
 #define LIB_TOPOLOGICAL_SORT_HPP 1
 
-#include <vector>
 #include <optional>
 #include <queue>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
 template <typename Graph>
-inline std::optional<std::vector<i32>> topological_sort(const Graph& g) {
+inline std::optional<std::vector<i32>> topological_sort(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> in(n);
-    for (i32 u = 0; u < n; ++u) {
+    for (i32 u = 0; u < n; ++u)
         for (const i32 v : g[u]) ++in[v];
-    }
 
     std::queue<i32> q;
     for (i32 u = 0; u < n; ++u)

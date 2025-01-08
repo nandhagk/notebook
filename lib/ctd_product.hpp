@@ -9,9 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include <lib/csr_graph.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
-#include <lib/csr_graph.hpp>
 #include <lib/type_traits.hpp>
 
 template <typename RangeProduct, is_commutative_monoid_t<typename RangeProduct::MX> * = nullptr>
@@ -257,7 +257,7 @@ struct ctd_product {
 
 private:
     template <typename Graph>
-    void reorder(const Graph& g, i32 s) {
+    void reorder(const Graph &g, i32 s) {
         ord.assign(n, -1);
 
         std::queue<i32> q;
