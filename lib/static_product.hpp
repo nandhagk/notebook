@@ -37,11 +37,19 @@ struct static_product {
         for (i32 i = 0; i < n; ++i) d[i + 1] = MX::op(d[i], f(i));
     }
 
+    X get(i32 p) const {
+        assert(0 <= p && p < n);
+
+        return prod(p, p + 1);
+    }
+
     X prod(i32 l, i32 r) const {
         assert(0 <= l && l <= r && r <= n);
 
         return MX::op(MX::inv(d[l]), d[r]);
     }
+
+    X prod_all() const { return d[n]; }
 };
 
 #endif // LIB_STATIC_PRODUCT_HPP

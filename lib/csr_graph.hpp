@@ -9,7 +9,7 @@
 struct simple_edge {
     i32 v;
 
-    simple_edge() {}
+    simple_edge() = default;
     simple_edge(i32 to) : v{to} {}
 
     i32 to() const { return v; }

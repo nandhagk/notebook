@@ -1,29 +1,31 @@
-#ifndef LIB_HLD_SEGMENT_TREE_HPP
-#define LIB_HLD_SEGMENT_TREE_HPP 1
+#ifndef LIB_HLD_PRODUCT_HPP
+#define LIB_HLD_PRODUCT_HPP 1
 
 #include <lib/hld.hpp>
 #include <lib/monoids/reverse_monoid.hpp>
 #include <lib/prelude.hpp>
-#include <lib/segment_tree.hpp>
 
-template <typename Monoid>
-struct hld_segment_tree {
-    using MX = Monoid;
+template <template <typename> typename RangeProduct, typename Monoid>
+constexpr auto extract(RangeProduct<Monoid> r) -> RangeProduct<monoid_reverse_monoid<Monoid>>;
+
+template <typename RangeProduct>
+struct hld_product {
+    using MX = typename RangeProduct::MX;
     using X = typename MX::ValueT;
 
     const hld &h;
 
-    segment_tree<MX> st;
-    segment_tree<monoid_reverse_monoid<MX>> rst;
+    RangeProduct st;
+    decltype(extract(std::declval<RangeProduct>())) rst;
 
-    explicit hld_segment_tree(const hld &g) : h(g) { build(); }
+    explicit hld_product(const hld &g) : h(g) { build(); }
 
     template <typename F>
-    hld_segment_tree(const hld &g, F f) : h(g) {
+    hld_product(const hld &g, F f) : h(g) {
         build(f);
     }
 
-    explicit hld_segment_tree(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
+    explicit hld_product(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
 
     void build() {
         build([](i32) -> X { return MX::unit(); });
@@ -39,7 +41,7 @@ struct hld_segment_tree {
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }
 
-    X get(i32 u) { return st.get(h.tin[u]); }
+    X get(i32 u) const { return st.get(h.tin[u]); }
 
     void set(i32 u, X x) {
         st.set(h.tin[u], x);
@@ -51,21 +53,22 @@ struct hld_segment_tree {
         if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
     }
 
-    X prod_path(i32 u, i32 v) {
+    X prod_all() const { return st.prod_all(); }
+
+    X prod_path(i32 u, i32 v) const {
         X x = MX::unit();
         for (const auto &[s, t] : h.decompose(u, v)) x = MX::op(x, prod(s, t));
 
         return x;
     }
 
-    X prod_subtree(i32 u) {
+    X prod_subtree(i32 u) const {
         static_assert(MX::commutative);
         return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
     }
 
-    X prod_all() { return st.prod_all(); }
-
-    X prod(i32 u, i32 v) {
+private:
+    X prod(i32 u, i32 v) const {
         const i32 a = h.tin[u];
         const i32 b = h.tin[v];
 
@@ -76,4 +79,4 @@ struct hld_segment_tree {
     }
 };
 
-#endif // LIB_HLD_SEGMENT_TREE_HPP
+#endif // LIB_HLD_PRODUCT_HPP

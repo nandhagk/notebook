@@ -10,6 +10,8 @@ struct monoid_reverse_monoid {
 
     static constexpr X unit() { return Monoid::unit(); }
 
+    static constexpr X inv(X x) { return Monoid::inv(x); }
+
     static constexpr bool commutative = Monoid::commutative;
 };
 
