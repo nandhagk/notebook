@@ -111,23 +111,25 @@ public:
         return true;
     }
 
-    i32 size(i32 u) { 
+    i32 size(i32 u) {
         assert(0 <= u && u < cc.n);
 
-        return bec.size(u); 
+        return bec.size(u);
     }
 
-    i32 find(i32 u) { 
+    i32 find(i32 u) {
         assert(0 <= u && u < cc.n);
 
-        return bec.find(u); 
+        return bec.find(u);
     }
 
-    bool same(i32 u, i32 v) { 
+    inline i32 ccs() const { return cc.ccs + b; }
+
+    bool same(i32 u, i32 v) {
         assert(0 <= u && u < cc.n);
         assert(0 <= v && v < cc.n);
 
-        return cc.same(u, v) && bec.same(u, v); 
+        return cc.same(u, v) && bec.same(u, v);
     }
 
     std::pair<i32, std::vector<i32>> ids() { return bec.ids(); }
