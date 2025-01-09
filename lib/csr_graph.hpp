@@ -14,8 +14,6 @@ struct simple_edge {
 
     i32 to() const { return v; }
 
-    i32 weight() const { return 1; }
-
     operator int() const { return v; }
 };
 
@@ -81,8 +79,6 @@ struct csr_graph {
         const E *begin() const { return &es[0]; }
 
         const E *end() const { return &es[sz]; }
-
-        const E &operator[](i32 i) const { return es[i]; }
 
         usize size() const { return sz; }
     };
