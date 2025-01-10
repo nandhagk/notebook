@@ -62,6 +62,7 @@ struct fenwick_tree {
 
         X x = MX::unit();
         for (; r > 0; r -= r & -r) x = MX::op(x, d[r - 1]);
+
         return x;
     }
 
@@ -94,6 +95,72 @@ struct fenwick_tree {
 
     void set(i32 p, X x) {
         multiply(p, MX::op(MX::inv(get(p)), x));
+    }
+
+    template <typename F>
+    i32 max_right(F f, i32 l) const {
+        assert(0 <= l && l <= n && f(MX::unit()));
+
+        MX s = MX::unit();
+        i32 i = l;
+
+        i32 k;
+        for (;;) {
+            if (i & 1) s = MX::op(s, MX::inv(d[--i]));
+            if (i == 0) {
+                k = topbit(n) + 1;
+                break;
+            }
+
+            k = lowbit(i) - 1;
+            if (i + (1 << k) > n) break;
+            if (const MX u = MX::op(s, d[i + (1 << k) - 1]); !f(u)) break;
+            
+            s = MX::op(s, MX::inv(d[i - 1]));
+            i -= i & -i;
+        }
+
+        while (k--) {
+            if (i + (1 << k) - 1 < n) {
+                if (const MX u = MX::op(s, d[i + (1 << k) - 1]); f(u)) {
+                    i += 1 << k;
+                    s = u;
+                }
+            }
+        }
+
+        return i;
+    }
+
+    template <typename F>
+    i32 min_left(F f, i32 r) const {
+        assert(0 <= r && r <= n && f(MX::unit()));
+
+        MX s = MX::unit();
+        i32 i = r;
+
+        i32 k = 0;
+        while (i > 0 && f(s)) {
+            s = MX::op(s, d[i - 1]);
+            k = lowbit(i);
+            i -= i & -i;
+        }
+
+        if (f(s)) {
+            assert(i == 0);
+            return 0;
+        }
+
+        while (k--) {
+            if (const MX u = MX::op(s, MX::inv(d[i + (1 << k) - 1])); !f(u)) {
+                i += 1 << k;
+                s = u;
+            }
+        }
+    }
+
+    i32 kth(X k, i32 l) const {
+        return max_right([&k](X x) -> bool { return x <= k; }, l);
     }
 };
 

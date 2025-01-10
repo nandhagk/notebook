@@ -72,7 +72,6 @@ struct rerooting {
 
         for (i32 i = 0; i < sz; ++i) {
             const i32 v = g[u][i];
-
             if (v == t) continue;
 
             const V left = i == 0 ? RR::unit() : suml[u][i - 1];
