@@ -24,8 +24,6 @@ struct ordered_set_small {
         return d[k];
     }
 
-    // ソート順を保ってxを追加
-    // 重複する場合何もせずfalseを返す
     bool insert(T x) {
         i32 i = 0;
 
@@ -39,7 +37,6 @@ struct ordered_set_small {
         return true;
     }
 
-    // 消せた場合trueを返す
     bool erase(T x) {
         i32 i = 0;
 
@@ -65,7 +62,6 @@ struct ordered_set_small {
         return res;
     }
 
-    // x未満の数
     i32 lower_bound(T x) const {
         for (i32 i = 0; i < size; ++i)
             if (d[i] >= x) return i;
@@ -73,7 +69,6 @@ struct ordered_set_small {
         return size;
     }
 
-    // x以下の数
     i32 upper_bound(T x) const {
         for (i32 i = 0; i < size; ++i)
             if (d[i] > x) return i;
@@ -236,7 +231,6 @@ public:
         return size(root);
     }
 
-    // 追加できたか
     bool insert(T x) {
         bool res = false;
         const auto rec = [&](auto &&dfs, node *v) -> node * {
@@ -270,7 +264,6 @@ public:
         return res;
     }
 
-    // 削除できたか
     bool erase(T x) {
         bool res = false;
         const auto rec = [&](auto &&dfs, node *v) -> node * {
