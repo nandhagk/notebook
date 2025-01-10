@@ -74,7 +74,7 @@ private:
 
         const T m = (l + r) / 2;
         const T x_m = x.get(m);
-        
+
         v->l = add_segment(v->l, x, a, b, l, m, x_l, x_m);
         v->r = add_segment(v->r, x, a, b, m, r, x_m, x_r);
         return v;
@@ -105,7 +105,7 @@ private:
 
         const T m = (l + r) / 2;
         const auto calc = [&](T lx, T rx) -> void {
-            for(;;) {
+            for (;;) {
                 const line a = min_line(lx);
                 if (res.empty() || res.back().second != a) res.push_back({lx, a});
                 if (a.b == inf<T>) return;

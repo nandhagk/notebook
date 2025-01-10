@@ -58,7 +58,6 @@ private:
 template <typename U, is_unsigned_integral_t<U> * = nullptr>
 using barrett = std::conditional_t<std::is_same_v<U, u32>, barrett_32, barrett_64>;
 
-
 template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr>
 struct arbitrary_modint_base {
     using mint = arbitrary_modint_base;

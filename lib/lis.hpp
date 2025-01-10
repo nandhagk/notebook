@@ -1,8 +1,8 @@
 #ifndef LIB_LIS_HPP
 #define LIB_LIS_HPP 1
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
@@ -19,7 +19,7 @@ inline std::vector<i32> lis(const std::vector<T> &a) {
 
         if (it != dp.begin()) prv[i] = -std::prev(it)->second;
         if (it == dp.end()) dp.emplace_back(a[i], -i);
-        else 
+        else
             *it = {a[i], -i};
     }
 
