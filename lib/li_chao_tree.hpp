@@ -191,6 +191,7 @@ public:
     T min(T x) const {
         return min(root, xmin, xmax + 1, x);
     }
+
     line min_line(T x) const {
         return min_line(root, xmin, xmax + 1, x);
     }
