@@ -48,16 +48,14 @@ struct rerooting {
         suml[u].resize(sz, RR::unit());
 
         V res = RR::unit();
+        for (i32 i = 0; i < sz; ++i) {
+            const i32 v = g[u][i];
 
-        i32 i = -1;
-        for (const auto &e : g[u]) {
-            ++i;
-            const i32 v = e;
-
-            if (v == t)
+            if (v == t) {
                 par[u] = i;
-            else
-                suml[u][i] = RR::up(e, dfs_up(g, x, v, u));
+            } else {
+                suml[u][i] = RR::up(g[u][i], dfs_up(g, x, v, u));
+            }
 
             res = RR::sibling(res, suml[u][i]);
         }
@@ -73,10 +71,8 @@ struct rerooting {
         for (i32 i = sz - 1; i > 0; --i) sumr[u][i - 1] = RR::sibling(sumr[u][i - 1], sumr[u][i]);
         for (i32 i = 1; i < sz; ++i) suml[u][i] = RR::sibling(suml[u][i], suml[u][i - 1]);
 
-        i32 i = -1;
-        for (const auto &e : g[u]) {
-            ++i;
-            const i32 v = e;
+        for (i32 i = 0; i < sz; ++i) {
+            const i32 v = g[u][i];
 
             if (v == t) continue;
 
@@ -84,7 +80,7 @@ struct rerooting {
             const V right = i == sz - 1 ? RR::unit() : sumr[u][i + 1];
             const V mid = RR::sibling(left, RR::sibling(psum[u], right));
 
-            psum[v] = RR::up(e, RR::parent(x[u], mid));
+            psum[v] = RR::up(g[u][i], RR::parent(x[u], mid));
             dfs_down(g, x, v, u);
         }
     }

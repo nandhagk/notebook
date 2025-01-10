@@ -105,6 +105,10 @@ struct csr_graph {
             return &es[sz];
         }
 
+        const E& operator[](i32 i) const {
+            return es[i];
+        }
+
         usize size() const {
             return sz;
         }
