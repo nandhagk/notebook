@@ -115,7 +115,7 @@ struct fenwick_tree {
             k = lowbit(i) - 1;
             if (i + (1 << k) > n) break;
             if (const MX u = MX::op(s, d[i + (1 << k) - 1]); !f(u)) break;
-            
+
             s = MX::op(s, MX::inv(d[i - 1]));
             i -= i & -i;
         }
