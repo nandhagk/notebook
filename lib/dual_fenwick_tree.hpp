@@ -17,7 +17,9 @@ struct dual_fenwick_tree {
 
     dual_fenwick_tree() {}
 
-    explicit dual_fenwick_tree(i32 m) { build(m); }
+    explicit dual_fenwick_tree(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = m;

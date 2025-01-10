@@ -19,7 +19,9 @@ struct rollback_dsu_product {
     std::vector<std::pair<i32, i32>> h;
 
     rollback_dsu_product() {}
-    explicit rollback_dsu_product(i32 m) { build(m); }
+    explicit rollback_dsu_product(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = ccs = m;
@@ -94,7 +96,9 @@ struct rollback_dsu_product {
         return {group, std::move(ids)};
     }
 
-    X prod(i32 u) const { return x[find(u)]; }
+    X prod(i32 u) const {
+        return x[find(u)];
+    }
 
     void rollback() {
         assert(!h.empty());

@@ -29,16 +29,22 @@ struct lazy_rbst {
         node() : node(MX::unit()) {}
     };
 
-    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+    i32 size(node *t) const {
+        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    }
 
     i32 n, pid;
     node *pool;
 
     lazy_rbst() : pool{nullptr} {}
 
-    explicit lazy_rbst(i32 m) : lazy_rbst() { build(m); }
+    explicit lazy_rbst(i32 m) : lazy_rbst() {
+        build(m);
+    }
 
-    ~lazy_rbst() { reset(); }
+    ~lazy_rbst() {
+        reset();
+    }
 
     void build(i32 m) {
         reset();
@@ -52,7 +58,9 @@ struct lazy_rbst {
         delete[] pool;
     }
 
-    node *make_node() { return nullptr; }
+    node *make_node() {
+        return nullptr;
+    }
 
     node *make_node(X x) {
         assert(pid < n);
@@ -246,7 +254,9 @@ struct lazy_rbst {
         set(root, p, MX::op(get(p), x));
     }
 
-    void reverse(node *&root) { toggle(root); }
+    void reverse(node *&root) {
+        toggle(root);
+    }
 
     void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));

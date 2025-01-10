@@ -20,7 +20,9 @@ struct rect_wavelet_matrix_product {
     wavelet_matrix_product<T, RangeProduct> wm;
 
     rect_wavelet_matrix_product() {}
-    explicit rect_wavelet_matrix_product(const std::vector<pt> &ps, const std::vector<X> &ws) { build(ps, ws); }
+    explicit rect_wavelet_matrix_product(const std::vector<pt> &ps, const std::vector<X> &ws) {
+        build(ps, ws);
+    }
 
     void build(const std::vector<pt> &ps, const std::vector<X> &ws) {
         const i32 p = static_cast<i32>(ps.size());
@@ -49,7 +51,9 @@ struct rect_wavelet_matrix_product {
         return wm.count(l, r, yl, yr).second;
     }
 
-    X get(T x, T y) const { return prod(x, x + 1, y, y + 1); }
+    X get(T x, T y) const {
+        return prod(x, x + 1, y, y + 1);
+    }
 
     void multiply(T x, T y, X v) {
         const i32 p = id(x, y);

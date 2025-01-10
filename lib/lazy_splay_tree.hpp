@@ -28,16 +28,22 @@ struct lazy_splay_tree {
         node() : node(MX::unit()) {}
     };
 
-    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+    i32 size(node *t) const {
+        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    }
 
     i32 n, pid;
     node *pool;
 
     lazy_splay_tree() : pool{nullptr} {}
 
-    explicit lazy_splay_tree(i32 m) : lazy_splay_tree() { build(m); }
+    explicit lazy_splay_tree(i32 m) : lazy_splay_tree() {
+        build(m);
+    }
 
-    ~lazy_splay_tree() { reset(); }
+    ~lazy_splay_tree() {
+        reset();
+    }
 
     void build(i32 m) {
         reset();
@@ -51,7 +57,9 @@ struct lazy_splay_tree {
         delete[] pool;
     }
 
-    node *make_node() { return nullptr; }
+    node *make_node() {
+        return nullptr;
+    }
 
     node *make_node(X x) {
         assert(pid < n);
@@ -214,7 +222,9 @@ struct lazy_splay_tree {
         return a;
     }
 
-    void insert(node *&root, i32 p, X x) { insert(root, p, make_node(x)); }
+    void insert(node *&root, i32 p, X x) {
+        insert(root, p, make_node(x));
+    }
 
     void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));

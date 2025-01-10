@@ -6,11 +6,17 @@ struct monoid_reverse_monoid {
     using X = typename Monoid::ValueT;
     using ValueT = X;
 
-    static constexpr X op(X x, X y) { return Monoid::op(y, x); }
+    static constexpr X op(X x, X y) {
+        return Monoid::op(y, x);
+    }
 
-    static constexpr X unit() { return Monoid::unit(); }
+    static constexpr X unit() {
+        return Monoid::unit();
+    }
 
-    static constexpr X inv(X x) { return Monoid::inv(x); }
+    static constexpr X inv(X x) {
+        return Monoid::inv(x);
+    }
 
     static constexpr bool commutative = Monoid::commutative;
 };

@@ -12,7 +12,9 @@ struct dsu {
     std::vector<i32> d;
 
     dsu() {}
-    explicit dsu(i32 m) { build(m); }
+    explicit dsu(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = ccs = m;

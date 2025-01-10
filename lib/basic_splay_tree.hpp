@@ -19,16 +19,22 @@ struct basic_splay_tree {
         node() : node(T()) {}
     };
 
-    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+    i32 size(node *t) const {
+        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    }
 
     i32 n, pid;
     node *pool;
 
     basic_splay_tree() : pool{nullptr} {}
 
-    explicit basic_splay_tree(i32 m) : basic_splay_tree() { build(m); }
+    explicit basic_splay_tree(i32 m) : basic_splay_tree() {
+        build(m);
+    }
 
-    ~basic_splay_tree() { reset(); }
+    ~basic_splay_tree() {
+        reset();
+    }
 
     void build(i32 m) {
         reset();
@@ -42,7 +48,9 @@ struct basic_splay_tree {
         delete[] pool;
     }
 
-    node *make_node() { return nullptr; }
+    node *make_node() {
+        return nullptr;
+    }
 
     node *make_node(T x) {
         assert(pid < n);
@@ -184,7 +192,9 @@ struct basic_splay_tree {
         return a;
     }
 
-    void insert(node *&root, i32 p, T x) { insert(root, p, make_node(x)); }
+    void insert(node *&root, i32 p, T x) {
+        insert(root, p, make_node(x));
+    }
 
     void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));

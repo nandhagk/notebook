@@ -22,9 +22,13 @@ struct rect_fenwick_tree {
 
     rect_fenwick_tree() {}
 
-    explicit rect_fenwick_tree(i32 m) { pts.reserve(m); }
+    explicit rect_fenwick_tree(i32 m) {
+        pts.reserve(m);
+    }
 
-    void add_point(T x, T y) { pts.emplace_back(x, y); }
+    void add_point(T x, T y) {
+        pts.emplace_back(x, y);
+    }
 
     void build() {
         std::sort(pts.begin(), pts.end());
@@ -51,7 +55,9 @@ struct rect_fenwick_tree {
         for (++i; i <= n; i += (i & -i)) fw[i].multiply(id(i, y), v);
     }
 
-    void set(T x, T y, X v) { multiply(x, y, MX::op(MX::inv(get(x, y)), v)); }
+    void set(T x, T y, X v) {
+        multiply(x, y, MX::op(MX::inv(get(x, y)), v));
+    }
 
     X prod(T xr, T yr) const {
         X r = MX::unit();
@@ -73,7 +79,9 @@ struct rect_fenwick_tree {
         return MX::op(MX::inv(vl), vr);
     }
 
-    X get(T x, T y) const { return prod(x, x + 1, y, y + 1); }
+    X get(T x, T y) const {
+        return prod(x, x + 1, y, y + 1);
+    }
 
 private:
     inline i32 id(T x) const {

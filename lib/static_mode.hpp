@@ -17,7 +17,9 @@ struct static_mode {
     std::vector<std::vector<std::pair<i32, i32>>> large;
 
     static_mode() {}
-    explicit static_mode(const std::vector<T> &v) { build(v); }
+    explicit static_mode(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());

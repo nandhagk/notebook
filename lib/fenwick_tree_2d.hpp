@@ -16,9 +16,13 @@ struct fenwick_tree_2d {
     std::vector<X> d;
 
     fenwick_tree_2d() {}
-    fenwick_tree_2d(i32 h, i32 w) { build(h, w); }
+    fenwick_tree_2d(i32 h, i32 w) {
+        build(h, w);
+    }
 
-    explicit fenwick_tree_2d(const std::vector<std::vector<X>> &v) { build(v); }
+    explicit fenwick_tree_2d(const std::vector<std::vector<X>> &v) {
+        build(v);
+    }
 
     template <typename F>
     fenwick_tree_2d(i32 h, i32 w, F f) {
@@ -104,7 +108,9 @@ struct fenwick_tree_2d {
     }
 
 private:
-    inline i32 idx(i32 i, i32 j) const { return (i - 1) * W + (j - 1); }
+    inline i32 idx(i32 i, i32 j) const {
+        return (i - 1) * W + (j - 1);
+    }
 
     void multiplyx(i32 x, i32 y, X v) {
         for (++y; y <= W; y += (y & -y)) d[idx(x, y)] = MX::op(d[idx(x, y)], v);

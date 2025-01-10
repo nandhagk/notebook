@@ -14,7 +14,9 @@ struct static_distinct {
     wavelet_matrix<i32> wm;
 
     static_distinct() {}
-    explicit static_distinct(const std::vector<T> &v) { build(v); }
+    explicit static_distinct(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());

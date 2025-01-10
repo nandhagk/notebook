@@ -23,16 +23,22 @@ struct rbst {
         node() : node(MX::unit()) {}
     };
 
-    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+    i32 size(node *t) const {
+        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    }
 
     i32 n, pid;
     node *pool;
 
     rbst() : pool{nullptr} {}
 
-    explicit rbst(i32 m) : rbst() { build(m); }
+    explicit rbst(i32 m) : rbst() {
+        build(m);
+    }
 
-    ~rbst() { reset(); }
+    ~rbst() {
+        reset();
+    }
 
     void build(i32 m) {
         reset();
@@ -46,7 +52,9 @@ struct rbst {
         delete[] pool;
     }
 
-    node *make_node() { return nullptr; }
+    node *make_node() {
+        return nullptr;
+    }
 
     node *make_node(X x) {
         assert(pid < n);
@@ -216,7 +224,9 @@ struct rbst {
         set(root, p, MX::op(get(p), x));
     }
 
-    void reverse(node *&root) { toggle(root); }
+    void reverse(node *&root) {
+        toggle(root);
+    }
 
     void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));

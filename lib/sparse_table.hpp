@@ -16,9 +16,13 @@ struct sparse_table {
     std::vector<std::vector<X>> d;
 
     sparse_table() {}
-    explicit sparse_table(i32 m) { build(m); }
+    explicit sparse_table(i32 m) {
+        build(m);
+    }
 
-    explicit sparse_table(const std::vector<X> &v) { build(v); }
+    explicit sparse_table(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     sparse_table(i32 m, F f) {

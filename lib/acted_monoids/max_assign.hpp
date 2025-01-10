@@ -12,7 +12,9 @@ struct acted_monoid_max_assign {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    static constexpr X act(X x, A a, i32) { return a ? *a : x; }
+    static constexpr X act(X x, A a, i32) {
+        return a ? *a : x;
+    }
 };
 
 #endif // LIB_ACTED_MONOID_MAX_ASSIGN_HPP

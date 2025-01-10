@@ -11,11 +11,21 @@
 namespace __DEBUG_UTIL__ {
 template <typename T>
 concept is_iterable = requires(T &&x) { begin(x); } && !std::is_same_v<std::remove_cvref_t<T>, std::string>;
-inline void print(const char *x) { std::cerr << x; }
-inline void print(char x) { std::cerr << "\'" << x << "\'"; }
-inline void print(bool x) { std::cerr << (x ? "T" : "F"); }
-inline void print(std::string x) { std::cerr << "\"" << x << "\""; }
-inline void print(std::string_view x) { std::cerr << "\"" << x << "\""; }
+inline void print(const char *x) {
+    std::cerr << x;
+}
+inline void print(char x) {
+    std::cerr << "\'" << x << "\'";
+}
+inline void print(bool x) {
+    std::cerr << (x ? "T" : "F");
+}
+inline void print(std::string x) {
+    std::cerr << "\"" << x << "\"";
+}
+inline void print(std::string_view x) {
+    std::cerr << "\"" << x << "\"";
+}
 inline void print(std::vector<bool> &v) { /* Overloaded this because stl optimizes
                                              vector<bool> by using _Bit_reference
                                              instead of bool to conserve space. */
@@ -69,12 +79,14 @@ template <typename T, typename... V>
 void printer(const char *names, T &&head, V &&...tail) {
     int i = 0;
     for (int bracket = 0; names[i] != '\0' and (names[i] != ',' or bracket > 0); i++)
-        if (names[i] == '(' or names[i] == '<' or names[i] == '{') bracket++;
+        if (names[i] == '(' or names[i] == '<' or names[i] == '{')
+            bracket++;
         else if (names[i] == ')' or names[i] == '>' or names[i] == '}')
             bracket--;
     std::cerr.write(names, i) << " = ";
     print(head);
-    if constexpr (sizeof...(tail)) std::cerr << " ||", printer(names + i + 1, tail...);
+    if constexpr (sizeof...(tail))
+        std::cerr << " ||", printer(names + i + 1, tail...);
     else
         std::cerr << "]\n";
 }

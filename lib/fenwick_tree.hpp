@@ -17,9 +17,13 @@ struct fenwick_tree {
     std::vector<X> d;
 
     fenwick_tree() {}
-    explicit fenwick_tree(i32 m) { build(m); }
+    explicit fenwick_tree(i32 m) {
+        build(m);
+    }
 
-    explicit fenwick_tree(const std::vector<X> &v) { build(v); }
+    explicit fenwick_tree(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     fenwick_tree(i32 m, F f) {
@@ -49,7 +53,9 @@ struct fenwick_tree {
         t = prod(n);
     }
 
-    X prod_all() const { return t; }
+    X prod_all() const {
+        return t;
+    }
 
     X prod(i32 r) const {
         assert(0 <= r && r <= n);
@@ -86,7 +92,9 @@ struct fenwick_tree {
         for (++p; p <= n; p += p & -p) d[p - 1] = MX::op(d[p - 1], x);
     }
 
-    void set(i32 p, X x) { multiply(p, MX::op(MX::inv(get(p)), x)); }
+    void set(i32 p, X x) {
+        multiply(p, MX::op(MX::inv(get(p)), x));
+    }
 };
 
 #endif // LIB_FENWICK_TREE_HPP

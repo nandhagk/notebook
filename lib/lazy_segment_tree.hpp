@@ -21,9 +21,13 @@ struct lazy_segment_tree {
     std::vector<A> z;
 
     lazy_segment_tree() {}
-    explicit lazy_segment_tree(i32 m) { build(m); }
+    explicit lazy_segment_tree(i32 m) {
+        build(m);
+    }
 
-    explicit lazy_segment_tree(const std::vector<X> &v) { build(v); }
+    explicit lazy_segment_tree(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     lazy_segment_tree(i32 m, F f) {
@@ -53,7 +57,9 @@ struct lazy_segment_tree {
         for (i32 i = size - 1; i >= 1; --i) update(i);
     }
 
-    void update(i32 k) { d[k] = MX::op(d[2 * k], d[2 * k + 1]); }
+    void update(i32 k) {
+        d[k] = MX::op(d[2 * k], d[2 * k + 1]);
+    }
 
     void set(i32 p, X x) {
         assert(0 <= p && p < n);
@@ -113,7 +119,9 @@ struct lazy_segment_tree {
         return MX::op(xl, xr);
     }
 
-    X prod_all() const { return d[1]; }
+    X prod_all() const {
+        return d[1];
+    }
 
     void apply(i32 l, i32 r, A a) {
         assert(0 <= l && l <= r && r <= n);

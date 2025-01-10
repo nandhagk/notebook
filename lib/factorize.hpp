@@ -15,7 +15,8 @@ inline std::vector<std::pair<U, i32>> factorize(U m) {
         if (n <= 1) return;
 
         U p;
-        if (n <= (1 << 30)) p = pollard_rho(static_cast<u32>(n));
+        if (n <= (1 << 30))
+            p = pollard_rho(static_cast<u32>(n));
         else
             p = pollard_rho(n);
 
@@ -34,7 +35,8 @@ inline std::vector<std::pair<U, i32>> factorize(U m) {
 
     std::vector<std::pair<U, i32>> fs;
     for (const U p : ps)
-        if (fs.empty() || fs.back().first != p) fs.emplace_back(p, 1);
+        if (fs.empty() || fs.back().first != p)
+            fs.emplace_back(p, 1);
         else
             ++fs.back().second;
 

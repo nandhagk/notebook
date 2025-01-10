@@ -8,7 +8,9 @@
 
 struct dense_graph {
     dense_graph() {}
-    explicit dense_graph(i32 p) { build(p); }
+    explicit dense_graph(i32 p) {
+        build(p);
+    }
 
     void build(i32 p) {
         n = p;
@@ -32,7 +34,9 @@ struct dense_graph {
         ++outdeg[u];
     }
 
-    i32 size() const { return n; }
+    i32 size() const {
+        return n;
+    }
 
     struct edge_range {
         const std::tr2::dynamic_bitset<> &e;
@@ -57,25 +61,43 @@ struct dense_graph {
                 return tmp;
             }
 
-            i32 operator*() const { return static_cast<i32>(v); }
+            i32 operator*() const {
+                return static_cast<i32>(v);
+            }
 
-            bool operator==(const edge_iterator &it) const { return v == it.v; }
+            bool operator==(const edge_iterator &it) const {
+                return v == it.v;
+            }
 
-            bool operator!=(const edge_iterator &it) const { return v != it.v; }
+            bool operator!=(const edge_iterator &it) const {
+                return v != it.v;
+            }
         };
 
-        edge_iterator begin() { return edge_iterator(e, e.find_first()); }
+        edge_iterator begin() {
+            return edge_iterator(e, e.find_first());
+        }
 
-        edge_iterator end() { return edge_iterator(e, e.size()); }
+        edge_iterator end() {
+            return edge_iterator(e, e.size());
+        }
 
-        edge_iterator begin() const { return edge_iterator(e, e.find_first()); }
+        edge_iterator begin() const {
+            return edge_iterator(e, e.find_first());
+        }
 
-        edge_iterator end() const { return edge_iterator(e, e.size()); }
+        edge_iterator end() const {
+            return edge_iterator(e, e.size());
+        }
 
-        usize size() const { return e.count(); }
+        usize size() const {
+            return e.count();
+        }
     };
 
-    edge_range operator[](i32 u) const { return edge_range(adj[u]); }
+    edge_range operator[](i32 u) const {
+        return edge_range(adj[u]);
+    }
 
     dense_graph reverse() const {
         dense_graph h(n);

@@ -15,9 +15,13 @@ struct static_product_2d {
     i32 H, W;
     std::vector<X> d;
 
-    static_product_2d(i32 h, i32 w) { build(h, w); }
+    static_product_2d(i32 h, i32 w) {
+        build(h, w);
+    }
 
-    explicit static_product_2d(const std::vector<std::vector<X>> &v) { build(v); }
+    explicit static_product_2d(const std::vector<std::vector<X>> &v) {
+        build(v);
+    }
 
     template <typename F>
     static_product_2d(i32 h, i32 w, F f) {
@@ -61,7 +65,9 @@ struct static_product_2d {
     }
 
 private:
-    inline i32 idx(i32 x, i32 y) const { return (W + 1) * x + y; }
+    inline i32 idx(i32 x, i32 y) const {
+        return (W + 1) * x + y;
+    }
 };
 
 #endif // LIB_STATIC_PRODUCT_2D_HPP

@@ -8,9 +8,13 @@ struct monoid_mul {
     using X = T;
     using ValueT = T;
 
-    static constexpr X op(X x, X y) { return x * y; }
+    static constexpr X op(X x, X y) {
+        return x * y;
+    }
 
-    static constexpr X inv(X x) { return X(1) / x; }
+    static constexpr X inv(X x) {
+        return X(1) / x;
+    }
 
     static constexpr X pow(X x, i64 n) {
         X z = 1;
@@ -25,7 +29,9 @@ struct monoid_mul {
         return z;
     }
 
-    static constexpr X unit() { return X(1); }
+    static constexpr X unit() {
+        return X(1);
+    }
 
     static constexpr bool commutative = true;
 };

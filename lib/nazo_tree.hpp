@@ -21,7 +21,9 @@ private:
 
 public:
     nazo_tree() {}
-    explicit nazo_tree(const std::string &s, char one = '1') { build(s, one); }
+    explicit nazo_tree(const std::string &s, char one = '1') {
+        build(s, one);
+    }
 
     void build(const std::string &s, char one = '1') {
         flag.fill(0);

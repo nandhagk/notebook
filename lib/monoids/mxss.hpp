@@ -20,9 +20,13 @@ struct monoid_mxss {
         return {a + p, std::max(b, a + q), std::max(r, c + p), std::max({d, s, c + q})};
     }
 
-    static constexpr X from_element(const T &t) { return {t, t, t, t}; }
+    static constexpr X from_element(const T &t) {
+        return {t, t, t, t};
+    }
 
-    static constexpr X unit() { return from_element(-inf<T>); }
+    static constexpr X unit() {
+        return from_element(-inf<T>);
+    }
 
     static constexpr bool commutative = false;
 };

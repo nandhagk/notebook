@@ -1,9 +1,10 @@
 BasedOnStyle: LLVM
 IndentWidth: 4
 ColumnLimit: 120
-AllowShortIfStatementsOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
-AllowShortBlocksOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
 RemoveBracesLLVM: true
 AccessModifierOffset: -4
 AlwaysBreakTemplateDeclarations: Yes

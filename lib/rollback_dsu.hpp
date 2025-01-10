@@ -13,7 +13,9 @@ struct rollback_dsu {
     std::vector<std::pair<i32, i32>> h;
 
     rollback_dsu() {}
-    explicit rollback_dsu(i32 m) { build(m); }
+    explicit rollback_dsu(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = ccs = m;

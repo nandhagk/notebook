@@ -18,9 +18,13 @@ struct hld_product {
     RangeProduct st;
     decltype(extract(std::declval<RangeProduct>())) rst;
 
-    explicit hld_product(const hld &g) : h(g) { build(); }
+    explicit hld_product(const hld &g) : h(g) {
+        build();
+    }
 
-    hld_product(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
+    hld_product(const hld &g, const std::vector<X> &v) : h(g) {
+        build(v);
+    }
 
     template <typename F>
     hld_product(const hld &g, F f) : h(g) {
@@ -41,7 +45,9 @@ struct hld_product {
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }
 
-    X get(i32 u) const { return st.get(h.tin[u]); }
+    X get(i32 u) const {
+        return st.get(h.tin[u]);
+    }
 
     void set(i32 u, X x) {
         st.set(h.tin[u], x);
@@ -53,7 +59,9 @@ struct hld_product {
         if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
     }
 
-    X prod_all() const { return st.prod_all(); }
+    X prod_all() const {
+        return st.prod_all();
+    }
 
     X prod_path(i32 u, i32 v) const {
         X x = MX::unit();

@@ -18,9 +18,13 @@ struct sparse_table_2d {
 
     sparse_table_2d() {}
 
-    sparse_table_2d(i32 h, i32 w) { build(h, w); }
+    sparse_table_2d(i32 h, i32 w) {
+        build(h, w);
+    }
 
-    explicit sparse_table_2d(const std::vector<std::vector<X>> &v) { build(v); }
+    explicit sparse_table_2d(const std::vector<std::vector<X>> &v) {
+        build(v);
+    }
 
     template <typename F>
     sparse_table_2d(i32 h, i32 w, F f) {

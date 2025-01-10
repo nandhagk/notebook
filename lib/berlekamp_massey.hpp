@@ -18,7 +18,8 @@ inline std::vector<Z> berlekamp_massey(const std::vector<Z> &a) {
         Z d = 0;
         for (i32 j = 0; j < static_cast<i32>(c.size()); ++j) d += c[j] * s[i - j];
 
-        if (d == 0) ++m;
+        if (d == 0)
+            ++m;
         else if (2 * (static_cast<i32>(c.size()) - 1) <= i) {
             auto t = c;
 

@@ -16,9 +16,13 @@ struct segment_tree {
     std::vector<X> d;
 
     segment_tree() {}
-    explicit segment_tree(i32 m) { build(m); }
+    explicit segment_tree(i32 m) {
+        build(m);
+    }
 
-    explicit segment_tree(const std::vector<X> &v) { build(v); }
+    explicit segment_tree(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     segment_tree(i32 m, F f) {
@@ -53,9 +57,13 @@ struct segment_tree {
         return d[size + i];
     }
 
-    std::vector<X> get_all() const { return {d.begin() + size, d.begin() + size + n}; }
+    std::vector<X> get_all() const {
+        return {d.begin() + size, d.begin() + size + n};
+    }
 
-    void update(i32 i) { d[i] = MX::op(d[2 * i], d[2 * i + 1]); }
+    void update(i32 i) {
+        d[i] = MX::op(d[2 * i], d[2 * i + 1]);
+    }
 
     void set(i32 i, X x) {
         assert(0 <= i && i < n);
@@ -89,7 +97,9 @@ struct segment_tree {
         return MX::op(vl, vr);
     }
 
-    X prod_all() const { return d[1]; }
+    X prod_all() const {
+        return d[1];
+    }
 
     template <typename F>
     i32 max_right(F f, i32 l) const {

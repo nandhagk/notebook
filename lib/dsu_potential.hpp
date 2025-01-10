@@ -19,7 +19,9 @@ struct dsu_potential {
     std::vector<i32> par, sz;
 
     dsu_potential() {}
-    explicit dsu_potential(i32 m) { build(m); }
+    explicit dsu_potential(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = ccs = m;

@@ -19,7 +19,9 @@ struct monoid_min_cnt {
         return {a, b + q};
     }
 
-    static constexpr X unit() { return {inf<T>, S(0)}; }
+    static constexpr X unit() {
+        return {inf<T>, S(0)};
+    }
 
     static constexpr bool commutative = true;
 };

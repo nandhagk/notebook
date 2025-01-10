@@ -20,16 +20,22 @@ struct basic_rbst {
         node() : node(T()) {}
     };
 
-    i32 size(node *t) const { return t != nullptr ? static_cast<i32>(t->sz) : 0; }
+    i32 size(node *t) const {
+        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    }
 
     i32 n, pid;
     node *pool;
 
     basic_rbst() : pool{nullptr} {}
 
-    explicit basic_rbst(i32 m) : basic_rbst() { build(m); }
+    explicit basic_rbst(i32 m) : basic_rbst() {
+        build(m);
+    }
 
-    ~basic_rbst() { reset(); }
+    ~basic_rbst() {
+        reset();
+    }
 
     void build(i32 m) {
         reset();
@@ -43,7 +49,9 @@ struct basic_rbst {
         delete[] pool;
     }
 
-    node *make_node() { return nullptr; }
+    node *make_node() {
+        return nullptr;
+    }
 
     node *make_node(T x) {
         assert(pid < n);
@@ -183,7 +191,9 @@ struct basic_rbst {
         return v;
     }
 
-    void reverse(node *&root) { toggle(root); }
+    void reverse(node *&root) {
+        toggle(root);
+    }
 
     void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));

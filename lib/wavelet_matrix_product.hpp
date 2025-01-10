@@ -22,7 +22,9 @@ struct wavelet_matrix_product {
     std::vector<RangeProduct> sg;
 
     wavelet_matrix_product() {}
-    explicit wavelet_matrix_product(const std::vector<T> &v, std::vector<X> s) { build(v, std::move(s)); }
+    explicit wavelet_matrix_product(const std::vector<T> &v, std::vector<X> s) {
+        build(v, std::move(s));
+    }
 
     void build(const std::vector<T> &v, std::vector<X> s) {
         n = static_cast<i32>(v.size());

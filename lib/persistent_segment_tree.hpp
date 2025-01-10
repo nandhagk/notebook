@@ -65,7 +65,9 @@ struct persistent_segment_tree {
     struct node_ref {
         i32 id;
         node_ref(i32 _id) : id(_id) {}
-        node<dep> &operator*() { return node_vector<dep>::V[id]; }
+        node<dep> &operator*() {
+            return node_vector<dep>::V[id];
+        }
     };
 
     template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
@@ -80,7 +82,8 @@ struct persistent_segment_tree {
         id = node_vector<dep>::copy_node(id);
         node_ref<dep> v(id);
         i32 dir = (k >> (log - dep - 1)) & 1;
-        if (dir == 0) (*v).lch = set<dep + 1, len / 2>((*v).lch, k, x);
+        if (dir == 0)
+            (*v).lch = set<dep + 1, len / 2>((*v).lch, k, x);
         else
             (*v).rch = set<dep + 1, len / 2>((*v).rch, k, x);
 
@@ -96,7 +99,8 @@ struct persistent_segment_tree {
             return (*v).val;
         } else {
             i32 dir = (k >> (log - dep - 1)) & 1;
-            if (dir == 0) return get<dep + 1>((*v).lch, k);
+            if (dir == 0)
+                return get<dep + 1>((*v).lch, k);
             else
                 return get<dep + 1>((*v).rch, k);
         }
@@ -188,9 +192,13 @@ public:
         return self_t(id);
     }
 
-    X get(u32 k) const { return get<0>(rootid, k); }
+    X get(u32 k) const {
+        return get<0>(rootid, k);
+    }
 
-    X prod(u32 l, u32 r) const { return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log); }
+    X prod(u32 l, u32 r) const {
+        return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log);
+    }
 
     self_t copy(self_t S, u32 l, u32 r) const {
         return copy<0, (u32)1 << log>(rootid, S.rootid, l, r, 0, (u32)1 << log);

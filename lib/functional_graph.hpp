@@ -15,7 +15,9 @@ struct functional_graph {
     hld h;
 
     functional_graph() {}
-    explicit functional_graph(const std::vector<i32> &t) { build(t); }
+    explicit functional_graph(const std::vector<i32> &t) {
+        build(t);
+    }
 
     bool in_cycle(i32 u) const {
         assert(0 <= u && u < n);

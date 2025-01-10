@@ -17,9 +17,13 @@ struct segment_tree_sparse_table {
 
     segment_tree_sparse_table() {}
 
-    segment_tree_sparse_table(i32 h, i32 w) { build(h, w); }
+    segment_tree_sparse_table(i32 h, i32 w) {
+        build(h, w);
+    }
 
-    explicit segment_tree_sparse_table(const std::vector<std::vector<X>> &v) { build(v); }
+    explicit segment_tree_sparse_table(const std::vector<std::vector<X>> &v) {
+        build(v);
+    }
 
     template <typename F>
     segment_tree_sparse_table(i32 h, i32 w, F f) {

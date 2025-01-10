@@ -26,9 +26,13 @@ struct static_modint_base {
         v = u;
     }
 
-    constexpr static U mod() { return m; }
+    constexpr static U mod() {
+        return m;
+    }
 
-    constexpr U val() const { return v; }
+    constexpr U val() const {
+        return v;
+    }
 
     constexpr mint inv() const {
         if constexpr (is_prime) {
@@ -39,7 +43,9 @@ struct static_modint_base {
         }
     }
 
-    constexpr mint pow(u64 n) const { return binpow(*this, n); }
+    constexpr mint pow(u64 n) const {
+        return binpow(*this, n);
+    }
 
     constexpr mint &operator+=(const mint &rhs) & {
         if ((v += rhs.val()) >= mod()) v -= mod();
@@ -56,23 +62,41 @@ struct static_modint_base {
         return *this;
     }
 
-    constexpr mint &operator/=(const mint &rhs) & { return *this *= rhs.inv(); }
+    constexpr mint &operator/=(const mint &rhs) & {
+        return *this *= rhs.inv();
+    }
 
-    friend constexpr mint operator+(mint lhs, const mint &rhs) { return lhs += rhs; }
+    friend constexpr mint operator+(mint lhs, const mint &rhs) {
+        return lhs += rhs;
+    }
 
-    friend constexpr mint operator-(mint lhs, const mint &rhs) { return lhs -= rhs; }
+    friend constexpr mint operator-(mint lhs, const mint &rhs) {
+        return lhs -= rhs;
+    }
 
-    friend constexpr mint operator*(mint lhs, const mint &rhs) { return lhs *= rhs; }
+    friend constexpr mint operator*(mint lhs, const mint &rhs) {
+        return lhs *= rhs;
+    }
 
-    friend constexpr mint operator/(mint lhs, const mint &rhs) { return lhs /= rhs; }
+    friend constexpr mint operator/(mint lhs, const mint &rhs) {
+        return lhs /= rhs;
+    }
 
-    constexpr mint operator-() const { return mint(0) - mint(*this); }
+    constexpr mint operator-() const {
+        return mint(0) - mint(*this);
+    }
 
-    friend constexpr bool operator==(const mint &lhs, const mint &rhs) { return lhs.val() == rhs.val(); }
+    friend constexpr bool operator==(const mint &lhs, const mint &rhs) {
+        return lhs.val() == rhs.val();
+    }
 
-    friend constexpr bool operator!=(const mint &lhs, const mint &rhs) { return lhs.val() != rhs.val(); }
+    friend constexpr bool operator!=(const mint &lhs, const mint &rhs) {
+        return lhs.val() != rhs.val();
+    }
 
-    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) { return os << rhs.val(); }
+    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) {
+        return os << rhs.val();
+    }
 
     friend std::istream &operator>>(std::istream &is, mint &rhs) {
         i64 x;

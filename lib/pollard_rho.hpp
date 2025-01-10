@@ -40,7 +40,9 @@ inline U pollard_rho(U n) {
         }
 
         if (g == n) {
-            do { g = std::gcd((x - (ys = f(ys))).val(), n); } while (g == 1);
+            do {
+                g = std::gcd((x - (ys = f(ys))).val(), n);
+            } while (g == 1);
         }
 
         if (g != n) return g;

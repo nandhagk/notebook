@@ -14,9 +14,13 @@ struct two_sat {
     std::vector<std::pair<i32, simple_edge>> es;
 
     two_sat() {}
-    explicit two_sat(i32 m) { build(m); }
+    explicit two_sat(i32 m) {
+        build(m);
+    }
 
-    void build(i32 m) { n = m; }
+    void build(i32 m) {
+        n = m;
+    }
 
     void add_clause(i32 i, bool p, i32 j, bool q) {
         assert(0 <= i && i < n);

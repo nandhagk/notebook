@@ -9,9 +9,13 @@ struct monoid_min {
     using X = T;
     using ValueT = T;
 
-    static constexpr X op(X x, X y) { return std::min(x, y); }
+    static constexpr X op(X x, X y) {
+        return std::min(x, y);
+    }
 
-    static constexpr X unit() { return inf<X>; }
+    static constexpr X unit() {
+        return inf<X>;
+    }
 
     static constexpr bool commutative = true;
 };

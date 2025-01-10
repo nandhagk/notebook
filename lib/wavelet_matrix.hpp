@@ -18,7 +18,9 @@ struct wavelet_matrix {
     std::vector<bit_vector> bv;
 
     wavelet_matrix() {}
-    explicit wavelet_matrix(const std::vector<T> &v) { build(v); }
+    explicit wavelet_matrix(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());
@@ -93,7 +95,9 @@ struct wavelet_matrix {
         return cnt;
     }
 
-    i32 count(i32 l, i32 r, T a, T b) const { return count(l, r, b) - count(l, r, a); }
+    i32 count(i32 l, i32 r, T a, T b) const {
+        return count(l, r, b) - count(l, r, a);
+    }
 
     T kth(i32 l, i32 r, i32 k) const {
         assert(0 <= l && l <= r && r <= n);

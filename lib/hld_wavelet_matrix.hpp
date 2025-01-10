@@ -12,7 +12,9 @@ struct hld_wavelet_matrix {
     const hld &h;
     wavelet_matrix<T> wm;
 
-    explicit hld_wavelet_matrix(const hld &g, const std::vector<T> &v) : h(g) { build(v); }
+    explicit hld_wavelet_matrix(const hld &g, const std::vector<T> &v) : h(g) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         std::vector<T> a(h.n);
@@ -43,9 +45,13 @@ struct hld_wavelet_matrix {
         return cnt;
     }
 
-    i32 count_subtree(i32 u, T a) const { return wm.count(h.tin[u], h.tin[u] + h.sz[u], a); }
+    i32 count_subtree(i32 u, T a) const {
+        return wm.count(h.tin[u], h.tin[u] + h.sz[u], a);
+    }
 
-    i32 count_subtree(i32 u, T a, T b) const { return wm.count(h.tin[u], h.tin[u] + h.sz[u], a, b); }
+    i32 count_subtree(i32 u, T a, T b) const {
+        return wm.count(h.tin[u], h.tin[u] + h.sz[u], a, b);
+    }
 
     T kth_path(i32 u, i32 v, i32 k) const {
         assert(0 <= k && k <= h.dist(u, v));
@@ -90,7 +96,9 @@ struct hld_wavelet_matrix {
         return wm.rv[p];
     }
 
-    T kth_subtree(i32 u, i32 k) const { return wm.kth(h.tin[u], h.tin[u] + h.sz[u], k); }
+    T kth_subtree(i32 u, i32 k) const {
+        return wm.kth(h.tin[u], h.tin[u] + h.sz[u], k);
+    }
 
     std::optional<T> next_path(i32 u, i32 v, T a) const {
         const auto it = std::upper_bound(wm.rv.begin(), wm.rv.end(), a);

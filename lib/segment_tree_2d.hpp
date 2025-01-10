@@ -16,9 +16,13 @@ struct segment_tree_2d {
     std::vector<X> d;
 
     segment_tree_2d() {}
-    segment_tree_2d(i32 h, i32 w) { build(h, w); }
+    segment_tree_2d(i32 h, i32 w) {
+        build(h, w);
+    }
 
-    explicit segment_tree_2d(const std::vector<std::vector<X>> &v) { build(v); }
+    explicit segment_tree_2d(const std::vector<std::vector<X>> &v) {
+        build(v);
+    }
 
     template <typename F>
     segment_tree_2d(i32 h, i32 w, F f) {
@@ -97,10 +101,14 @@ struct segment_tree_2d {
         }
     }
 
-    void multiply(i32 p, i32 q, X x) { set(p, q, MX::op(get(p, q), x)); }
+    void multiply(i32 p, i32 q, X x) {
+        set(p, q, MX::op(get(p, q), x));
+    }
 
 private:
-    inline i32 idx(i32 i, i32 j) const { return i * 2 * W + j; }
+    inline i32 idx(i32 i, i32 j) const {
+        return i * 2 * W + j;
+    }
 
     X prod(i32 x, i32 yl, i32 yr) const {
         X r = MX::unit();

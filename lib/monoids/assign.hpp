@@ -8,9 +8,13 @@ struct monoid_assign {
     using X = std::optional<T>;
     using ValueT = X;
 
-    static constexpr X op(X x, X y) { return y == std::nullopt ? x : y; }
+    static constexpr X op(X x, X y) {
+        return y == std::nullopt ? x : y;
+    }
 
-    static constexpr X unit() { return std::nullopt; }
+    static constexpr X unit() {
+        return std::nullopt;
+    }
 
     static constexpr bool commutative = false;
 };

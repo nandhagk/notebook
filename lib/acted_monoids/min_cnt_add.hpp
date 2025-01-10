@@ -12,7 +12,9 @@ struct acted_monoid_min_cnt_add {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    static constexpr X act(X x, A a, i32) { return x == MX::unit() ? x : X{x.first + a, x.second}; }
+    static constexpr X act(X x, A a, i32) {
+        return x == MX::unit() ? x : X{x.first + a, x.second};
+    }
 };
 
 #endif // LIB_ACTED_MONOID_MIN_CNT_ADD_HPP

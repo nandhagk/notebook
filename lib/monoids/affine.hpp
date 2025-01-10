@@ -9,7 +9,9 @@ struct monoid_affine {
     using X = std::pair<T, T>;
     using ValueT = X;
 
-    static constexpr X op(X x, X y) { return {x.first * y.first, x.second * y.first + y.second}; }
+    static constexpr X op(X x, X y) {
+        return {x.first * y.first, x.second * y.first + y.second};
+    }
 
     static constexpr X inv(const T &x) {
         auto [a, b] = x;
@@ -17,9 +19,13 @@ struct monoid_affine {
         return {a, a * (-b)};
     }
 
-    static constexpr T eval(X f, T x) { return f.first * x + f.second; }
+    static constexpr T eval(X f, T x) {
+        return f.first * x + f.second;
+    }
 
-    static constexpr X unit() { return {T(1), T(0)}; }
+    static constexpr X unit() {
+        return {T(1), T(0)};
+    }
 
     static constexpr X pow(const X &x, i64 n) {
         X z = unit();

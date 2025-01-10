@@ -25,7 +25,9 @@ private:
 
 public:
     static_inversions() {}
-    explicit static_inversions(const std::vector<T> &v) { build(v); }
+    explicit static_inversions(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());
@@ -100,7 +102,8 @@ public:
             i64 ret = fb.prefix_inv[lr] - fb.prefix_inv[fr];
             i32 sum = 0;
             for (const i32 i : fb.sorted_ind)
-                if (i < fr) ret -= sum;
+                if (i < fr)
+                    ret -= sum;
                 else if (i < lr)
                     ++sum;
             return ret;

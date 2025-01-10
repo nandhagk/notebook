@@ -41,7 +41,8 @@ inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const G
         if (!zero_in[u]) continue;
 
         seen[u] = true;
-        if (const i32 zero_out = dfs(dfs, u); zero_out != -1) es.emplace_back(zero_out, u);
+        if (const i32 zero_out = dfs(dfs, u); zero_out != -1)
+            es.emplace_back(zero_out, u);
         else
             in_unused.push_back(u);
     }

@@ -12,9 +12,13 @@ struct simple_edge {
     simple_edge() = default;
     simple_edge(i32 to) : v{to} {}
 
-    i32 to() const { return v; }
+    i32 to() const {
+        return v;
+    }
 
-    operator int() const { return v; }
+    operator int() const {
+        return v;
+    }
 };
 
 template <typename W>
@@ -27,11 +31,17 @@ struct weighted_edge {
     weighted_edge() {}
     weighted_edge(i32 to, W cost) : v{to}, w{cost} {}
 
-    i32 to() const { return v; }
+    i32 to() const {
+        return v;
+    }
 
-    const W &weight() const { return w; }
+    const W &weight() const {
+        return w;
+    }
 
-    operator int() const { return v; }
+    operator int() const {
+        return v;
+    }
 };
 
 template <typename Edge>
@@ -39,7 +49,9 @@ struct csr_graph {
     using E = Edge;
 
     csr_graph() {}
-    csr_graph(i32 p, const std::vector<std::pair<i32, Edge>> &es) { build(p, es); }
+    csr_graph(i32 p, const std::vector<std::pair<i32, Edge>> &es) {
+        build(p, es);
+    }
 
     void build(i32 p, const std::vector<std::pair<i32, Edge>> &es) {
         n = p;
@@ -64,7 +76,9 @@ struct csr_graph {
         for (const auto &[u, e] : es) elist[--start[u]] = e;
     }
 
-    i32 size() const { return n; }
+    i32 size() const {
+        return n;
+    }
 
     struct edge_range {
         const E *es;
@@ -72,18 +86,30 @@ struct csr_graph {
 
         edge_range(const E *e, usize size) : es{e}, sz{size} {}
 
-        const E *begin() { return &es[0]; }
+        const E *begin() {
+            return &es[0];
+        }
 
-        const E *end() { return &es[sz]; }
+        const E *end() {
+            return &es[sz];
+        }
 
-        const E *begin() const { return &es[0]; }
+        const E *begin() const {
+            return &es[0];
+        }
 
-        const E *end() const { return &es[sz]; }
+        const E *end() const {
+            return &es[sz];
+        }
 
-        usize size() const { return sz; }
+        usize size() const {
+            return sz;
+        }
     };
 
-    edge_range operator[](i32 u) const { return edge_range(elist.data() + start[u], outdeg[u]); }
+    edge_range operator[](i32 u) const {
+        return edge_range(elist.data() + start[u], outdeg[u]);
+    }
 
     csr_graph<E> reverse() const {
         std::vector<std::pair<i32, E>> es;

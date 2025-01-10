@@ -20,9 +20,13 @@ struct monoid_mnss {
         return {a + p, std::min(b, a + q), std::min(r, c + p), std::min({d, s, c + q})};
     }
 
-    static constexpr X from_element(const T &t) { return {t, t, t, t}; }
+    static constexpr X from_element(const T &t) {
+        return {t, t, t, t};
+    }
 
-    static constexpr X unit() { return from_element(inf<T>); }
+    static constexpr X unit() {
+        return from_element(inf<T>);
+    }
 
     static constexpr bool commutative = false;
 };

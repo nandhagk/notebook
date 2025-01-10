@@ -9,7 +9,9 @@
 struct barrett_32 {
     constexpr barrett_32(u32 m_) : m(m_), im((u64)(-1) / m + 1) {}
 
-    constexpr u32 mod() const { return m; }
+    constexpr u32 mod() const {
+        return m;
+    }
 
     constexpr u32 modulo(u64 z) const {
         if (m == 1) return 0;
@@ -20,7 +22,9 @@ struct barrett_32 {
         return u32(z - y + (z < y ? m : 0));
     }
 
-    constexpr u32 mul(u32 a, u32 b) const { return modulo(u64(a) * b); }
+    constexpr u32 mul(u32 a, u32 b) const {
+        return modulo(u64(a) * b);
+    }
 
 private:
     u32 m;
@@ -36,7 +40,9 @@ struct barrett_64 {
         ml = im & u64(-1);
     }
 
-    constexpr u64 mod() const { return m; }
+    constexpr u64 mod() const {
+        return m;
+    }
 
     constexpr u64 modulo(u128 x) const {
         u128 z = (x & u64(-1)) * ml;
@@ -48,7 +54,9 @@ struct barrett_64 {
         return u64(x < m ? x : x - m);
     }
 
-    constexpr u64 mul(u64 a, u64 b) const { return modulo(u128(a) * b); }
+    constexpr u64 mul(u64 a, u64 b) const {
+        return modulo(u128(a) * b);
+    }
 
 private:
     u64 m;
@@ -77,20 +85,30 @@ struct arbitrary_modint_base {
         v = u;
     }
 
-    static void set_mod(U m) { bt = m; }
+    static void set_mod(U m) {
+        bt = m;
+    }
 
-    static U mod() { return bt.mod(); }
+    static U mod() {
+        return bt.mod();
+    }
 
-    U val() const { return v; }
+    U val() const {
+        return v;
+    }
 
-    mint operator-() const { return mint(0) - mint(*this); }
+    mint operator-() const {
+        return mint(0) - mint(*this);
+    }
 
     mint inv() const {
         using S = make_signed<U>;
         return ::inv(S(val()), S(mod()));
     }
 
-    mint pow(u64 n) const { return binpow(*this, n); }
+    mint pow(u64 n) const {
+        return binpow(*this, n);
+    }
 
     mint &operator+=(const mint &rhs) & {
         if ((v += rhs.val()) >= mod()) v -= mod();
@@ -107,21 +125,37 @@ struct arbitrary_modint_base {
         return *this;
     }
 
-    mint &operator/=(const mint &rhs) & { return *this *= rhs.inv(); }
+    mint &operator/=(const mint &rhs) & {
+        return *this *= rhs.inv();
+    }
 
-    friend mint operator+(mint lhs, const mint &rhs) { return lhs += rhs; }
+    friend mint operator+(mint lhs, const mint &rhs) {
+        return lhs += rhs;
+    }
 
-    friend mint operator-(mint lhs, const mint &rhs) { return lhs -= rhs; }
+    friend mint operator-(mint lhs, const mint &rhs) {
+        return lhs -= rhs;
+    }
 
-    friend mint operator*(mint lhs, const mint &rhs) { return lhs *= rhs; }
+    friend mint operator*(mint lhs, const mint &rhs) {
+        return lhs *= rhs;
+    }
 
-    friend mint operator/(mint lhs, const mint &rhs) { return lhs /= rhs; }
+    friend mint operator/(mint lhs, const mint &rhs) {
+        return lhs /= rhs;
+    }
 
-    friend bool operator==(const mint &lhs, const mint &rhs) { return lhs.val() == rhs.val(); }
+    friend bool operator==(const mint &lhs, const mint &rhs) {
+        return lhs.val() == rhs.val();
+    }
 
-    friend bool operator!=(const mint &lhs, const mint &rhs) { return lhs.val() != rhs.val(); }
+    friend bool operator!=(const mint &lhs, const mint &rhs) {
+        return lhs.val() != rhs.val();
+    }
 
-    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) { return os << rhs.val(); }
+    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) {
+        return os << rhs.val();
+    }
 
     friend std::istream &operator>>(std::istream &is, mint &rhs) {
         i64 x;

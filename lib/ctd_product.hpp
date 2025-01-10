@@ -215,7 +215,9 @@ struct ctd_product {
         subtrees.shrink_to_fit();
     }
 
-    X get(i32 u) const { return nodes[ord[u]].d; }
+    X get(i32 u) const {
+        return nodes[ord[u]].d;
+    }
 
     void multiply(i32 u, X x) {
         assert(0 <= u && u < n);
@@ -230,7 +232,9 @@ struct ctd_product {
         }
     }
 
-    X prod(i32 u, i32 d) const { return prod(u, d, d + 1); }
+    X prod(i32 u, i32 d) const {
+        return prod(u, d, d + 1);
+    }
 
     X prod(i32 u, i32 dl, i32 dr) const {
         assert(0 <= u && u < n);

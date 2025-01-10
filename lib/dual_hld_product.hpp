@@ -13,14 +13,18 @@ struct dual_hld_product {
 
     DualRangeProduct st;
 
-    explicit dual_hld_product(const hld &g) : h(g) { build(); }
+    explicit dual_hld_product(const hld &g) : h(g) {
+        build();
+    }
 
     template <typename F>
     dual_hld_product(const hld &g, F f) : h(g) {
         build(f);
     }
 
-    explicit dual_hld_product(const hld &g, const std::vector<A> &v) : h(g) { build(v); }
+    explicit dual_hld_product(const hld &g, const std::vector<A> &v) : h(g) {
+        build(v);
+    }
 
     void build() {
         build([](i32) -> A { return MA::unit(); });
@@ -35,9 +39,13 @@ struct dual_hld_product {
         st.build(h.n, f);
     }
 
-    A get(i32 u) { return st.get(h.tin[u]); }
+    A get(i32 u) {
+        return st.get(h.tin[u]);
+    }
 
-    void set(i32 u, A x) { st.set(h.tin[u], x); }
+    void set(i32 u, A x) {
+        st.set(h.tin[u], x);
+    }
 
     void apply_path(i32 u, i32 v, A a) {
         for (const auto &[s, t] : h.decompose(u, v)) {

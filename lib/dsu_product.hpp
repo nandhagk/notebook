@@ -18,7 +18,9 @@ struct dsu_product {
     std::vector<X> x;
 
     dsu_product() {}
-    explicit dsu_product(i32 m) { build(m); }
+    explicit dsu_product(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = ccs = m;

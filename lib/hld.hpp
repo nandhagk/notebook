@@ -111,7 +111,8 @@ struct hld {
         const i32 l = du - dx;
         const i32 r = dv - dx;
 
-        if (l + r < k) return std::nullopt;
+        if (l + r < k)
+            return std::nullopt;
         else if (k < l)
             return jump(u, k);
         else
@@ -134,7 +135,8 @@ struct hld {
             }
         }
 
-        if (tin[u] < tin[v]) dn.emplace_back(u, v);
+        if (tin[u] < tin[v])
+            dn.emplace_back(u, v);
         else
             up.emplace_back(u, v);
 

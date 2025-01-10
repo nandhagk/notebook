@@ -22,9 +22,13 @@ struct rect_segment_tree {
 
     rect_segment_tree() {}
 
-    explicit rect_segment_tree(i32 m) { pts.reserve(m); }
+    explicit rect_segment_tree(i32 m) {
+        pts.reserve(m);
+    }
 
-    void add_point(T x, T y) { pts.emplace_back(x, y); }
+    void add_point(T x, T y) {
+        pts.emplace_back(x, y);
+    }
 
     void build() {
         std::sort(pts.begin(), pts.end());
@@ -81,7 +85,9 @@ struct rect_segment_tree {
         return x;
     }
 
-    X get(T x, T y) const { return prod(x, x + 1, y + 1); }
+    X get(T x, T y) const {
+        return prod(x, x + 1, y + 1);
+    }
 
 private:
     void set(i32 v, const pt &p, X x) {

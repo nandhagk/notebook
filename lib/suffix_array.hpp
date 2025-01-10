@@ -63,7 +63,8 @@ std::vector<i32> sa_is(const std::vector<i32> &s, int upper) {
     if (n == 0) return {};
     if (n == 1) return {0};
     if (n == 2) {
-        if (s[0] < s[1]) return {0, 1};
+        if (s[0] < s[1])
+            return {0, 1};
         else
             return {1, 0};
     }
@@ -77,7 +78,8 @@ std::vector<i32> sa_is(const std::vector<i32> &s, int upper) {
 
     std::vector<i32> sum_l(upper + 1), sum_s(upper + 1);
     for (i32 i = 0; i < n; ++i)
-        if (!ls[i]) ++sum_s[s[i]];
+        if (!ls[i])
+            ++sum_s[s[i]];
         else
             ++sum_l[s[i] + 1];
 

@@ -16,7 +16,9 @@ struct static_distinct_offline {
     std::vector<std::tuple<i32, i32, i32>> qs;
 
     static_distinct_offline() {}
-    explicit static_distinct_offline(const std::vector<T> &v) { build(v); }
+    explicit static_distinct_offline(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());
@@ -40,7 +42,8 @@ struct static_distinct_offline {
 
         std::vector<i32> last(n, -1);
         for (i32 i = 0; i < n; ++i) {
-            if (last[b[i]] != -1) nxt[last[b[i]]] = i;
+            if (last[b[i]] != -1)
+                nxt[last[b[i]]] = i;
             else
                 ++first[i];
 

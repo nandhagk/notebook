@@ -10,17 +10,27 @@ struct priority_deque {
     std::vector<T> d;
 
     priority_deque() {}
-    explicit priority_deque(const std::vector<T> &v) { build(v); }
+    explicit priority_deque(const std::vector<T> &v) {
+        build(v);
+    }
 
     template <typename F>
     priority_deque(i32 n, F f) {
         build(n, f);
     }
 
-    i32 size() const { return static_cast<i32>(d.size()); }
-    bool empty() const { return d.empty(); }
-    T min() const { return d[0]; }
-    T max() const { return size() == 1 ? d[0] : d[1]; }
+    i32 size() const {
+        return static_cast<i32>(d.size());
+    }
+    bool empty() const {
+        return d.empty();
+    }
+    T min() const {
+        return d[0];
+    }
+    T max() const {
+        return size() == 1 ? d[0] : d[1];
+    }
 
     void build(const std::vector<T> &v) {
         build(static_cast<i32>(v.size()), [&](i32 i) { return v[i]; });
@@ -71,7 +81,9 @@ struct priority_deque {
     }
 
 private:
-    inline i32 parent(i32 i) { return (i - 4 + (i & 3)) / 2; }
+    inline i32 parent(i32 i) {
+        return (i - 4 + (i & 3)) / 2;
+    }
 
     void down(i32 i) {
         const i32 n = size();

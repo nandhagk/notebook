@@ -22,7 +22,9 @@ struct arbitrary_montgomery_modint_base {
     template <typename T, std::enable_if_t<std::is_integral<T>::value> * = nullptr>
     arbitrary_montgomery_modint_base(T x) : v(reduce(V(x % m + m) * n2)) {}
 
-    static U reduce(V b) { return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W); }
+    static U reduce(V b) {
+        return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);
+    }
 
     static U get_r() {
         U p = m;
@@ -43,11 +45,17 @@ struct arbitrary_montgomery_modint_base {
         return p >= mod() ? p - mod() : p;
     }
 
-    static U mod() { return m; }
+    static U mod() {
+        return m;
+    }
 
-    mint inv() const { return ::inv(S(val()), S(mod())); }
+    mint inv() const {
+        return ::inv(S(val()), S(mod()));
+    }
 
-    mint pow(u64 n) const { return binpow(*this, n); }
+    mint pow(u64 n) const {
+        return binpow(*this, n);
+    }
 
     mint &operator+=(const mint &rhs) & {
         if (S(v += rhs.v - 2 * mod()) < 0) v += 2 * mod();
@@ -64,17 +72,29 @@ struct arbitrary_montgomery_modint_base {
         return *this;
     }
 
-    mint &operator/=(const mint &rhs) & { return *this *= rhs.inv(); }
+    mint &operator/=(const mint &rhs) & {
+        return *this *= rhs.inv();
+    }
 
-    friend mint operator+(mint lhs, const mint &rhs) { return lhs += rhs; }
+    friend mint operator+(mint lhs, const mint &rhs) {
+        return lhs += rhs;
+    }
 
-    friend mint operator-(mint lhs, const mint &rhs) { return lhs -= rhs; }
+    friend mint operator-(mint lhs, const mint &rhs) {
+        return lhs -= rhs;
+    }
 
-    friend mint operator*(mint lhs, const mint &rhs) { return lhs *= rhs; }
+    friend mint operator*(mint lhs, const mint &rhs) {
+        return lhs *= rhs;
+    }
 
-    friend mint operator/(mint lhs, const mint &rhs) { return lhs /= rhs; }
+    friend mint operator/(mint lhs, const mint &rhs) {
+        return lhs /= rhs;
+    }
 
-    mint operator-() const { return mint(0) - mint(*this); }
+    mint operator-() const {
+        return mint(0) - mint(*this);
+    }
 
     friend bool operator==(const mint &lhs, const mint &rhs) {
         const U p = lhs.v >= mod() ? lhs.v - mod() : lhs.v;
@@ -82,9 +102,13 @@ struct arbitrary_montgomery_modint_base {
         return p == q;
     }
 
-    friend bool operator!=(const mint &lhs, const mint &rhs) { return !(lhs == rhs); }
+    friend bool operator!=(const mint &lhs, const mint &rhs) {
+        return !(lhs == rhs);
+    }
 
-    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) { return os << rhs.val(); }
+    friend std::ostream &operator<<(std::ostream &os, const mint &rhs) {
+        return os << rhs.val();
+    }
 
     friend std::istream &operator>>(std::istream &is, mint &rhs) {
         i64 x;

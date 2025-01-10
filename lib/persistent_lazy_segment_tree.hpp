@@ -68,7 +68,9 @@ struct persistent_lazy_segment_tree {
     struct node_ref {
         i32 id;
         node_ref(i32 _id) : id(_id) {}
-        node<dep> &operator*() { return node_vector<dep>::V[id]; }
+        node<dep> &operator*() {
+            return node_vector<dep>::V[id];
+        }
     };
 
     template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
@@ -120,7 +122,8 @@ struct persistent_lazy_segment_tree {
             return AM::act((*v).val, lz, 1);
         } else {
             i32 dir = (k >> (log - dep - 1)) & 1;
-            if (dir == 0) return get<dep + 1>((*v).lch, k, MA::op((*v).lzl, lz));
+            if (dir == 0)
+                return get<dep + 1>((*v).lch, k, MA::op((*v).lzl, lz));
             else
                 return get<dep + 1>((*v).rch, k, MA::op((*v).lzr, lz));
         }
@@ -129,7 +132,8 @@ struct persistent_lazy_segment_tree {
     template <u32 dep, u32 len, std::enable_if_t<dep == log> * = nullptr>
     static i32 apply(i32 id, u32 l, u32 r, u32 L, u32 R, A lz, A lz2) {
         id = node_vector<dep>::copy_node(id);
-        if (r <= L || R <= l) all_apply<dep, len>(id, lz);
+        if (r <= L || R <= l)
+            all_apply<dep, len>(id, lz);
         else
             all_apply<dep, len>(id, MA::op(lz, lz2));
         return id;
@@ -266,14 +270,18 @@ public:
         return self_t(id);
     }
 
-    X get(u32 k) const { return get<0>(rootid, k, MA::unit()); }
+    X get(u32 k) const {
+        return get<0>(rootid, k, MA::unit());
+    }
 
     self_t apply(u32 l, u32 r, A lz) const {
         i32 id = apply<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit(), lz);
         return self_t(id);
     }
 
-    X prod(u32 l, u32 r) const { return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit()); }
+    X prod(u32 l, u32 r) const {
+        return prod<0, (u32)1 << log>(rootid, l, r, 0, (u32)1 << log, MA::unit());
+    }
 
     self_t copy(self_t S, u32 l, u32 r) const {
         return copy<0, (u32)1 << log>(rootid, S.rootid, l, r, 0, (u32)1 << log, MA::unit(), MA::unit());

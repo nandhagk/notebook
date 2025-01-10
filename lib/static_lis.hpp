@@ -89,7 +89,8 @@ inline void unit_monge_dmul(const i32 n, iter stack, const iter a, const iter b)
         while (pos.col != n) {
             d_itr temp = pos;
             right(temp);
-            if (temp.delta == 0) pos = temp;
+            if (temp.delta == 0)
+                pos = temp;
             else
                 break;
         }
@@ -210,7 +211,9 @@ struct static_lis {
     wavelet_matrix<i32> wm;
 
     static_lis() {}
-    explicit static_lis(const std::vector<T> &v) { build(v); }
+    explicit static_lis(const std::vector<T> &v) {
+        build(v);
+    }
 
     void build(const std::vector<T> &v) {
         n = static_cast<i32>(v.size());

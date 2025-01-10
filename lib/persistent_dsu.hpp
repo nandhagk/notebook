@@ -9,7 +9,9 @@ struct persistent_dsu {
 private:
     using self_t = persistent_dsu;
 
-    static constexpr i32 e() { return -1; }
+    static constexpr i32 e() {
+        return -1;
+    }
 
     using array_t = persistent_array<i32, e, MAXN + 1>;
 
@@ -25,11 +27,17 @@ private:
 public:
     persistent_dsu() {}
 
-    i32 find(i32 u) const { return get_info(u).first; }
+    i32 find(i32 u) const {
+        return get_info(u).first;
+    }
 
-    i32 size(i32 u) const { return get_info(u).second; }
+    i32 size(i32 u) const {
+        return get_info(u).second;
+    }
 
-    bool same(i32 u, i32 v) const { return find(u) == find(v); }
+    bool same(i32 u, i32 v) const {
+        return find(u) == find(v);
+    }
 
     self_t merge(i32 u, i32 v) const {
         i32 usz, vsz;

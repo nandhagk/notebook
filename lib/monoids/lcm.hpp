@@ -8,9 +8,13 @@ struct monoid_lcm {
     using X = T;
     using ValueT = T;
 
-    static constexpr X op(X x, X y) { return std::lcm(x, y); }
+    static constexpr X op(X x, X y) {
+        return std::lcm(x, y);
+    }
 
-    static constexpr X unit() { return X(1); }
+    static constexpr X unit() {
+        return X(1);
+    }
 
     static constexpr bool commutative = true;
 };

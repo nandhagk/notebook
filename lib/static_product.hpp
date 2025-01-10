@@ -16,9 +16,13 @@ struct static_product {
     std::vector<X> d;
 
     static_product() {}
-    explicit static_product(i32 m) { build(m); }
+    explicit static_product(i32 m) {
+        build(m);
+    }
 
-    explicit static_product(const std::vector<X> &v) { build(v); }
+    explicit static_product(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     static_product(i32 m, F f) {
@@ -49,7 +53,9 @@ struct static_product {
         return MX::op(MX::inv(d[l]), d[r]);
     }
 
-    X prod_all() const { return d[n]; }
+    X prod_all() const {
+        return d[n];
+    }
 };
 
 #endif // LIB_STATIC_PRODUCT_HPP

@@ -11,7 +11,9 @@ struct acted_monoid_sum_add {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    static constexpr X act(X x, A a, i32 sz) { return x + a * sz; }
+    static constexpr X act(X x, A a, i32 sz) {
+        return x + a * sz;
+    }
 };
 
 #endif // LIB_ACTED_MONOID_SUM_ADD_HPP

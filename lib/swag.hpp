@@ -15,7 +15,9 @@ struct swag {
     std::deque<X> q;
     std::vector<X> suml, sumr;
 
-    swag() { build(); }
+    swag() {
+        build();
+    }
 
     void build() {
         q.clear();
@@ -26,9 +28,13 @@ struct swag {
         sumr.push_back(MX::unit());
     }
 
-    i32 size() const { return static_cast<i32>(q.size()); }
+    i32 size() const {
+        return static_cast<i32>(q.size());
+    }
 
-    X prod_all() const { return MX::op(suml.back(), sumr.back()); }
+    X prod_all() const {
+        return MX::op(suml.back(), sumr.back());
+    }
 
     void push_back(X x) {
         q.push_back(x);
@@ -81,8 +87,12 @@ struct swag {
         q.pop_front();
     }
 
-    X back() const { return q.back(); }
-    X front() const { return q.front(); }
+    X back() const {
+        return q.back();
+    }
+    X front() const {
+        return q.front();
+    }
 };
 
 #endif // LIB_SWAG_HPP

@@ -35,7 +35,9 @@ private:
     template <i32 dep>
     struct node<dep, std::enable_if_t<dep != log>> {
         std::array<i32, 1 << K> ch;
-        node() { ch.fill(nullid); }
+        node() {
+            ch.fill(nullid);
+        }
     };
 
     template <i32 dep>
@@ -57,12 +59,15 @@ private:
     struct node_ref {
         i32 id;
         node_ref(i32 _id) : id(_id) {}
-        node<dep> &operator*() { return node_vector<dep>::V[id]; }
+        node<dep> &operator*() {
+            return node_vector<dep>::V[id];
+        }
     };
 
     template <i32 dep>
     static i32 set(i32 id, i32 k, T x) {
-        if (id == nullid) id = node_vector<dep>::make_node();
+        if (id == nullid)
+            id = node_vector<dep>::make_node();
         else
             id = node_vector<dep>::copy_node(id);
         node_ref<dep> v(id);
@@ -117,7 +122,8 @@ private:
     static i32 copy(i32 id1, i32 id2, i32 l, i32 r, i32 L, i32 R) {
         if (r <= L || R <= l) return id1;
         if (l <= L && R <= r) return id2;
-        if (id1 == nullid) id1 = node_vector<dep>::make_node();
+        if (id1 == nullid)
+            id1 = node_vector<dep>::make_node();
         else
             id1 = node_vector<dep>::copy_node(id1);
         i32 M = (l + r) / 2;
@@ -142,11 +148,17 @@ public:
         return self_t(id);
     }
 
-    T get(i32 k) const { return get<0>(rootid, k); }
+    T get(i32 k) const {
+        return get<0>(rootid, k);
+    }
 
-    T operator[](i32 k) const { return get(k); }
+    T operator[](i32 k) const {
+        return get(k);
+    }
 
-    self_t copy(self_t A, i32 l, i32 r) const { return copy<0>(rootid, A.rootid, l, r, 0, 1 << log); }
+    self_t copy(self_t A, i32 l, i32 r) const {
+        return copy<0>(rootid, A.rootid, l, r, 0, 1 << log);
+    }
 };
 
 template <typename T, auto e, i32 MAXIDX>

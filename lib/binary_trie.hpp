@@ -21,7 +21,9 @@ struct binary_trie {
 
     binary_trie() : nodes{node()} {}
 
-    explicit binary_trie(i32 n) : binary_trie() { nodes.reserve(2 * n); }
+    explicit binary_trie(i32 n) : binary_trie() {
+        nodes.reserve(2 * n);
+    }
 
     i32 go(i32 v, bool c) {
         if (!nodes[v].to[c]) {
@@ -75,7 +77,9 @@ struct binary_trie {
         return a;
     }
 
-    U max_xor(U x) const { return min_xor(~x); }
+    U max_xor(U x) const {
+        return min_xor(~x);
+    }
 };
 
 #endif // LIB_BINARY_TRIE_HPP

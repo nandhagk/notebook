@@ -14,7 +14,9 @@ private:
     dsu cc, bec;
     std::vector<i32> p;
 
-    i32 parent(i32 u) { return p[u] = bec.find(p[u]); }
+    i32 parent(i32 u) {
+        return p[u] = bec.find(p[u]);
+    }
 
     void evert(i32 u) {
         std::vector<i32> V;
@@ -83,7 +85,9 @@ private:
 public:
     becc_incremental() {}
 
-    explicit becc_incremental(i32 n) { build(n); }
+    explicit becc_incremental(i32 n) {
+        build(n);
+    }
 
     void build(i32 n) {
         b = 0;
@@ -123,7 +127,9 @@ public:
         return bec.find(u);
     }
 
-    inline i32 ccs() const { return cc.ccs + b; }
+    inline i32 ccs() const {
+        return cc.ccs + b;
+    }
 
     bool same(i32 u, i32 v) {
         assert(0 <= u && u < cc.n);
@@ -132,7 +138,9 @@ public:
         return cc.same(u, v) && bec.same(u, v);
     }
 
-    std::pair<i32, std::vector<i32>> ids() { return bec.ids(); }
+    std::pair<i32, std::vector<i32>> ids() {
+        return bec.ids();
+    }
 };
 
 #endif // LIB_BECC_INCREMENTAL_HPP

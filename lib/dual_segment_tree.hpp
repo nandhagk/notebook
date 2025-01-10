@@ -16,9 +16,13 @@ struct dual_segment_tree {
     std::vector<A> z;
 
     dual_segment_tree() {}
-    explicit dual_segment_tree(i32 m) { build(m); }
+    explicit dual_segment_tree(i32 m) {
+        build(m);
+    }
 
-    explicit dual_segment_tree(const std::vector<A> &v) { build(v); }
+    explicit dual_segment_tree(const std::vector<A> &v) {
+        build(v);
+    }
 
     template <typename F>
     dual_segment_tree(i32 m, F f) {
@@ -90,7 +94,9 @@ struct dual_segment_tree {
     }
 
 private:
-    void all_apply(i32 k, A a) { z[k] = MA::op(z[k], a); }
+    void all_apply(i32 k, A a) {
+        z[k] = MA::op(z[k], a);
+    }
 
     void push(i32 k) {
         if (z[k] == MA::unit()) return;

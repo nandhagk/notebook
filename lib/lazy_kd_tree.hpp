@@ -30,7 +30,9 @@ struct lazy_kd_tree {
         return ((std::get<Is>(a) <= std::get<Is>(b)) && ...);
     }
 
-    bool cle_pt(const PT &a, const PT &b) { return cle_pt_impl(a, b, std::make_index_sequence<K>{}); }
+    bool cle_pt(const PT &a, const PT &b) {
+        return cle_pt_impl(a, b, std::make_index_sequence<K>{});
+    }
 
     struct node {
         // Vector sp -> ep describes the hypercube.
@@ -78,13 +80,21 @@ struct lazy_kd_tree {
     }
 
     // Vector st -> ed describes a hypercube.
-    X prod(const PT &st, const PT &ed) { return prod_rec(st, ed, 0, n, 1); }
+    X prod(const PT &st, const PT &ed) {
+        return prod_rec(st, ed, 0, n, 1);
+    }
 
-    X get(i32 x) { return get_rec(x, 0, n, 1); }
+    X get(i32 x) {
+        return get_rec(x, 0, n, 1);
+    }
 
-    void set(i32 x, X v) { set_rec(rnk[x], v, 0, n, 1); }
+    void set(i32 x, X v) {
+        set_rec(rnk[x], v, 0, n, 1);
+    }
 
-    void apply(const PT &st, const PT &ed, A a) { apply_rec(st, ed, a, 0, n, 1); }
+    void apply(const PT &st, const PT &ed, A a) {
+        apply_rec(st, ed, a, 0, n, 1);
+    }
 
     template <i32 D>
     void build_rec(const std::vector<PT> &p, const std::vector<X> &s, std::vector<i32> &idx, i32 l, i32 r, i32 x) {
@@ -144,7 +154,8 @@ private:
         const i32 mid = (l + r) >> 1;
         push_down(x, mid - l, r - mid);
 
-        if (p < mid) set_rec(p, v, l, mid, x * 2);
+        if (p < mid)
+            set_rec(p, v, l, mid, x * 2);
         else
             set_rec(p, v, mid, r, x * 2 + 1);
 

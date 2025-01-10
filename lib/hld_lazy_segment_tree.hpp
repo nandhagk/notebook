@@ -25,20 +25,26 @@ struct hld_lazy_segment_tree {
         using X = typename MX::ValueT;
         using A = typename MA::ValueT;
 
-        static constexpr X act(const X &x, const A &a, const i64 size) { return AM::act(x, a, size); }
+        static constexpr X act(const X &x, const A &a, const i64 size) {
+            return AM::act(x, a, size);
+        }
     };
 
     lazy_segment_tree<ActedMonoid> st;
     lazy_segment_tree<RAM> rst;
 
-    explicit hld_lazy_segment_tree(const hld &g) : h(g) { build(); }
+    explicit hld_lazy_segment_tree(const hld &g) : h(g) {
+        build();
+    }
 
     template <typename F>
     hld_lazy_segment_tree(const hld &g, F f) : h(g) {
         build(f);
     }
 
-    explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v) : h(g) { build(v); }
+    explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v) : h(g) {
+        build(v);
+    }
 
     void build() {
         build([](i32) -> X { return MX::unit(); });
@@ -54,7 +60,9 @@ struct hld_lazy_segment_tree {
         if constexpr (!MX::commutative) rst.build(h.n, f);
     }
 
-    X get(i32 u) { return st.get(h.tin[u]); }
+    X get(i32 u) {
+        return st.get(h.tin[u]);
+    }
 
     void set(i32 u, X x) {
         st.set(h.tin[u], x);
@@ -78,7 +86,9 @@ struct hld_lazy_segment_tree {
         return st.prod(h.tin[u], h.tin[u] + h.sz[u]);
     }
 
-    X prod_all() { return st.prod_all(); }
+    X prod_all() {
+        return st.prod_all();
+    }
 
     void apply_path(i32 u, i32 v, A a) {
         for (const auto &[s, t] : h.decompose(u, v)) {

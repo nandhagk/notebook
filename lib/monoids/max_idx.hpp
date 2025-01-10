@@ -17,9 +17,13 @@ struct monoid_max_idx {
         return x;
     }
 
-    static constexpr X unit() { return {-inf<T>, inf<T>}; }
+    static constexpr X unit() {
+        return {-inf<T>, inf<T>};
+    }
 
-    static constexpr X from_element(const T &t, const i32 i) { return {t, i}; }
+    static constexpr X from_element(const T &t, const i32 i) {
+        return {t, i};
+    }
 
     static constexpr bool commutative = true;
 };

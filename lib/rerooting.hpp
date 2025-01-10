@@ -54,7 +54,8 @@ struct rerooting {
             ++i;
             const i32 v = e;
 
-            if (v == t) par[u] = i;
+            if (v == t)
+                par[u] = i;
             else
                 suml[u][i] = RR::up(e, dfs_up(g, x, v, u));
 

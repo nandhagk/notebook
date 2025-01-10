@@ -16,9 +16,13 @@ struct disjoint_sparse_table {
     std::vector<std::vector<X>> d;
 
     disjoint_sparse_table() {}
-    explicit disjoint_sparse_table(i32 m) { build(m); }
+    explicit disjoint_sparse_table(i32 m) {
+        build(m);
+    }
 
-    explicit disjoint_sparse_table(const std::vector<X> &v) { build(v); }
+    explicit disjoint_sparse_table(const std::vector<X> &v) {
+        build(v);
+    }
 
     template <typename F>
     disjoint_sparse_table(i32 m, F f) {

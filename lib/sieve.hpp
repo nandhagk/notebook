@@ -12,7 +12,9 @@ struct sieve {
     std::vector<i32> lp, pr;
 
     sieve() {}
-    explicit sieve(i32 m) { build(m); }
+    explicit sieve(i32 m) {
+        build(m);
+    }
 
     void build(i32 m) {
         n = m;

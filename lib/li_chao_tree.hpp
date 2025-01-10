@@ -13,10 +13,16 @@ struct li_chao_tree {
 
         line(T p, T q) : a(p), b(q) {}
 
-        inline T get(T x) const { return a * x + b; }
+        inline T get(T x) const {
+            return a * x + b;
+        }
 
-        friend bool operator==(const line &lhs, const line &rhs) { return lhs.a == rhs.a && lhs.b == rhs.b; }
-        friend bool operator!=(const line &lhs, const line &rhs) { return !(lhs == rhs); }
+        friend bool operator==(const line &lhs, const line &rhs) {
+            return lhs.a == rhs.a && lhs.b == rhs.b;
+        }
+        friend bool operator!=(const line &lhs, const line &rhs) {
+            return !(lhs == rhs);
+        }
     };
 
 private:
@@ -45,11 +51,13 @@ private:
             const T t_m = v->x.get(m), x_m = x.get(m);
             if (t_m > x_m) {
                 std::swap(v->x, x);
-                if (x_l >= t_l) v->l = add_line(v->l, x, l, m, t_l, t_m);
+                if (x_l >= t_l)
+                    v->l = add_line(v->l, x, l, m, t_l, t_m);
                 else
                     v->r = add_line(v->r, x, m, r, t_m, t_r);
             } else {
-                if (t_l >= x_l) v->l = add_line(v->l, x, l, m, x_l, x_m);
+                if (t_l >= x_l)
+                    v->l = add_line(v->l, x, l, m, x_l, x_m);
                 else
                     v->r = add_line(v->r, x, m, r, x_m, x_r);
             }
@@ -85,7 +93,8 @@ private:
         if (l + 1 == r) return v->x.get(x);
 
         const T m = (l + r) / 2;
-        if (x < m) return std::min(v->x.get(x), min(v->l, l, m, x));
+        if (x < m)
+            return std::min(v->x.get(x), min(v->l, l, m, x));
         else
             return std::min(v->x.get(x), min(v->r, m, r, x));
     }
@@ -158,9 +167,13 @@ private:
 public:
     li_chao_tree() : root(nullptr) {}
 
-    ~li_chao_tree() { clear(); }
+    ~li_chao_tree() {
+        clear();
+    }
 
-    void clear() { clear(root); }
+    void clear() {
+        clear(root);
+    }
 
     void add_line(T a, T b) {
         line x(a, b);
@@ -172,8 +185,12 @@ public:
         root = add_segment(root, x, l, r, xmin, xmax + 1, x.get(xmin), x.get(xmax + 1));
     }
 
-    T min(T x) const { return min(root, xmin, xmax + 1, x); }
-    line min_line(T x) const { return min_line(root, xmin, xmax + 1, x); }
+    T min(T x) const {
+        return min(root, xmin, xmax + 1, x);
+    }
+    line min_line(T x) const {
+        return min_line(root, xmin, xmax + 1, x);
+    }
 
     std::vector<std::pair<T, line>> enumerate() {
         if (!root) return {{xmin, line(0, inf<T>)}};
