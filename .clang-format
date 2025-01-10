@@ -9,3 +9,4 @@ RemoveBracesLLVM: true
 AccessModifierOffset: -4
 AlwaysBreakTemplateDeclarations: Yes
 PackConstructorInitializers: NextLineOnly
+InsertBraces: true
