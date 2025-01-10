@@ -1,10 +1,10 @@
 #ifndef LIB_EULERIAN_HPP
 #define LIB_EULERIAN_HPP 1
 
-#include <vector>
-#include <optional>
 #include <algorithm>
 #include <numeric>
+#include <optional>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
@@ -33,7 +33,7 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
 
             --in[v];
             self(self, v);
-            
+
             es.push_back(i);
             us.push_back(u);
             vs.push_back(v);
@@ -46,7 +46,8 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
     std::reverse(vs.begin(), vs.end());
     std::reverse(es.begin(), es.end());
 
-    for (i32 u = 0; u < n; ++u) if (in[u] || out[u]) return std::nullopt;
+    for (i32 u = 0; u < n; ++u)
+        if (in[u] || out[u]) return std::nullopt;
     for (i32 i = 1; i < static_cast<i32>(us.size()); ++i)
         if (vs[i - 1] != us[i]) return std::nullopt;
 
@@ -55,12 +56,11 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
 }
 
 template <typename Graph>
-inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_undirected(const Graph& g) {
+inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_undirected(const Graph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);
-    for (i32 u = 0; u < n; ++u) 
-        deg[u] = static_cast<i32>(g[u].size());
+    for (i32 u = 0; u < n; ++u) deg[u] = static_cast<i32>(g[u].size());
 
     i32 s = -1;
     for (i32 u = 0; u < n; ++u) {
@@ -78,13 +78,13 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
 
     const auto dfs = [&](auto &&self, i32 u) -> void {
         while (deg[u]) {
-            const auto &[v, i] = g[u][--pos[u]]; 
+            const auto &[v, i] = g[u][--pos[u]];
             if (used[i]) continue;
 
             --deg[u];
             --deg[v];
             used[i] = true;
-            
+
             self(self, v);
 
             us.push_back(u);
@@ -99,7 +99,8 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
     std::reverse(vs.begin(), vs.end());
     std::reverse(es.begin(), es.end());
 
-    for (i32 u = 0; u < n; ++u) if (deg[u]) return std::nullopt;
+    for (i32 u = 0; u < n; ++u)
+        if (deg[u]) return std::nullopt;
     for (i32 i = 1; i < static_cast<i32>(us.size()); ++i)
         if (vs[i - 1] != us[i]) return std::nullopt;
 

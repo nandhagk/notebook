@@ -51,11 +51,10 @@ struct rerooting {
         for (i32 i = 0; i < sz; ++i) {
             const i32 v = g[u][i];
 
-            if (v == t) {
+            if (v == t)
                 par[u] = i;
-            } else {
+            else
                 suml[u][i] = RR::up(g[u][i], dfs_up(g, x, v, u));
-            }
 
             res = RR::sibling(res, suml[u][i]);
         }

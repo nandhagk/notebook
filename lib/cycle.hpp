@@ -1,9 +1,9 @@
 #ifndef LIB_CYCLE_HPP
 #define LIB_CYCLE_HPP 1
 
-#include <vector>
-#include <optional>
 #include <algorithm>
+#include <optional>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
@@ -23,8 +23,7 @@ inline std::optional<std::vector<i32>> cycle_directed(const Graph &g) {
                 if (self(self, v)) return true;
             } else if (state[v] == 1) {
                 ans.push_back(i);
-                for (i32 x = u; x != v; x = par[x].first)
-                    ans.push_back(par[x].second);
+                for (i32 x = u; x != v; x = par[x].first) ans.push_back(par[x].second);
 
                 std::reverse(ans.begin(), ans.end());
                 return true;
