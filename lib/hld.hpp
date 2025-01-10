@@ -15,7 +15,8 @@ struct hld {
     hld() {}
 
     template <typename Graph>
-    explicit hld(const Graph &g) : hld(g, 0) {}
+    explicit hld(const Graph &g)
+        : hld(g, 0) {}
 
     template <typename Graph>
     hld(const Graph &g, i32 root) {

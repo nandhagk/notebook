@@ -23,9 +23,11 @@ struct lazy_splay_tree {
         bool rev;
         u32 sz;
 
-        explicit node(X x) : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        explicit node(X x)
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
-        node() : node(MX::unit()) {}
+        node()
+            : node(MX::unit()) {}
     };
 
     i32 size(node *t) const {
@@ -35,9 +37,11 @@ struct lazy_splay_tree {
     i32 n, pid;
     node *pool;
 
-    lazy_splay_tree() : pool{nullptr} {}
+    lazy_splay_tree()
+        : pool{nullptr} {}
 
-    explicit lazy_splay_tree(i32 m) : lazy_splay_tree() {
+    explicit lazy_splay_tree(i32 m)
+        : lazy_splay_tree() {
         build(m);
     }
 

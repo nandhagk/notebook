@@ -15,9 +15,11 @@ struct basic_rbst {
         bool rev;
         u32 sz;
 
-        explicit node(T x) : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
+        explicit node(T x)
+            : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
 
-        node() : node(T()) {}
+        node()
+            : node(T()) {}
     };
 
     i32 size(node *t) const {
@@ -27,9 +29,11 @@ struct basic_rbst {
     i32 n, pid;
     node *pool;
 
-    basic_rbst() : pool{nullptr} {}
+    basic_rbst()
+        : pool{nullptr} {}
 
-    explicit basic_rbst(i32 m) : basic_rbst() {
+    explicit basic_rbst(i32 m)
+        : basic_rbst() {
         build(m);
     }
 

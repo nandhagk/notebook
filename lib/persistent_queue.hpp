@@ -18,7 +18,8 @@ private:
     i32 s{}, t{};
     array_t p;
 
-    persistent_queue(i32 a, i32 b, array_t q) : s{a}, t{b}, p(q) {}
+    persistent_queue(i32 a, i32 b, array_t q)
+        : s{a}, t{b}, p(q) {}
 
 public:
     persistent_queue() {}

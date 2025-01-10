@@ -7,7 +7,8 @@
 #include <lib/prelude.hpp>
 
 struct barrett_32 {
-    constexpr barrett_32(u32 m_) : m(m_), im((u64)(-1) / m + 1) {}
+    constexpr barrett_32(u32 m_)
+        : m(m_), im((u64)(-1) / m + 1) {}
 
     constexpr u32 mod() const {
         return m;
@@ -32,7 +33,8 @@ private:
 };
 
 struct barrett_64 {
-    constexpr barrett_64(u64 m_) : m(m_) {
+    constexpr barrett_64(u64 m_)
+        : m(m_) {
         u128 im = u128(-1) / m;
         if (im * m + m == u128(0)) ++im;
 
@@ -70,10 +72,12 @@ template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr>
 struct arbitrary_modint_base {
     using mint = arbitrary_modint_base;
 
-    constexpr arbitrary_modint_base() : v(0) {}
+    constexpr arbitrary_modint_base()
+        : v(0) {}
 
     template <typename T, is_unsigned_integral_t<T> * = nullptr>
-    arbitrary_modint_base(T x) : v(U(x % mod())) {}
+    arbitrary_modint_base(T x)
+        : v(U(x % mod())) {}
 
     template <typename T, is_signed_integral_t<T> * = nullptr>
     arbitrary_modint_base(T x) {

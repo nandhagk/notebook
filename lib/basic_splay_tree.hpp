@@ -14,9 +14,11 @@ struct basic_splay_tree {
         bool rev;
         u32 sz;
 
-        explicit node(T x) : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
+        explicit node(T x)
+            : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
 
-        node() : node(T()) {}
+        node()
+            : node(T()) {}
     };
 
     i32 size(node *t) const {
@@ -26,9 +28,11 @@ struct basic_splay_tree {
     i32 n, pid;
     node *pool;
 
-    basic_splay_tree() : pool{nullptr} {}
+    basic_splay_tree()
+        : pool{nullptr} {}
 
-    explicit basic_splay_tree(i32 m) : basic_splay_tree() {
+    explicit basic_splay_tree(i32 m)
+        : basic_splay_tree() {
         build(m);
     }
 

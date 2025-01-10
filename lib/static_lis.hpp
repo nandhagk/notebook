@@ -63,7 +63,8 @@ inline void unit_monge_dmul(const i32 n, iter stack, const iter a, const iter b)
     struct d_itr {
         i32 delta;
         i32 col;
-        d_itr() : delta(0), col(0) {}
+        d_itr()
+            : delta(0), col(0) {}
     };
 
     i32 row = n;

@@ -18,9 +18,11 @@ struct rbst {
         bool rev;
         u32 sz;
 
-        explicit node(X x) : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
+        explicit node(X x)
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
-        node() : node(MX::unit()) {}
+        node()
+            : node(MX::unit()) {}
     };
 
     i32 size(node *t) const {
@@ -30,9 +32,11 @@ struct rbst {
     i32 n, pid;
     node *pool;
 
-    rbst() : pool{nullptr} {}
+    rbst()
+        : pool{nullptr} {}
 
-    explicit rbst(i32 m) : rbst() {
+    explicit rbst(i32 m)
+        : rbst() {
         build(m);
     }
 

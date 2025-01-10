@@ -18,16 +18,19 @@ struct hld_product {
     RangeProduct st;
     decltype(extract(std::declval<RangeProduct>())) rst;
 
-    explicit hld_product(const hld &g) : h(g) {
+    explicit hld_product(const hld &g)
+        : h(g) {
         build();
     }
 
-    hld_product(const hld &g, const std::vector<X> &v) : h(g) {
+    hld_product(const hld &g, const std::vector<X> &v)
+        : h(g) {
         build(v);
     }
 
     template <typename F>
-    hld_product(const hld &g, F f) : h(g) {
+    hld_product(const hld &g, F f)
+        : h(g) {
         build(f);
     }
 

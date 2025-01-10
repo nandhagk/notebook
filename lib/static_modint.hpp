@@ -11,10 +11,12 @@ template <typename U, U m, is_unsigned_integral_t<U> * = nullptr>
 struct static_modint_base {
     using mint = static_modint_base;
 
-    constexpr static_modint_base() : v(0) {}
+    constexpr static_modint_base()
+        : v(0) {}
 
     template <typename T, is_unsigned_integral_t<T> * = nullptr>
-    constexpr static_modint_base(T x) : v(U(x % mod())) {}
+    constexpr static_modint_base(T x)
+        : v(U(x % mod())) {}
 
     template <typename T, is_signed_integral_t<T> * = nullptr>
     constexpr static_modint_base(T x) {

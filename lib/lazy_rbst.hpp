@@ -24,9 +24,11 @@ struct lazy_rbst {
         bool rev;
         u32 sz;
 
-        explicit node(X x) : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        explicit node(X x)
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
-        node() : node(MX::unit()) {}
+        node()
+            : node(MX::unit()) {}
     };
 
     i32 size(node *t) const {
@@ -36,9 +38,11 @@ struct lazy_rbst {
     i32 n, pid;
     node *pool;
 
-    lazy_rbst() : pool{nullptr} {}
+    lazy_rbst()
+        : pool{nullptr} {}
 
-    explicit lazy_rbst(i32 m) : lazy_rbst() {
+    explicit lazy_rbst(i32 m)
+        : lazy_rbst() {
         build(m);
     }
 

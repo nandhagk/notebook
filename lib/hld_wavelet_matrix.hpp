@@ -12,7 +12,8 @@ struct hld_wavelet_matrix {
     const hld &h;
     wavelet_matrix<T> wm;
 
-    explicit hld_wavelet_matrix(const hld &g, const std::vector<T> &v) : h(g) {
+    explicit hld_wavelet_matrix(const hld &g, const std::vector<T> &v)
+        : h(g) {
         build(v);
     }
 

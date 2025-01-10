@@ -14,7 +14,8 @@ struct hld_wavelet_matrix_product {
     using MX = typename RangeProduct::MX;
     using X = typename MX::ValueT;
 
-    explicit hld_wavelet_matrix_product(const hld &g, const std::vector<T> &v, const std::vector<X> &s) : h(g) {
+    explicit hld_wavelet_matrix_product(const hld &g, const std::vector<T> &v, const std::vector<X> &s)
+        : h(g) {
         build(v, s);
     }
 

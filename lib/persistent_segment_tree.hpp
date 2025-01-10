@@ -31,14 +31,16 @@ struct persistent_segment_tree {
     template <u32 dep>
     struct node<dep, std::enable_if_t<dep == log>> {
         X val;
-        node() : val(MX::unit()) {}
+        node()
+            : val(MX::unit()) {}
     };
 
     template <u32 dep>
     struct node<dep, std::enable_if_t<dep != log>> {
         i32 lch, rch;
         X val;
-        node() : lch(nullid), rch(nullid), val(MX::unit()) {}
+        node()
+            : lch(nullid), rch(nullid), val(MX::unit()) {}
     };
 
     template <u32 dep>
@@ -64,7 +66,8 @@ struct persistent_segment_tree {
     template <u32 dep>
     struct node_ref {
         i32 id;
-        node_ref(i32 _id) : id(_id) {}
+        node_ref(i32 _id)
+            : id(_id) {}
         node<dep> &operator*() {
             return node_vector<dep>::V[id];
         }
@@ -181,11 +184,14 @@ struct persistent_segment_tree {
     }
 
     i32 rootid;
-    persistent_segment_tree(i32 _rootid) : rootid(_rootid) {}
+    persistent_segment_tree(i32 _rootid)
+        : rootid(_rootid) {}
 
 public:
-    persistent_segment_tree() : rootid(nullid) {}
-    explicit persistent_segment_tree(const std::vector<X> &V) : rootid(build<0>(V, 0, 1 << log)) {}
+    persistent_segment_tree()
+        : rootid(nullid) {}
+    explicit persistent_segment_tree(const std::vector<X> &V)
+        : rootid(build<0>(V, 0, 1 << log)) {}
 
     self_t set(u32 k, X x) const {
         i32 id = set<0, (u32)1 << log>(rootid, k, x);

@@ -41,13 +41,15 @@ struct dense_graph {
     struct edge_range {
         const std::tr2::dynamic_bitset<> &e;
 
-        explicit edge_range(const std::tr2::dynamic_bitset<> &es) : e{es} {}
+        explicit edge_range(const std::tr2::dynamic_bitset<> &es)
+            : e{es} {}
 
         struct edge_iterator {
             const std::tr2::dynamic_bitset<> &e;
             usize v;
 
-            edge_iterator(const std::tr2::dynamic_bitset<> &es, usize s) : e{es}, v{s} {}
+            edge_iterator(const std::tr2::dynamic_bitset<> &es, usize s)
+                : e{es}, v{s} {}
 
             const edge_iterator &operator++() {
                 v = e.find_next(v);

@@ -33,16 +33,19 @@ struct hld_lazy_segment_tree {
     lazy_segment_tree<ActedMonoid> st;
     lazy_segment_tree<RAM> rst;
 
-    explicit hld_lazy_segment_tree(const hld &g) : h(g) {
+    explicit hld_lazy_segment_tree(const hld &g)
+        : h(g) {
         build();
     }
 
     template <typename F>
-    hld_lazy_segment_tree(const hld &g, F f) : h(g) {
+    hld_lazy_segment_tree(const hld &g, F f)
+        : h(g) {
         build(f);
     }
 
-    explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v) : h(g) {
+    explicit hld_lazy_segment_tree(const hld &g, const std::vector<X> &v)
+        : h(g) {
         build(v);
     }
 

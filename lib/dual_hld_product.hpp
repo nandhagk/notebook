@@ -13,16 +13,19 @@ struct dual_hld_product {
 
     DualRangeProduct st;
 
-    explicit dual_hld_product(const hld &g) : h(g) {
+    explicit dual_hld_product(const hld &g)
+        : h(g) {
         build();
     }
 
     template <typename F>
-    dual_hld_product(const hld &g, F f) : h(g) {
+    dual_hld_product(const hld &g, F f)
+        : h(g) {
         build(f);
     }
 
-    explicit dual_hld_product(const hld &g, const std::vector<A> &v) : h(g) {
+    explicit dual_hld_product(const hld &g, const std::vector<A> &v)
+        : h(g) {
         build(v);
     }
 

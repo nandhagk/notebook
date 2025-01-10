@@ -11,7 +11,8 @@ struct li_chao_tree {
     struct line {
         T a, b;
 
-        line(T p, T q) : a(p), b(q) {}
+        line(T p, T q)
+            : a(p), b(q) {}
 
         inline T get(T x) const {
             return a * x + b;
@@ -30,7 +31,8 @@ private:
         line x;
         node *l, *r;
 
-        explicit node(const line &z) : x(z), l(nullptr), r(nullptr) {}
+        explicit node(const line &z)
+            : x(z), l(nullptr), r(nullptr) {}
     };
 
     node *root;
@@ -165,7 +167,8 @@ private:
     }
 
 public:
-    li_chao_tree() : root(nullptr) {}
+    li_chao_tree()
+        : root(nullptr) {}
 
     ~li_chao_tree() {
         clear();

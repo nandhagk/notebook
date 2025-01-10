@@ -22,7 +22,8 @@ private:
     }
 
     array_t sz;
-    persistent_dsu(array_t _sz) : sz(_sz) {}
+    persistent_dsu(array_t _sz)
+        : sz(_sz) {}
 
 public:
     persistent_dsu() {}

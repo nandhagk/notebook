@@ -17,9 +17,11 @@ struct splay_tree {
         bool rev;
         u32 sz;
 
-        explicit node(X x) : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
+        explicit node(X x)
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
-        node() : node(MX::unit()) {}
+        node()
+            : node(MX::unit()) {}
     };
 
     i32 size(node *t) const {
@@ -29,9 +31,11 @@ struct splay_tree {
     i32 n, pid;
     node *pool;
 
-    splay_tree() : pool{nullptr} {}
+    splay_tree()
+        : pool{nullptr} {}
 
-    explicit splay_tree(i32 m) : splay_tree() {
+    explicit splay_tree(i32 m)
+        : splay_tree() {
         build(m);
     }
 

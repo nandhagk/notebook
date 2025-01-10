@@ -28,10 +28,12 @@ struct static_montgomery_modint_base {
     static constexpr U n2 = static_cast<U>(-V(m) % m);
     static constexpr U r = get_r();
 
-    constexpr static_montgomery_modint_base() : v(0) {}
+    constexpr static_montgomery_modint_base()
+        : v(0) {}
 
     template <typename T, std::enable_if_t<std::is_integral<T>::value> * = nullptr>
-    constexpr static_montgomery_modint_base(T x) : v(reduce(V(x % m + m) * n2)) {}
+    constexpr static_montgomery_modint_base(T x)
+        : v(reduce(V(x % m + m) * n2)) {}
 
     constexpr static U reduce(V b) {
         return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);

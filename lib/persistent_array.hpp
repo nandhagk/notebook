@@ -29,7 +29,8 @@ private:
     template <i32 dep>
     struct node<dep, std::enable_if_t<dep == log>> {
         T val;
-        node() : val(e()) {}
+        node()
+            : val(e()) {}
     };
 
     template <i32 dep>
@@ -58,7 +59,8 @@ private:
     template <i32 dep>
     struct node_ref {
         i32 id;
-        node_ref(i32 _id) : id(_id) {}
+        node_ref(i32 _id)
+            : id(_id) {}
         node<dep> &operator*() {
             return node_vector<dep>::V[id];
         }
@@ -136,12 +138,15 @@ private:
     }
 
     i32 rootid;
-    persistent_array(i32 _rootid) : rootid(_rootid) {}
+    persistent_array(i32 _rootid)
+        : rootid(_rootid) {}
 
 public:
-    persistent_array() : rootid(nullid) {}
+    persistent_array()
+        : rootid(nullid) {}
 
-    persistent_array(const std::vector<T> &V) : rootid(build<0>(V, 0, 1 << log)) {}
+    persistent_array(const std::vector<T> &V)
+        : rootid(build<0>(V, 0, 1 << log)) {}
 
     self_t set(i32 k, T x) const {
         i32 id = set<0>(rootid, k, x);

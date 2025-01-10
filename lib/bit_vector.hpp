@@ -9,7 +9,8 @@ struct bit_vector {
     i32 n;
     std::vector<std::pair<u64, u32>> d;
 
-    explicit bit_vector(i32 m) : n(m), d((n + 127) >> 6) {}
+    explicit bit_vector(i32 m)
+        : n(m), d((n + 127) >> 6) {}
 
     void set(i32 i) {
         d[i >> 6].first |= static_cast<u64>(1) << (i & 63);

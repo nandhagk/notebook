@@ -10,7 +10,8 @@ struct simple_edge {
     i32 v;
 
     simple_edge() = default;
-    simple_edge(i32 to) : v{to} {}
+    simple_edge(i32 to)
+        : v{to} {}
 
     i32 to() const {
         return v;
@@ -29,7 +30,8 @@ struct weighted_edge {
     W w;
 
     weighted_edge() {}
-    weighted_edge(i32 to, W cost) : v{to}, w{cost} {}
+    weighted_edge(i32 to, W cost)
+        : v{to}, w{cost} {}
 
     i32 to() const {
         return v;
@@ -84,7 +86,8 @@ struct csr_graph {
         const E *es;
         usize sz;
 
-        edge_range(const E *e, usize size) : es{e}, sz{size} {}
+        edge_range(const E *e, usize size)
+            : es{e}, sz{size} {}
 
         const E *begin() {
             return &es[0];

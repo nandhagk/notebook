@@ -17,10 +17,12 @@ struct arbitrary_montgomery_modint_base {
 
     static constexpr i32 W = std::numeric_limits<U>::digits;
 
-    constexpr arbitrary_montgomery_modint_base() : v(0) {}
+    constexpr arbitrary_montgomery_modint_base()
+        : v(0) {}
 
     template <typename T, std::enable_if_t<std::is_integral<T>::value> * = nullptr>
-    arbitrary_montgomery_modint_base(T x) : v(reduce(V(x % m + m) * n2)) {}
+    arbitrary_montgomery_modint_base(T x)
+        : v(reduce(V(x % m + m) * n2)) {}
 
     static U reduce(V b) {
         return static_cast<U>((b + V(U(b) * U(-r)) * m) >> W);

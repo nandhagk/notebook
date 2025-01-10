@@ -48,7 +48,8 @@ private:
 public:
     RollbackDSU dsu;
 
-    dynamic_connectivity_offline(i32 m) : n{m}, dsu(n) {}
+    dynamic_connectivity_offline(i32 m)
+        : n{m}, dsu(n) {}
 
     void link(i32 a, i32 b) {
         assert(0 <= a && a < n);

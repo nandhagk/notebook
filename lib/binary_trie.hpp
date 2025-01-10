@@ -19,9 +19,11 @@ struct binary_trie {
 
     std::vector<node> nodes;
 
-    binary_trie() : nodes{node()} {}
+    binary_trie()
+        : nodes{node()} {}
 
-    explicit binary_trie(i32 n) : binary_trie() {
+    explicit binary_trie(i32 n)
+        : binary_trie() {
         nodes.reserve(2 * n);
     }
 

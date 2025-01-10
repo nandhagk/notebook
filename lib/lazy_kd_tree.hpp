@@ -40,7 +40,8 @@ struct lazy_kd_tree {
         X val;
 
         node() {}
-        node(const PT &s, const PT &e, X x = MX::unit()) : sp(s), ep(e), val(x) {}
+        node(const PT &s, const PT &e, X x = MX::unit())
+            : sp(s), ep(e), val(x) {}
     };
 
     i32 n;
