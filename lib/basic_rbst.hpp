@@ -168,7 +168,7 @@ struct basic_rbst {
         auto [l, r] = split(root, p);
         auto [a, b] = split(r, 1);
 
-        a->val = x;
+        *a = node(x);
         root = merge(l, merge(a, b));
     }
 
