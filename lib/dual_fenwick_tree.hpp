@@ -21,9 +21,33 @@ struct dual_fenwick_tree {
         build(m);
     }
 
+    explicit dual_fenwick_tree(const std::vector<A> &v) {
+        build(v);
+    }
+
+    template <typename F>
+    dual_fenwick_tree(i32 m, F f) {
+        build(m, f);
+    }
+
     void build(i32 m) {
+        return build(m, [](i32) -> A { return MA::unit(); });
+    }
+
+    void build(const std::vector<A> &v) {
+        return build(static_cast<i32>(v.size()), [&](i32 i) -> A { return v[i]; });
+    }
+
+    template <typename F>
+    void build(i32 m, F f) {
         n = m;
         d.assign(n, MA::unit());
+
+        for (i32 i = 0; i < n; ++i) d[i] = f(i);
+        for (i32 i = 1; i <= n; ++i) {
+            const i32 j = i + (i & -i);
+            if (j <= n) d[j - 1] = MA::op(d[i - 1], d[j - 1]);
+        }
     }
 
     A get(i32 p) const {

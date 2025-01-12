@@ -126,7 +126,7 @@ struct wavelet_matrix_product {
         i32 cnt{};
         X x = MX::unit();
         const auto dfs = [&](auto &&self, i32 d, i32 L, i32 R, i32 p, i32 q) -> void {
-            assert(p - q == 1 << d);
+            assert(q - p == 1 << d);
 
             if (hi <= p || q <= lo) return;
             if (lo <= p && q <= hi) {
