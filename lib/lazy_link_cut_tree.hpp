@@ -9,42 +9,9 @@
 
 template <typename ActedMonoid>
 struct lazy_link_cut_tree {
-    struct RMX {
-        using MX = typename ActedMonoid::MX;
-        using X = std::pair<typename MX::ValueT, typename MX::ValueT>;
-        using ValueT = X;
-
-        static constexpr X op(const X &x, const X &y) {
-            return {MX::op(x.first, y.first), MX::op(y.second, x.second)};
-        }
-
-        static constexpr X unit() {
-            return {MX::unit(), MX::unit()};
-        }
-
-        static constexpr X rev(const X &x) {
-            return {x.second, x.first};
-        }
-
-        static constexpr bool commutative = MX::commutative;
-    };
-
-    struct RAM {
-        using MX = RMX;
-        using MA = typename ActedMonoid::MA;
-
-        using X = typename MX::ValueT;
-        using A = typename MA::ValueT;
-
-        static constexpr X act(const X &x, const A &a, i32 sz) {
-            return {ActedMonoid::act(x.first, a, sz), ActedMonoid::act(x.second, a, sz)};
-        }
-    };
-
-    using AM = std::conditional_t<ActedMonoid::MX::commutative, ActedMonoid, RAM>;
+    using AM = ActedMonoid;
 
     using MX = typename AM::MX;
-    using Y = typename ActedMonoid::MX::ValueT;
     using X = typename MX::ValueT;
 
     using MA = typename AM::MA;
@@ -52,13 +19,13 @@ struct lazy_link_cut_tree {
 
     struct node {
         node *l, *r, *p;
-        X val, sum;
+        X val, sum, mus;
         A lz;
         bool rev;
         u32 sz;
 
         explicit node(const X &x)
-            : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+            : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
         node()
             : node(MX::unit()) {}
@@ -103,42 +70,41 @@ struct lazy_link_cut_tree {
         return nullptr;
     }
 
-    node *make_node(const Y &x) {
+    node *make_node(const X &x) {
         assert(pid < n);
 
-        if constexpr (MX::commutative)
-            return &(pool[pid++] = node(x));
-        else
-            return &(pool[pid++] = node({x, x}));
+        return &(pool[pid++] = node(x));
     }
 
     void update(node *t) {
         if (t == nullptr) return;
 
         t->sz = 1;
-        t->sum = t->val;
+        t->mus = t->sum = t->val;
 
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
+            t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
+            t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void all_apply(node *t, const A &a) {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
+        t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
-        if constexpr (!MX::commutative) t->sum = MX::rev(t->sum);
-
+        std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
@@ -278,45 +244,27 @@ struct lazy_link_cut_tree {
         return expose(v);
     }
 
-    void set(node *t, const Y &x) {
+    void set(node *t, const X &x) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            t->val = x;
-        else
-            t->val = {x, x};
-
+        t->val = x;
         update(t);
     }
 
-    void multiply(node *t, const Y &x) {
+    void multiply(node *t, const X &x) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            t->val = MX::op(t->val, x);
-        else
-            t->val = MX::op(t->val, {x, x});
-
+        t->val = MX::op(t->val, x);
         update(t);
     }
 
-    Y get(node *t) {
+    X get(node *t) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            return t->val;
-        else
-            return t->val.first;
+        return t->val;
     }
 
-    Y prod_path(node *u, node *v) {
+    X prod_path(node *u, node *v) {
         evert(u);
         expose(v);
-
-        if constexpr (MX::commutative)
-            return v->sum;
-        else
-            return v->sum.first;
+        return v->sum;
     }
 
     void apply_path(node *u, node *v, const A &a) {

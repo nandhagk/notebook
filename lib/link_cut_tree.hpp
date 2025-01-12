@@ -9,38 +9,17 @@
 
 template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
 struct link_cut_tree {
-    struct RMX {
-        using MX = Monoid;
-        using X = std::pair<typename MX::ValueT, typename MX::ValueT>;
-        using ValueT = X;
-
-        static constexpr X op(const X &x, const X &y) {
-            return {MX::op(x.first, y.first), MX::op(y.second, x.second)};
-        }
-
-        static constexpr X unit() {
-            return {MX::unit(), MX::unit()};
-        }
-
-        static constexpr X rev(const X &x) {
-            return {x.second, x.first};
-        }
-
-        static constexpr bool commutative = Monoid::commutative;
-    };
-
-    using MX = std::conditional_t<Monoid::commutative, Monoid, RMX>;
-    using Y = typename Monoid::ValueT;
+    using MX = Monoid;
     using X = typename MX::ValueT;
 
     struct node {
         node *l, *r, *p;
-        X val, sum;
+        X val, sum, mus;
         bool rev;
         u32 sz;
 
         explicit node(const X &x)
-            : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
+            : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
 
         node()
             : node(MX::unit()) {}
@@ -85,36 +64,34 @@ struct link_cut_tree {
         return nullptr;
     }
 
-    node *make_node(const Y &x) {
+    node *make_node(const X &x) {
         assert(pid < n);
 
-        if constexpr (MX::commutative)
-            return &(pool[pid++] = node(x));
-        else
-            return &(pool[pid++] = node({x, x}));
+        return &(pool[pid++] = node(x));
     }
 
     void update(node *t) {
         if (t == nullptr) return;
 
         t->sz = 1;
-        t->sum = t->val;
+        t->mus = t->sum = t->val;
 
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
+            t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
+            t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
-        if constexpr (!MX::commutative) t->sum = MX::rev(t->sum);
-
+        std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
@@ -248,45 +225,27 @@ struct link_cut_tree {
         return expose(v);
     }
 
-    void set(node *t, const Y &x) {
+    void set(node *t, const X &x) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            t->val = x;
-        else
-            t->val = {x, x};
-
+        t->val = x;
         update(t);
     }
 
-    void multiply(node *t, const Y &x) {
+    void multiply(node *t, const X &x) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            t->val = MX::op(t->val, x);
-        else
-            t->val = MX::op(t->val, {x, x});
-
+        t->val = MX::op(t->val, x);
         update(t);
     }
 
-    Y get(node *t) {
+    X get(node *t) {
         expose(t);
-
-        if constexpr (MX::commutative)
-            return t->val;
-        else
-            return t->val.first;
+        return t->val;
     }
 
-    Y prod_path(node *u, node *v) {
+    X prod_path(node *u, node *v) {
         evert(u);
         expose(v);
-
-        if constexpr (MX::commutative)
-            return v->sum;
-        else
-            return v->sum.first;
+        return v->sum;
     }
 
     node *jump(node *t, i32 k) {
