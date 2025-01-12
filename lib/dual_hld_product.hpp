@@ -46,18 +46,18 @@ struct dual_hld_product {
         return st.get(h.tin[u]);
     }
 
-    void set(i32 u, A x) {
+    void set(i32 u, const A &x) {
         st.set(h.tin[u], x);
     }
 
-    void apply_path(i32 u, i32 v, A a) {
+    void apply_path(i32 u, i32 v, const A &a) {
         for (const auto &[s, t] : h.decompose(u, v)) {
             const auto &[x, y] = std::minmax(h.tin[s], h.tin[t]);
             st.apply(x, y + 1, a);
         }
     }
 
-    void apply_subtree(i32 u, A a) {
+    void apply_subtree(i32 u, const A &a) {
         const i32 x = h.tin[u];
         const i32 y = h.tin[u] + h.sz[u];
 

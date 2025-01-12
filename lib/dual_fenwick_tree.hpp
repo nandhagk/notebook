@@ -59,7 +59,7 @@ struct dual_fenwick_tree {
         return x;
     }
 
-    void apply(i32 l, i32 r, A a) {
+    void apply(i32 l, i32 r, const A &a) {
         assert(0 <= l && l <= r && r <= n);
 
         A b = MA::inv(a);

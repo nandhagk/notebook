@@ -2,8 +2,8 @@
 #define LIB_STATIC_MEX_HPP 1
 
 #include <lib/monoids/min.hpp>
-#include <lib/sparse_table.hpp>
 #include <lib/rect_wavelet_matrix_product.hpp>
+#include <lib/sparse_table.hpp>
 
 // Very slow
 struct static_mex {

@@ -225,7 +225,7 @@ struct dual_ctd_product {
         return res;
     }
 
-    void apply(i32 u, i32 dl, i32 dr, A a) {
+    void apply(i32 u, i32 dl, i32 dr, const A &a) {
         assert(0 <= u && u < n);
 
         u = ord[u];
@@ -267,7 +267,7 @@ private:
         assert(t == n);
     }
 
-    void apply(sequence_t &seq, i32 l, i32 r, A a) {
+    void apply(sequence_t &seq, i32 l, i32 r, const A &a) {
         l = std::max(0, l);
         r = std::min(r, seq.n);
 

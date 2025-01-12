@@ -70,16 +70,10 @@ struct rect_segment_tree {
         i32 l = static_cast<i32>(std::lower_bound(pts.begin(), pts.end(), pt{xl, yr}, cmp) - pts.begin());
         i32 r = static_cast<i32>(std::lower_bound(pts.begin(), pts.end(), pt{xr, yr}, cmp) - pts.begin());
 
-        l += n;
-        r += n;
-
         X x = MX::unit();
-        while (l < r) {
+        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1) x = MX::op(x, prod(l++, yl, yr));
             if (r & 1) x = MX::op(prod(--r, yl, yr), x);
-
-            l >>= 1;
-            r >>= 1;
         }
 
         return x;

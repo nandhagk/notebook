@@ -49,7 +49,7 @@ struct dual_segment_tree {
         for (i32 i = 0; i < n; ++i) z[i + size] = f(i);
     }
 
-    void set(i32 p, A x) {
+    void set(i32 p, const A &x) {
         assert(0 <= p && p < n);
 
         p += size;
@@ -72,7 +72,7 @@ struct dual_segment_tree {
         return {z.begin() + size, z.begin() + size + n};
     }
 
-    void apply(i32 l, i32 r, A a) {
+    void apply(i32 l, i32 r, const A &a) {
         assert(0 <= l && l <= r && r <= n);
 
         if (l == r) return;
@@ -94,7 +94,7 @@ struct dual_segment_tree {
     }
 
 private:
-    void all_apply(i32 k, A a) {
+    void all_apply(i32 k, const A &a) {
         z[k] = MA::op(z[k], a);
     }
 
