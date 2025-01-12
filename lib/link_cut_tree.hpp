@@ -88,11 +88,10 @@ struct link_cut_tree {
     node *make_node(const Y &x) {
         assert(pid < n);
 
-        if constexpr (MX::commutative) {
+        if constexpr (MX::commutative)
             return &(pool[pid++] = node(x));
-        } else {
+        else
             return &(pool[pid++] = node({x, x}));
-        }
     }
 
     void update(node *t) {
@@ -252,46 +251,42 @@ struct link_cut_tree {
     void set(node *t, const Y &x) {
         expose(t);
 
-        if constexpr (MX::commutative) {
+        if constexpr (MX::commutative)
             t->val = x;
-        } else {
+        else
             t->val = {x, x};
-        }
 
         update(t);
     }
 
     void multiply(node *t, const Y &x) {
         expose(t);
-        
-        if constexpr (MX::commutative) {
+
+        if constexpr (MX::commutative)
             t->val = MX::op(t->val, x);
-        } else {
+        else
             t->val = MX::op(t->val, {x, x});
-        }
 
         update(t);
     }
 
     Y get(node *t) {
         expose(t);
-        
-        if constexpr (MX::commutative) {
+
+        if constexpr (MX::commutative)
             return t->val;
-        } else {
+        else
             return t->val.first;
-        }
     }
 
-    Y prod(node *u, node *v) {
+    Y prod_path(node *u, node *v) {
         evert(u);
         expose(v);
-        
-        if constexpr (MX::commutative) {
+
+        if constexpr (MX::commutative)
             return v->sum;
-        } else {
+        else
             return v->sum.first;
-        }
     }
 
     node *jump(node *t, i32 k) {
