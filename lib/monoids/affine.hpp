@@ -29,11 +29,8 @@ struct monoid_affine {
 
     static constexpr X pow(const X &x, i64 n) {
         X z = unit();
-        X y = x;
-        while (n) {
+        for (X y = x; n; n >>= 1, y = op(y, y)) {
             if (n & 1) z = op(z, y);
-            y = op(y, y);
-            n >>= 1;
         }
 
         return z;

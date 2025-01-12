@@ -7,12 +7,12 @@
 template <typename T>
 struct acted_monoid_mxss_assign {
     using MX = monoid_mxss<T>;
-    using MA = monoid_assign<T>;
+    using MA = monoid_assign<typename MX::ValueT>;
 
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    static constexpr X act(X x, A a, i32 sz) {
+    static constexpr X act(const X &x, const A &a, i32 sz) {
         return a ? MX::from_element(*a * sz) : x;
     }
 };
