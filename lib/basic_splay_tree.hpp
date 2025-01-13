@@ -14,7 +14,7 @@ struct basic_splay_tree {
         bool rev;
         u32 sz;
 
-        explicit node(T x)
+        explicit node(const T &x)
             : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
 
         node()
