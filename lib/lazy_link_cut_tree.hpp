@@ -66,7 +66,7 @@ struct lazy_link_cut_tree {
         delete[] pool;
     }
 
-    node *make_node() {
+    node *make_node() const {
         return nullptr;
     }
 
@@ -76,7 +76,7 @@ struct lazy_link_cut_tree {
         return &(pool[pid++] = node(x));
     }
 
-    void update(node *t) {
+    void update(node *t) const {
         if (t == nullptr) return;
 
         t->sz = 1;
@@ -95,20 +95,20 @@ struct lazy_link_cut_tree {
         }
     }
 
-    void all_apply(node *t, const A &a) {
+    void all_apply(node *t, const A &a) const {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
         t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
-    void toggle(node *t) {
+    void toggle(node *t) const {
         std::swap(t->l, t->r);
         std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    void push(node *t) const {
         if (t == nullptr) return;
 
         if (t->lz != MA::unit()) {
@@ -124,7 +124,7 @@ struct lazy_link_cut_tree {
         }
     }
 
-    void rotate_right(node *t) {
+    void rotate_right(node *t) const {
         node *x = t->p;
         node *y = x->p;
 
@@ -142,7 +142,7 @@ struct lazy_link_cut_tree {
         }
     }
 
-    void rotate_left(node *t) {
+    void rotate_left(node *t) const {
         node *x = t->p;
         node *y = x->p;
 
@@ -160,7 +160,7 @@ struct lazy_link_cut_tree {
         }
     }
 
-    void splay(node *t) {
+    void splay(node *t) const {
         push(t);
 
         while (!t->is_root()) {
@@ -199,13 +199,13 @@ struct lazy_link_cut_tree {
         }
     }
 
-    void evert(node *t) {
+    void evert(node *t) const {
         expose(t);
         toggle(t);
         push(t);
     }
 
-    node *expose(node *t) {
+    node *expose(node *t) const {
         node *rp = nullptr;
         for (node *cur = t; cur; cur = cur->p) {
             splay(cur);
@@ -218,7 +218,7 @@ struct lazy_link_cut_tree {
         return rp;
     }
 
-    void link(node *chi, node *par) {
+    void link(node *chi, node *par) const {
         evert(chi);
         expose(par);
         chi->p = par;
@@ -226,7 +226,7 @@ struct lazy_link_cut_tree {
         update(par);
     }
 
-    void cut(node *chi) {
+    void cut(node *chi) const {
         expose(chi);
         node *par = chi->l;
         chi->l = nullptr;
@@ -234,47 +234,47 @@ struct lazy_link_cut_tree {
         par->p = nullptr;
     }
 
-    void cut(node *u, node *v) {
+    void cut(node *u, node *v) const {
         evert(u);
         cut(v);
     }
 
-    node *lca(node *u, node *v) {
+    node *lca(node *u, node *v) const {
         expose(u);
         return expose(v);
     }
 
-    void set(node *t, const X &x) {
+    void set(node *t, const X &x) const {
         expose(t);
         t->val = x;
         update(t);
     }
 
-    void multiply(node *t, const X &x) {
+    void multiply(node *t, const X &x) const {
         expose(t);
         t->val = MX::op(t->val, x);
         update(t);
     }
 
-    X get(node *t) {
+    X get(node *t) const {
         expose(t);
         return t->val;
     }
 
-    X prod_path(node *u, node *v) {
+    X prod_path(node *u, node *v) const {
         evert(u);
         expose(v);
         return v->sum;
     }
 
-    void apply_path(node *u, node *v, const A &a) {
+    void apply_path(node *u, node *v, const A &a) const {
         evert(u);
         expose(v);
         all_apply(v, a);
         push(v);
     }
 
-    node *jump(node *t, i32 k) {
+    node *jump(node *t, i32 k) const {
         expose(t);
         while (t) {
             push(t);
@@ -292,7 +292,7 @@ struct lazy_link_cut_tree {
         return nullptr;
     }
 
-    bool is_connected(node *u, node *v) {
+    bool is_connected(node *u, node *v) const {
         expose(u);
         expose(v);
         return u == v || u->p;

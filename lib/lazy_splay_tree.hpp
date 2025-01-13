@@ -18,13 +18,13 @@ struct lazy_splay_tree {
 
     struct node {
         node *l, *r;
-        X val, sum;
+        X val, sum, mus;
         A lz;
         bool rev;
         u32 sz;
 
-        explicit node(X x)
-            : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        explicit node(const X &x)
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, mus{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
         node()
             : node(MX::unit()) {}
@@ -101,27 +101,31 @@ struct lazy_splay_tree {
 
     void update(node *t) {
         t->sz = 1;
-        t->sum = t->val;
+        t->mus = t->sum = t->val;
 
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
+            t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
+            t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void all_apply(node *t, A a) {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
+        t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
+        std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
@@ -226,7 +230,7 @@ struct lazy_splay_tree {
         return a;
     }
 
-    void insert(node *&root, i32 p, X x) {
+    void insert(node *&root, i32 p, const X &x) {
         insert(root, p, make_node(x));
     }
 
@@ -258,7 +262,7 @@ struct lazy_splay_tree {
         root = merge(root->l, root->r);
     }
 
-    void set(node *&root, i32 p, X x) {
+    void set(node *&root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
         root = splay(root, p);
@@ -267,7 +271,7 @@ struct lazy_splay_tree {
         update(root);
     }
 
-    void apply(node *&root, i32 l, i32 r, A a) {
+    void apply(node *&root, i32 l, i32 r, const A &a) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return;
@@ -315,7 +319,7 @@ struct lazy_splay_tree {
         return v;
     }
 
-    void multiply(node *&root, i32 p, X x) {
+    void multiply(node *&root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
         root = splay(root, p);
@@ -327,7 +331,7 @@ struct lazy_splay_tree {
     void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
-        if (l + 1 >= r) return;
+        if (l == r) return;
 
         auto [a, b, c] = split3(root, l, r);
         toggle(b);

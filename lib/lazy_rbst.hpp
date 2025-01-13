@@ -19,13 +19,13 @@ struct lazy_rbst {
 
     struct node {
         node *l, *r;
-        X val, sum;
+        X val, sum, mus;
         A lz;
         bool rev;
         u32 sz;
 
         explicit node(const X &x)
-            : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+            : l{nullptr}, r{nullptr}, val{x}, sum{x}, mus{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
         node()
             : node(MX::unit()) {}
@@ -102,16 +102,18 @@ struct lazy_rbst {
 
     node *update(node *t) {
         t->sz = 1;
-        t->sum = t->val;
+        t->mus = t->sum = t->val;
 
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
+            t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
+            t->mus = MX::op(t->r->mus, t->mus);
         }
 
         return t;
@@ -120,11 +122,13 @@ struct lazy_rbst {
     void all_apply(node *t, A a) {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
+        t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
+        std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
@@ -269,7 +273,7 @@ struct lazy_rbst {
     void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
-        if (l + 1 >= r) return;
+        if (l == r) return;
 
         auto [x, y] = split(root, r);
         auto [p, q] = split(x, l);

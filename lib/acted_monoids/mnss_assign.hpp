@@ -7,7 +7,7 @@
 template <typename T>
 struct acted_monoid_mnss_assign {
     using MX = monoid_mnss<T>;
-    using MA = monoid_assign<typename MX::ValueT>;
+    using MA = monoid_assign<T>;
 
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
