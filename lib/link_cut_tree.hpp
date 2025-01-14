@@ -29,10 +29,6 @@ struct link_cut_tree {
         }
     };
 
-    i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
-    }
-
     i32 n, pid;
     node *pool;
 
@@ -79,19 +75,20 @@ struct link_cut_tree {
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
-            t->mus = MX::op(t->mus, t->l->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
-            t->mus = MX::op(t->r->mus, t->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void toggle(node *t) const {
         std::swap(t->l, t->r);
-        std::swap(t->sum, t->mus);
+        if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
+
         t->rev ^= true;
     }
 
@@ -223,6 +220,26 @@ struct link_cut_tree {
     node *lca(node *u, node *v) const {
         expose(u);
         return expose(v);
+    }
+
+    node *root(node *u) const {
+        expose(u);
+
+        for (; u->l; u = u->l) push(u);
+        splay(u);
+
+        return u;
+    }
+
+    node *par(node *u) const {
+        expose(u);
+        if (u->l == nullptr) return u->l;
+
+        push(u);
+        for (u = u->l; u->r; u = u->r) push(u);
+
+        splay(u);
+        return u;
     }
 
     void set(node *t, const X &x) const {

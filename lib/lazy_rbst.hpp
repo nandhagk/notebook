@@ -107,13 +107,13 @@ struct lazy_rbst {
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
-            t->mus = MX::op(t->mus, t->l->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
-            t->mus = MX::op(t->r->mus, t->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->r->mus, t->mus);
         }
 
         return t;
@@ -122,13 +122,13 @@ struct lazy_rbst {
     void all_apply(node *t, A a) {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
-        t->mus = AM::act(t->mus, a, t->sz);
+        if constexpr (!MX::commutative) t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
-        std::swap(t->sum, t->mus);
+        if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 

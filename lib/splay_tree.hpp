@@ -101,19 +101,19 @@ struct splay_tree {
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
-            t->mus = MX::op(t->mus, t->l->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
-            t->mus = MX::op(t->r->mus, t->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void toggle(node *t) {
         std::swap(t->l, t->r);
-        std::swap(t->sum, t->mus);
+        if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 

@@ -13,7 +13,6 @@ struct rerooting {
 
     std::vector<std::vector<V>> suml, sumr;
     std::vector<V> sum, psum;
-    std::vector<i32> par;
 
     rerooting() {}
 
@@ -28,7 +27,6 @@ struct rerooting {
 
         suml.resize(n);
         sumr.resize(n);
-        par.assign(n, -1);
 
         sum = x;
         psum.resize(n, RR::unit());
@@ -50,12 +48,9 @@ struct rerooting {
         V res = RR::unit();
         for (i32 i = 0; i < sz; ++i) {
             const i32 v = g[u][i];
+            if (v == t) continue;
 
-            if (v == t)
-                par[u] = i;
-            else
-                suml[u][i] = RR::up(g[u][i], dfs_up(g, x, v, u));
-
+            suml[u][i] = RR::up(g[u][i], dfs_up(g, x, v, u));
             res = RR::sibling(res, suml[u][i]);
         }
 

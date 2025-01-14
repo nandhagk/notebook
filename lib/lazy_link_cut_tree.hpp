@@ -12,9 +12,9 @@ struct lazy_link_cut_tree {
     using AM = ActedMonoid;
 
     using MX = typename AM::MX;
-    using X = typename MX::ValueT;
-
     using MA = typename AM::MA;
+
+    using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
     struct node {
@@ -34,10 +34,6 @@ struct lazy_link_cut_tree {
             return !p || (p->l != this && p->r != this);
         }
     };
-
-    i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
-    }
 
     i32 n, pid;
     node *pool;
@@ -85,26 +81,26 @@ struct lazy_link_cut_tree {
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
-            t->mus = MX::op(t->mus, t->l->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
-            t->mus = MX::op(t->r->mus, t->mus);
+            if constexpr (!MX::commutative) t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
     void all_apply(node *t, const A &a) const {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
-        t->mus = AM::act(t->mus, a, t->sz);
+        if constexpr (!MX::commutative) t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
     void toggle(node *t) const {
         std::swap(t->l, t->r);
-        std::swap(t->sum, t->mus);
+        if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
@@ -243,6 +239,28 @@ struct lazy_link_cut_tree {
         expose(u);
         return expose(v);
     }
+
+    node *root(node *u) const {
+        expose(u);
+
+        for (; u->l; u = u->l) push(u);
+        splay(u);
+
+        return u;
+    }
+
+    node *par(node *u) const {
+        expose(u);
+        if (u->l == nullptr) return u->l;
+
+        push(u);
+        for (u = u->l; u->r; u = u->r) push(u);
+
+        splay(u);
+        return u;
+    }
+
+
 
     void set(node *t, const X &x) const {
         expose(t);
