@@ -211,6 +211,26 @@ struct basic_link_cut_tree {
         return expose(v);
     }
 
+    node *root(node *u) const {
+        expose(u);
+
+        for (; u->l; u = u->l) push(u);
+        splay(u);
+
+        return u;
+    }
+
+    node *par(node *u) const {
+        expose(u);
+        if (u->l == nullptr) return u->l;
+
+        push(u);
+        for (u = u->l; u->r; u = u->r) push(u);
+
+        splay(u);
+        return u;
+    }
+
     node *jump(node *t, i32 k) const {
         expose(t);
 

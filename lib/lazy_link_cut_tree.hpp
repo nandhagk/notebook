@@ -260,8 +260,6 @@ struct lazy_link_cut_tree {
         return u;
     }
 
-
-
     void set(node *t, const X &x) const {
         expose(t);
         t->val = x;
