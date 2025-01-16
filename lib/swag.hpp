@@ -90,6 +90,7 @@ struct swag {
     X back() const {
         return q.back();
     }
+
     X front() const {
         return q.front();
     }
