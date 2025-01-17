@@ -1,5 +1,5 @@
-#ifndef LIB_BECC_INCREMENTAL_HPP
-#define LIB_BECC_INCREMENTAL_HPP 1
+#ifndef LIB_INCREMENTAL_BECC_HPP
+#define LIB_INCREMENTAL_BECC_HPP 1
 
 #include <vector>
 
@@ -7,7 +7,7 @@
 #include <lib/pbds.hpp>
 #include <lib/prelude.hpp>
 
-struct becc_incremental {
+struct incremental_becc {
     i32 b;
 
 private:
@@ -19,18 +19,18 @@ private:
     }
 
     void evert(i32 u) {
-        std::vector<i32> V;
+        std::vector<i32> v;
 
         for (;;) {
-            V.push_back(u);
+            v.push_back(u);
             if (bec.same(u, p[u])) break;
             u = parent(u);
         }
 
-        while (!V.empty()) {
-            u = V.back();
-            V.pop_back();
-            p[u] = (V.empty() ? u : V.back());
+        while (!v.empty()) {
+            u = v.back();
+            v.pop_back();
+            p[u] = (v.empty() ? u : v.back());
         }
     }
 
@@ -45,10 +45,10 @@ private:
     }
 
     i32 lca(i32 u, i32 v) {
-        hash_set<i32> V;
+        hash_set<i32> z;
         for (;;) {
             if (u != -1) {
-                if (!V.insert(u).second) return u;
+                if (!z.insert(u).second) return u;
 
                 i32 par = parent(u);
                 u = (bec.same(u, par) ? -1 : par);
@@ -83,9 +83,9 @@ private:
     }
 
 public:
-    becc_incremental() {}
+    incremental_becc() {}
 
-    explicit becc_incremental(i32 n) {
+    explicit incremental_becc(i32 n) {
         build(n);
     }
 
@@ -143,4 +143,4 @@ public:
     }
 };
 
-#endif // LIB_BECC_INCREMENTAL_HPP
+#endif // LIB_INCREMENTAL_BECC_HPP
