@@ -25,8 +25,13 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
     }
 
     if (s == -1) return std::make_pair(std::vector<i32>{0}, std::vector<i32>{});
+    const i32 m = std::reduce(out.begin(), out.end());
 
     std::vector<i32> us, vs, es;
+    us.reserve(m);
+    vs.reserve(m);
+    es.reserve(m);
+
     const auto dfs = [&](auto &&self, i32 u) -> void {
         while (out[u]) {
             const auto &[v, i] = g[u][--out[u]];
@@ -75,6 +80,10 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
 
     const i32 m = std::reduce(deg.begin(), deg.end()) / 2;
     std::vector<bool> used(m);
+
+    us.reserve(m);
+    vs.reserve(m);
+    es.reserve(m);
 
     const auto dfs = [&](auto &&self, i32 u) -> void {
         while (deg[u]) {

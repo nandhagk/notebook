@@ -22,12 +22,15 @@ struct priority_deque {
     i32 size() const {
         return static_cast<i32>(d.size());
     }
+
     bool empty() const {
         return d.empty();
     }
+
     T min() const {
         return d[0];
     }
+
     T max() const {
         return size() == 1 ? d[0] : d[1];
     }
