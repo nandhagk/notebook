@@ -219,7 +219,7 @@ struct ctd_product {
         return nodes[ord[u]].d;
     }
 
-    void multiply(i32 u, X x) {
+    void multiply(i32 u, const X &x) {
         assert(0 <= u && u < n);
 
         u = ord[u];

@@ -86,14 +86,14 @@ struct fenwick_tree {
         return prod(p, p + 1);
     }
 
-    void multiply(i32 p, X x) {
+    void multiply(i32 p, const X &x) {
         assert(0 <= p && p < n);
 
         t = MX::op(t, x);
         for (++p; p <= n; p += p & -p) d[p - 1] = MX::op(d[p - 1], x);
     }
 
-    void set(i32 p, X x) {
+    void set(i32 p, const X &x) {
         multiply(p, MX::op(MX::inv(get(p)), x));
     }
 

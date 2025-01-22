@@ -3,10 +3,10 @@
 
 #include <vector>
 
+#include <lib/csr_graph.hpp>
+#include <lib/dsu.hpp>
 #include <lib/prelude.hpp>
 #include <lib/scc.hpp>
-#include <lib/dsu.hpp>
-#include <lib/csr_graph.hpp>
 
 inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, i32>> &es) {
     if (es.empty()) return {};
@@ -15,7 +15,7 @@ inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, 
     std::vector<i32> t(m, m);
     std::vector<i32> idx(n, -1);
 
-    const auto dfs = [&](auto &&self, i32 l, i32 r, std::vector<std::tuple<i32, i32, i32>> &e) -> void {
+    const auto dfs = [&](auto &&self, i32 l, i32 r, std::vector<std::tuple<i32, i32, i32>> e) -> void {
         const i32 mid = (l + r) / 2;
         std::vector<std::tuple<i32, i32, i32>> el, er;
 
@@ -43,9 +43,7 @@ inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, 
                 if (x < g.n && y < g.n && group[x] == group[y]) t[id] = l;
             }
 
-            for (const auto &[id, u, v] : e)
-                idx[u] = idx[v] = -1;
-
+            for (const auto &[id, u, v] : e) idx[u] = idx[v] = -1;
             return;
         }
 
@@ -57,39 +55,34 @@ inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, 
             const i32 y = idx[v];
 
             if (id < mid) {
-                if (group[x] == group[y]) {
+                if (group[x] == group[y])
                     el.emplace_back(id, u, v);
-                } else {
+                else
                     er.emplace_back(id, group[x], group[y]);
-                }
+            } else if (x < g.n && y < g.n && group[x] == group[y]) {
+                t[id] = id;
             } else {
-                if (x < g.n && y < g.n && group[x] == group[y]) {
-                    t[id] = id;
-                } else {
-                    const i32 w = x < g.n ? group[x] : x;
-                    const i32 z = y < g.n ? group[y] : y;
-                    er.emplace_back(id, w, z);
-                }
+                const i32 w = x < g.n ? group[x] : x;
+                const i32 z = y < g.n ? group[y] : y;
+                er.emplace_back(id, w, z);
             }
         }
 
-        for (const auto &[id, u, v] : e)
-            idx[u] = idx[v] = -1;
+        for (const auto &[id, u, v] : e) idx[u] = idx[v] = -1;
 
         e.clear();
         e.shrink_to_fit();
 
-        if (!el.empty()) self(self, l, mid, el);
-        if (!er.empty()) self(self, mid, r, er);
+        if (!el.empty()) self(self, l, mid, std::move(el));
+        if (!er.empty()) self(self, mid, r, std::move(er));
     };
 
     std::vector<std::tuple<i32, i32, i32>> fs;
     fs.reserve(m);
 
-    for (i32 i = 0; i < m; ++i)
-        fs.emplace_back(i, es[i].first, es[i].second);
+    for (i32 i = 0; i < m; ++i) fs.emplace_back(i, es[i].first, es[i].second);
 
-    dfs(dfs, 0, m, fs);
+    dfs(dfs, 0, m, std::move(fs));
     return t;
 }
 

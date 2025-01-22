@@ -5,15 +5,14 @@
 
 #include <lib/prelude.hpp>
 #include <lib/scc.hpp>
+#include <lib/topological_sort.hpp>
 
 // https://codeforces.com/blog/entry/80391?#comment-667198
 template <typename Graph>
-inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const Graph &g, const std::vector<i32> &ids) {
-    const auto h = scc_dag(g, ids);
+inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const Graph &h) {
+    assert(topological_sort(h));
 
-    const i32 n = static_cast<i32>(g.size());
-    const i32 k = *std::max_element(ids.begin(), ids.end()) + 1;
-
+    const i32 k = static_cast<i32>(h.size());
     if (k == 1) return {};
 
     std::vector<bool> zero_in(k, true);
@@ -61,16 +60,6 @@ inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const G
     }
 
     for (const i32 u : in_unused) es.emplace_back(k - 1, u);
-
-    std::vector<i32> rids(k);
-    for (i32 u = 0; u < n; ++u) rids[ids[u]] = u;
-
-    for (auto &&[u, v] : es) {
-        u = rids[u];
-        v = rids[v];
-    }
-
-    return es;
 }
 
 #endif // LIB_STRONG_CONNECTIVITY_AUGMENTATION_HPP
