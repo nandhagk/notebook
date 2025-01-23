@@ -56,7 +56,7 @@ constexpr bool miller_rabin(u64 n) {
 template <typename U, U m, is_unsigned_integral_t<U> * = nullptr>
 constexpr bool is_prime_v = miller_rabin(m);
 
-template <typename T, std::enable_if_t<std::is_integral_v<T>> * = nullptr>
+template <typename T, is_integral_t<T> * = nullptr>
 inline bool is_prime(T n) {
     if (n < (1 << 30))
         return miller_rabin(static_cast<u32>(n));

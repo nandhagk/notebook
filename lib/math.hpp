@@ -2,7 +2,6 @@
 #define LIB_MATH_HPP 1
 
 #include <cassert>
-#include <type_traits>
 #include <utility>
 
 #include <lib/prelude.hpp>

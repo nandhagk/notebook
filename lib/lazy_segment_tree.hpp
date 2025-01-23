@@ -57,10 +57,6 @@ struct lazy_segment_tree {
         for (i32 i = size - 1; i >= 1; --i) update(i);
     }
 
-    void update(i32 k) {
-        d[k] = MX::op(d[2 * k], d[2 * k + 1]);
-    }
-
     void set(i32 p, const X &x) {
         assert(0 <= p && p < n);
 
@@ -220,6 +216,10 @@ private:
         apply_at(2 * k + 1, z[k]);
 
         z[k] = MA::unit();
+    }
+
+    void update(i32 k) {
+        d[k] = MX::op(d[2 * k], d[2 * k + 1]);
     }
 };
 

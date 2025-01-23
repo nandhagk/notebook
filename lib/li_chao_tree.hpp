@@ -21,6 +21,7 @@ struct li_chao_tree {
         friend bool operator==(const line &lhs, const line &rhs) {
             return lhs.a == rhs.a && lhs.b == rhs.b;
         }
+
         friend bool operator!=(const line &lhs, const line &rhs) {
             return !(lhs == rhs);
         }

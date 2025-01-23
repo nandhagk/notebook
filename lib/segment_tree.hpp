@@ -61,10 +61,6 @@ struct segment_tree {
         return {d.begin() + size, d.begin() + size + n};
     }
 
-    void update(i32 i) {
-        d[i] = MX::op(d[2 * i], d[2 * i + 1]);
-    }
-
     void set(i32 i, const X &x) {
         assert(0 <= i && i < n);
 
@@ -154,6 +150,11 @@ struct segment_tree {
         } while ((r & -r) != r);
 
         return 0;
+    }
+
+private:
+    void update(i32 i) {
+        d[i] = MX::op(d[2 * i], d[2 * i + 1]);
     }
 };
 

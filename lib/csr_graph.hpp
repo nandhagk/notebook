@@ -67,10 +67,12 @@ struct csr_graph {
         start.resize(n);
 
         for (const auto &[u, e] : es) {
-            ++deg[u];
-            ++deg[e.to()];
+            const i32 v = e;
 
-            ++indeg[e.to()];
+            ++deg[u];
+            ++deg[v];
+
+            ++indeg[v];
             ++outdeg[u];
         }
 

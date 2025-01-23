@@ -6,7 +6,7 @@
 #include <lib/prelude.hpp>
 
 template <template <typename> typename RangeProduct, typename Monoid>
-constexpr auto extract(RangeProduct<Monoid> r) -> RangeProduct<monoid_reverse_monoid<Monoid>>;
+constexpr auto reverse_range_product(RangeProduct<Monoid> r) -> RangeProduct<monoid_reverse_monoid<Monoid>>;
 
 template <typename RangeProduct>
 struct hld_product {
@@ -16,7 +16,7 @@ struct hld_product {
     const hld &h;
 
     RangeProduct st;
-    decltype(extract(std::declval<RangeProduct>())) rst;
+    decltype(reverse_range_product(std::declval<RangeProduct>())) rst;
 
     explicit hld_product(const hld &g)
         : h(g) {
