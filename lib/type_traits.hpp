@@ -104,4 +104,13 @@ constexpr bool is_abelian_group_v = is_abelian_group<T>::value;
 template <typename T>
 using is_abelian_group_t = std::enable_if_t<is_abelian_group_v<T>>;
 
+template <typename Graph>
+constexpr auto graph_weight(const Graph &g) {
+    const auto &[_, w] = g[0][0];
+    return w;
+}
+
+template <typename Graph>
+using graph_weight_t = decltype(graph_weight(std::declval<Graph>()));
+
 #endif // LIB_TYPE_TRAITS_HPP

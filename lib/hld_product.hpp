@@ -9,6 +9,9 @@ template <template <typename> typename RangeProduct, typename Monoid>
 constexpr auto reverse_range_product(RangeProduct<Monoid> r) -> RangeProduct<monoid_reverse_monoid<Monoid>>;
 
 template <typename RangeProduct>
+using reverse_range_product_t = decltype(reverse_range_product(std::declval<RangeProduct>()));
+
+template <typename RangeProduct>
 struct hld_product {
     using MX = typename RangeProduct::MX;
     using X = typename MX::ValueT;
@@ -16,7 +19,7 @@ struct hld_product {
     const hld &h;
 
     RangeProduct st;
-    decltype(reverse_range_product(std::declval<RangeProduct>())) rst;
+    reverse_range_product_t<RangeProduct> rst;
 
     explicit hld_product(const hld &g)
         : h(g) {
