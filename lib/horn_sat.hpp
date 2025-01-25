@@ -27,7 +27,7 @@ struct horn_sat {
         es.clear();
     }
 
-    void add_clause(const std::vector<i32> neg, i32 pos = -1) {
+    void add_clause(const std::vector<i32> &neg, i32 pos = -1) {
         for (const i32 u : neg) {
             es.emplace_back(u, n + m);
             es.emplace_back(n + m, u);

@@ -11,8 +11,9 @@
 template <typename Graph>
 inline std::vector<i32> directed_mst(const Graph &g, const i32 root) {
     using T = graph_weight_t<Graph>;
-
     const i32 n = static_cast<i32>(g.size());
+
+    assert(0 <= root && root < n);
 
     i32 m{};
     for (i32 u = 0; u < n; ++u) m += static_cast<i32>(g[u].size());
