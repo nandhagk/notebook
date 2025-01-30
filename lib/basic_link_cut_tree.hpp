@@ -27,7 +27,7 @@ struct basic_link_cut_tree {
         }
     };
 
-    i32 size(node *t) const {
+    static i32 size(node *t) {
         return t != nullptr ? t->sz : 0;
     }
 
