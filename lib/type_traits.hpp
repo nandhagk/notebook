@@ -104,6 +104,17 @@ constexpr bool is_abelian_group_v = is_abelian_group<T>::value;
 template <typename T>
 using is_abelian_group_t = std::enable_if_t<is_abelian_group_v<T>>;
 
+template <typename, typename = std::void_t<>>
+struct has_pow : std::false_type {};
+
+template <typename T>
+struct has_pow<
+    T, std::enable_if_t<std::is_same_v<decltype(T::pow(std::declval<typename T::ValueT>(), 0)), typename T::ValueT>>>
+    : std::true_type {};
+
+template <typename T>
+constexpr bool has_pow_v = has_pow<T>::value;
+
 template <typename Graph>
 constexpr auto graph_weight(const Graph &g) {
     const auto &[_, w] = g[0][0];

@@ -17,7 +17,7 @@ struct rbst {
         node *l, *r;
         X val, sum, mus;
         bool rev;
-        u32 sz;
+        i32 sz;
 
         explicit node(const X &x)
             : l{nullptr}, r{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
@@ -27,7 +27,7 @@ struct rbst {
     };
 
     i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+        return t != nullptr ? t->sz : 0;
     }
 
     i32 n, pid;

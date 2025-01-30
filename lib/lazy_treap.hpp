@@ -22,7 +22,7 @@ struct lazy_treap {
         X val, sum, mus;
         A lz;
         bool rev;
-        u32 sz;
+        i32 sz;
         u64 pr;
 
         explicit node(const X &x)
@@ -33,7 +33,7 @@ struct lazy_treap {
     };
 
     i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+        return t != nullptr ? t->sz : 0;
     }
 
     i32 n, pid;

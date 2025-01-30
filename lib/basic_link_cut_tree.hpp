@@ -14,7 +14,7 @@ struct basic_link_cut_tree {
         node *l, *r, *p;
         X val;
         bool rev;
-        u32 sz;
+        i32 sz;
 
         explicit node(const X &x)
             : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, rev{false}, sz{1} {}
@@ -28,7 +28,7 @@ struct basic_link_cut_tree {
     };
 
     i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+        return t != nullptr ? t->sz : 0;
     }
 
     i32 n, pid;
@@ -68,7 +68,8 @@ struct basic_link_cut_tree {
         return &(pool[pid++] = node(x));
     }
 
-    void update(node *t) const {
+private:
+    static void update(node *t) {
         if (t == nullptr) return;
 
         t->sz = 1;
@@ -76,12 +77,12 @@ struct basic_link_cut_tree {
         if (t->r != nullptr) t->sz += t->r->sz;
     }
 
-    void toggle(node *t) const {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         t->rev ^= true;
     }
 
-    void push(node *t) const {
+    static void push(node *t) {
         if (t == nullptr) return;
 
         if (t->rev) {
@@ -91,7 +92,7 @@ struct basic_link_cut_tree {
         }
     }
 
-    void rotate_right(node *t) const {
+    static void rotate_right(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -109,7 +110,7 @@ struct basic_link_cut_tree {
         }
     }
 
-    void rotate_left(node *t) const {
+    static void rotate_left(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -127,7 +128,7 @@ struct basic_link_cut_tree {
         }
     }
 
-    void splay(node *t) const {
+    static void splay(node *t) {
         push(t);
 
         while (!t->is_root()) {
@@ -166,13 +167,8 @@ struct basic_link_cut_tree {
         }
     }
 
-    void evert(node *t) const {
-        expose(t);
-        toggle(t);
-        push(t);
-    }
-
-    node *expose(node *t) const {
+public:
+    static node *expose(node *t) {
         node *rp = nullptr;
         for (node *cur = t; cur; cur = cur->p) {
             splay(cur);
@@ -185,7 +181,13 @@ struct basic_link_cut_tree {
         return rp;
     }
 
-    void link(node *chi, node *par) const {
+    static void evert(node *t) {
+        expose(t);
+        toggle(t);
+        push(t);
+    }
+
+    static void link(node *chi, node *par) {
         evert(chi);
         expose(par);
         chi->p = par;
@@ -193,7 +195,7 @@ struct basic_link_cut_tree {
         update(par);
     }
 
-    void cut(node *chi) const {
+    static void cut(node *chi) {
         expose(chi);
         node *par = chi->l;
         chi->l = nullptr;
@@ -201,37 +203,17 @@ struct basic_link_cut_tree {
         par->p = nullptr;
     }
 
-    void cut(node *u, node *v) const {
+    static void cut(node *u, node *v) {
         evert(u);
         cut(v);
     }
 
-    node *lca(node *u, node *v) const {
+    static node *lca(node *u, node *v) {
         expose(u);
         return expose(v);
     }
 
-    node *root(node *u) const {
-        expose(u);
-
-        for (; u->l; u = u->l) push(u);
-        splay(u);
-
-        return u;
-    }
-
-    node *par(node *u) const {
-        expose(u);
-        if (u->l == nullptr) return u->l;
-
-        push(u);
-        for (u = u->l; u->r; u = u->r) push(u);
-
-        splay(u);
-        return u;
-    }
-
-    node *jump(node *t, i32 k) const {
+    static node *jump(node *t, i32 k) {
         expose(t);
 
         while (t) {
@@ -251,7 +233,7 @@ struct basic_link_cut_tree {
         return nullptr;
     }
 
-    bool is_connected(node *u, node *v) const {
+    static bool is_connected(node *u, node *v) {
         expose(u);
         expose(v);
 

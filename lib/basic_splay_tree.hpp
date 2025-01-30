@@ -12,7 +12,7 @@ struct basic_splay_tree {
         node *l, *r;
         T val;
         bool rev;
-        u32 sz;
+        i32 sz;
 
         explicit node(const T &x)
             : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
@@ -21,8 +21,8 @@ struct basic_splay_tree {
             : node(T()) {}
     };
 
-    i32 size(node *t) const {
-        return t != nullptr ? static_cast<i32>(t->sz) : 0;
+    static i32 size(node *t) {
+        return t != nullptr ? t->sz : 0;
     }
 
     i32 n, pid;
@@ -90,18 +90,19 @@ struct basic_splay_tree {
         return t;
     }
 
-    void update(node *t) {
+private:
+    static void update(node *t) {
         t->sz = 1;
         if (t->l != nullptr) t->sz += t->l->sz;
         if (t->r != nullptr) t->sz += t->r->sz;
     }
 
-    void toggle(node *t) {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    static void push(node *t) {
         if (t == nullptr) return;
 
         if (t->rev) {
@@ -111,7 +112,7 @@ struct basic_splay_tree {
         }
     }
 
-    node *rotate_right(node *t) {
+    static node *rotate_right(node *t) {
         node *l = t->l;
         t->l = l->r;
         l->r = t;
@@ -122,7 +123,7 @@ struct basic_splay_tree {
         return l;
     }
 
-    node *rotate_left(node *t) {
+    static node *rotate_left(node *t) {
         node *r = t->r;
         t->r = r->l;
         r->l = t;
@@ -133,7 +134,7 @@ struct basic_splay_tree {
         return r;
     }
 
-    node *splay(node *t, i32 k) {
+    static node *splay(node *t, i32 k) {
         push(t);
 
         const i32 lsz = size(t->l);
@@ -151,7 +152,8 @@ struct basic_splay_tree {
         return t;
     }
 
-    node *merge(node *l, node *r) {
+public:
+    static node *merge(node *l, node *r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
         r = splay(r, 0);
@@ -161,7 +163,7 @@ struct basic_splay_tree {
         return r;
     }
 
-    std::pair<node *, node *> split(node *&root, i32 k) {
+    static std::pair<node *, node *> split(node *&root, i32 k) {
         if (k >= size(root)) return {root, nullptr};
 
         root = splay(root, k);
@@ -172,7 +174,7 @@ struct basic_splay_tree {
         return {l, root};
     }
 
-    std::tuple<node *, node *, node *> split3(node *&root, i32 l, i32 r) {
+    static std::tuple<node *, node *, node *> split3(node *&root, i32 l, i32 r) {
         if (l == 0) {
             auto [b, c] = split(root, r);
             return {nullptr, b, c};
@@ -186,7 +188,7 @@ struct basic_splay_tree {
         return {root, b, c};
     }
 
-    node *merge3(node *a, node *b, node *c) {
+    static node *merge3(node *a, node *b, node *c) {
         node *t = merge(b, c);
         if (a == nullptr) return t;
 
@@ -196,11 +198,11 @@ struct basic_splay_tree {
         return a;
     }
 
-    void insert(node *&root, i32 p, T x) {
+    void insert(node *&root, i32 p, const T &x) {
         insert(root, p, make_node(x));
     }
 
-    void insert(node *&root, i32 p, node *t) {
+    static void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));
 
         if (p == size(root)) {
@@ -228,7 +230,7 @@ struct basic_splay_tree {
         root = merge(root->l, root->r);
     }
 
-    void set(node *&root, i32 p, T x) {
+    static void set(node *&root, i32 p, const T &x) {
         assert(0 <= p && p < size(root));
 
         root = splay(root, p);
@@ -237,31 +239,14 @@ struct basic_splay_tree {
         update(root);
     }
 
-    T get(node *&root, i32 p) {
+    static T get(node *&root, i32 p) {
         assert(0 <= p && p < size(root));
 
         root = splay(root, p);
         return root->val;
     }
 
-    void dump(node *root, std::vector<T> &v) {
-        if (root == nullptr) return;
-
-        push(root);
-        dump(root->l, v);
-        v.push_back(root->val);
-        dump(root->r, v);
-    }
-
-    std::vector<T> get_all(node *&root) {
-        std::vector<T> v;
-        v.reserve(size(root));
-
-        dump(root, v);
-        return v;
-    }
-
-    void reverse(node *&root, i32 l, i32 r) {
+    static void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l + 1 >= r) return;
@@ -270,6 +255,23 @@ struct basic_splay_tree {
         toggle(b);
 
         root = merge3(a, b, c);
+    }
+
+    static void dump(node *root, std::vector<T> &v) {
+        if (root == nullptr) return;
+
+        push(root);
+        dump(root->l, v);
+        v.push_back(root->val);
+        dump(root->r, v);
+    }
+
+    static std::vector<T> get_all(node *&root) {
+        std::vector<T> v;
+        v.reserve(size(root));
+
+        dump(root, v);
+        return v;
     }
 };
 
