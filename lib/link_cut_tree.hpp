@@ -16,7 +16,7 @@ struct link_cut_tree {
         node *l, *r, *p;
         X val, sum, mus;
         bool rev;
-        u32 sz;
+        i32 sz;
 
         explicit node(const X &x)
             : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
@@ -66,7 +66,8 @@ struct link_cut_tree {
         return &(pool[pid++] = node(x));
     }
 
-    void update(node *t) const {
+private:
+    static void update(node *t) {
         if (t == nullptr) return;
 
         t->sz = 1;
@@ -75,24 +76,26 @@ struct link_cut_tree {
         if (t->l != nullptr) {
             t->sz += t->l->sz;
             t->sum = MX::op(t->l->sum, t->sum);
+
             if constexpr (!MX::commutative) t->mus = MX::op(t->mus, t->l->mus);
         }
 
         if (t->r != nullptr) {
             t->sz += t->r->sz;
             t->sum = MX::op(t->sum, t->r->sum);
+
             if constexpr (!MX::commutative) t->mus = MX::op(t->r->mus, t->mus);
         }
     }
 
-    void toggle(node *t) const {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
 
         t->rev ^= true;
     }
 
-    void push(node *t) const {
+    static void push(node *t) {
         if (t == nullptr) return;
 
         if (t->rev) {
@@ -102,7 +105,7 @@ struct link_cut_tree {
         }
     }
 
-    void rotate_right(node *t) const {
+    static void rotate_right(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -120,7 +123,7 @@ struct link_cut_tree {
         }
     }
 
-    void rotate_left(node *t) const {
+    static void rotate_left(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -138,7 +141,7 @@ struct link_cut_tree {
         }
     }
 
-    void splay(node *t) const {
+    static void splay(node *t) {
         push(t);
 
         while (!t->is_root()) {
@@ -177,13 +180,8 @@ struct link_cut_tree {
         }
     }
 
-    void evert(node *t) const {
-        expose(t);
-        toggle(t);
-        push(t);
-    }
-
-    node *expose(node *t) const {
+public:
+    static node *expose(node *t) {
         node *rp = nullptr;
         for (node *cur = t; cur; cur = cur->p) {
             splay(cur);
@@ -196,7 +194,13 @@ struct link_cut_tree {
         return rp;
     }
 
-    void link(node *chi, node *par) const {
+    static void evert(node *t) {
+        expose(t);
+        toggle(t);
+        push(t);
+    }
+
+    static void link(node *chi, node *par) {
         evert(chi);
         expose(par);
         chi->p = par;
@@ -204,7 +208,7 @@ struct link_cut_tree {
         update(par);
     }
 
-    void cut(node *chi) const {
+    static void cut(node *chi) {
         expose(chi);
         node *par = chi->l;
         chi->l = nullptr;
@@ -212,40 +216,40 @@ struct link_cut_tree {
         par->p = nullptr;
     }
 
-    void cut(node *u, node *v) const {
+    static void cut(node *u, node *v) {
         evert(u);
         cut(v);
     }
 
-    node *lca(node *u, node *v) const {
+    static node *lca(node *u, node *v) {
         expose(u);
         return expose(v);
     }
 
-    void set(node *t, const X &x) const {
+    static void set(node *t, const X &x) {
         expose(t);
         t->val = x;
         update(t);
     }
 
-    void multiply(node *t, const X &x) const {
+    static void multiply(node *t, const X &x) {
         expose(t);
         t->val = MX::op(t->val, x);
         update(t);
     }
 
-    X get(node *t) const {
+    static X get(node *t) {
         expose(t);
         return t->val;
     }
 
-    X prod_path(node *u, node *v) const {
+    static X prod_path(node *u, node *v) {
         evert(u);
         expose(v);
         return v->sum;
     }
 
-    node *jump(node *t, i32 k) const {
+    static node *jump(node *t, i32 k) {
         expose(t);
 
         while (t) {
@@ -265,9 +269,10 @@ struct link_cut_tree {
         return nullptr;
     }
 
-    bool is_connected(node *u, node *v) const {
+    static bool is_connected(node *u, node *v) {
         expose(u);
         expose(v);
+
         return u == v || u->p;
     }
 };

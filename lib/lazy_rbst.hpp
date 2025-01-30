@@ -31,7 +31,7 @@ struct lazy_rbst {
             : node(MX::unit()) {}
     };
 
-    i32 size(node *t) const {
+    static i32 size(node *t) {
         return t != nullptr ? t->sz : 0;
     }
 
@@ -100,7 +100,8 @@ struct lazy_rbst {
         return t;
     }
 
-    node *update(node *t) {
+private:
+    static node *update(node *t) {
         t->sz = 1;
         t->mus = t->sum = t->val;
 
@@ -119,20 +120,20 @@ struct lazy_rbst {
         return t;
     }
 
-    void all_apply(node *t, A a) {
+    static void all_apply(node *t, const A &a) {
         t->val = AM::act(t->val, a, 1);
         t->sum = AM::act(t->sum, a, t->sz);
         if constexpr (!MX::commutative) t->mus = AM::act(t->mus, a, t->sz);
         t->lz = MA::op(t->lz, a);
     }
 
-    void toggle(node *t) {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    static void push(node *t) {
         if (t->lz != MA::unit()) {
             if (t->l != nullptr) all_apply(t->l, t->lz);
             if (t->r != nullptr) all_apply(t->r, t->lz);
@@ -146,7 +147,8 @@ struct lazy_rbst {
         }
     }
 
-    node *merge(node *l, node *r) {
+public:
+    static node *merge(node *l, node *r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
         if ((MT() % (l->sz + r->sz)) < l->sz) {
@@ -160,7 +162,7 @@ struct lazy_rbst {
         }
     }
 
-    std::pair<node *, node *> split(node *&root, i32 k) {
+    static std::pair<node *, node *> split(node *&root, i32 k) {
         if (root == nullptr) return {nullptr, nullptr};
 
         push(root);
@@ -181,7 +183,7 @@ struct lazy_rbst {
         insert(root, p, make_node(x));
     }
 
-    void insert(node *&root, i32 p, node *t) {
+    static void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));
 
         auto [l, r] = split(root, p);
@@ -196,7 +198,7 @@ struct lazy_rbst {
         root = merge(l, b);
     }
 
-    void set(node *&root, i32 p, const X &x) {
+    static void set(node *&root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
         auto [l, r] = split(root, p);
@@ -206,7 +208,7 @@ struct lazy_rbst {
         root = merge(l, merge(a, b));
     }
 
-    void multiply(node *&root, i32 p, const X &x) {
+    static void multiply(node *&root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
         auto [l, r] = split(root, p);
@@ -216,7 +218,7 @@ struct lazy_rbst {
         root = merge(l, merge(a, b));
     }
 
-    void apply(node *&root, i32 l, i32 r, const A &a) {
+    static void apply(node *&root, i32 l, i32 r, const A &a) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return;
@@ -228,7 +230,7 @@ struct lazy_rbst {
         root = merge(x, merge(p, q));
     }
 
-    X prod(node *&root, i32 l, i32 r) {
+    static X prod(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return MX::unit();
@@ -243,34 +245,17 @@ struct lazy_rbst {
         return v;
     }
 
-    X get(node *&root, i32 p) {
+    static X get(node *&root, i32 p) {
         assert(0 <= p && p < size(root));
 
         return prod(root, p, p + 1);
     }
 
-    void dump(node *root, std::vector<X> &v) {
-        if (root == nullptr) return;
-
-        push(root);
-        dump(root->l, v);
-        v.push_back(root->val);
-        dump(root->r, v);
-    }
-
-    std::vector<X> get_all(node *&root) {
-        std::vector<X> v;
-        v.reserve(size(root));
-
-        dump(root, v);
-        return v;
-    }
-
-    void reverse(node *&root) {
+    static void reverse(node *&root) {
         toggle(root);
     }
 
-    void reverse(node *&root, i32 l, i32 r) {
+    static void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return;
@@ -280,6 +265,23 @@ struct lazy_rbst {
 
         reverse(q);
         root = merge(merge(p, q), y);
+    }
+
+    static void dump(node *root, std::vector<X> &v) {
+        if (root == nullptr) return;
+
+        push(root);
+        dump(root->l, v);
+        v.push_back(root->val);
+        dump(root->r, v);
+    }
+
+    static std::vector<X> get_all(node *&root) {
+        std::vector<X> v;
+        v.reserve(size(root));
+
+        dump(root, v);
+        return v;
     }
 };
 

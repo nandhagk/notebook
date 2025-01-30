@@ -27,7 +27,7 @@ struct treap {
             : node(MX::unit()) {}
     };
 
-    i32 size(node *t) const {
+    static i32 size(node *t) {
         return t != nullptr ? t->sz : 0;
     }
 
@@ -110,7 +110,8 @@ struct treap {
         return st[0];
     }
 
-    node *update(node *t) {
+private:
+    static node *update(node *t) {
         t->sz = 1;
         t->mus = t->sum = t->val;
 
@@ -129,13 +130,13 @@ struct treap {
         return t;
     }
 
-    void toggle(node *t) {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         if constexpr (!MX::commutative) std::swap(t->sum, t->mus);
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    static void push(node *t) {
         if (t->rev) {
             if (t->l != nullptr) toggle(t->l);
             if (t->r != nullptr) toggle(t->r);
@@ -143,7 +144,8 @@ struct treap {
         }
     }
 
-    node *merge(node *l, node *r) {
+public:
+    static node *merge(node *l, node *r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
         if (l->pr > r->pr) {
@@ -157,7 +159,7 @@ struct treap {
         }
     }
 
-    std::pair<node *, node *> split(node *&root, i32 k) {
+    static std::pair<node *, node *> split(node *&root, i32 k) {
         if (root == nullptr) return {nullptr, nullptr};
 
         push(root);
@@ -178,7 +180,7 @@ struct treap {
         insert(root, p, make_node(x));
     }
 
-    void insert(node *&root, i32 p, node *t) {
+    static void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));
 
         auto [l, r] = split(root, p);
@@ -193,7 +195,7 @@ struct treap {
         root = merge(l, b);
     }
 
-    void set(node *&root, i32 p, const X &x) {
+    static void set(node *&root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
         auto [l, r] = split(root, p);
@@ -203,7 +205,17 @@ struct treap {
         root = merge(l, merge(a, b));
     }
 
-    X prod(node *&root, i32 l, i32 r) {
+    static void multiply(node *&root, i32 p, const X &x) {
+        assert(0 <= p && p < size(root));
+
+        auto [l, r] = split(root, p);
+        auto [a, b] = split(r, 1);
+
+        *a = node(MX::op(a->val, x));
+        root = merge(l, merge(a, b));
+    }
+
+    static X prod(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return MX::unit();
@@ -218,44 +230,17 @@ struct treap {
         return v;
     }
 
-    X get(node *&root, i32 p) {
+    static X get(node *&root, i32 p) {
         assert(0 <= p && p < size(root));
 
         return prod(root, p, p + 1);
     }
 
-    void dump(node *root, std::vector<X> &v) {
-        if (root == nullptr) return;
-
-        push(root);
-        dump(root->l, v);
-        v.push_back(root->val);
-        dump(root->r, v);
-    }
-
-    std::vector<X> get_all(node *&root) {
-        std::vector<X> v;
-        v.reserve(size(root));
-
-        dump(root, v);
-        return v;
-    }
-
-    void multiply(node *&root, i32 p, const X &x) {
-        assert(0 <= p && p < size(root));
-
-        auto [l, r] = split(root, p);
-        auto [a, b] = split(r, 1);
-
-        *a = node(MX::op(a->val, x));
-        root = merge(l, merge(a, b));
-    }
-
-    void reverse(node *&root) {
+    static void reverse(node *&root) {
         toggle(root);
     }
 
-    void reverse(node *&root, i32 l, i32 r) {
+    static void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l == r) return;
@@ -265,6 +250,23 @@ struct treap {
 
         reverse(q);
         root = merge(merge(p, q), y);
+    }
+
+    static void dump(node *root, std::vector<X> &v) {
+        if (root == nullptr) return;
+
+        push(root);
+        dump(root->l, v);
+        v.push_back(root->val);
+        dump(root->r, v);
+    }
+
+    static std::vector<X> get_all(node *&root) {
+        std::vector<X> v;
+        v.reserve(size(root));
+
+        dump(root, v);
+        return v;
     }
 };
 

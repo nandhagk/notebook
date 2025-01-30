@@ -102,7 +102,8 @@ struct lazy_augmented_link_cut_tree {
         return &(pool[pid++] = node(x));
     }
 
-    void update(node *t) {
+private:
+    static void update(node *t) {
         if (!t->fake) {
             t->hsz = 1;
             t->hmus = t->hsum = t->val;
@@ -110,12 +111,14 @@ struct lazy_augmented_link_cut_tree {
             if (t->hl != nullptr) {
                 t->hsz += t->hl->hsz;
                 t->hsum = MX::op(t->hl->hsum, t->hsum);
+
                 if constexpr (!MX::commutative) t->hmus = MX::op(t->hmus, t->hl->hmus);
             }
 
             if (t->hr != nullptr) {
                 t->hsz += t->hr->hsz;
                 t->hsum = MX::op(t->hsum, t->hr->hsum);
+
                 if constexpr (!MX::commutative) t->hmus = MX::op(t->hr->hmus, t->hmus);
             }
         }
@@ -147,20 +150,21 @@ struct lazy_augmented_link_cut_tree {
         t->asum = MX::op(t->hsum, t->lsum);
     }
 
-    void push_heavy(node *t, const A &a) {
+    static void push_heavy(node *t, const A &a) {
         if (t == nullptr || t->fake) return;
 
         t->val = AM::act(t->val, a, 1);
 
         t->hlz = MA::op(t->hlz, a);
         t->hsum = AM::act(t->hsum, a, t->hsz);
+
         if constexpr (!MX::commutative) t->hmus = AM::act(t->hmus, a, t->hsz);
 
         t->asz = t->hsz + t->lsz;
         t->asum = MX::op(t->hsum, t->lsum);
     }
 
-    void push_light(node *t, bool o, const A &a) {
+    static void push_light(node *t, bool o, const A &a) {
         if (t == nullptr) return;
 
         t->llz = MA::op(t->llz, a);
@@ -174,7 +178,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void toggle(node *t) {
+    static void toggle(node *t) {
         if (t == nullptr) return;
 
         std::swap(t->hl, t->hr);
@@ -183,7 +187,7 @@ struct lazy_augmented_link_cut_tree {
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    static void push(node *t) {
         if (t == nullptr) return;
 
         if (t->hlz != MA::unit()) {
@@ -207,7 +211,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void rotate_right_heavy(node *t) {
+    static void rotate_right_heavy(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -227,7 +231,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void rotate_left_heavy(node *t) {
+    static void rotate_left_heavy(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -247,7 +251,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void splay_heavy(node *t) {
+    static void splay_heavy(node *t) {
         push(t);
 
         while (!t->is_root_heavy()) {
@@ -286,7 +290,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void rotate_right_light(node *t) {
+    static void rotate_right_light(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -304,7 +308,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void rotate_left_light(node *t) {
+    static void rotate_left_light(node *t) {
         node *x = t->p;
         node *y = x->p;
 
@@ -322,7 +326,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void splay_light(node *t) {
+    static void splay_light(node *t) {
         push(t);
 
         while (!t->is_root_light()) {
@@ -361,7 +365,7 @@ struct lazy_augmented_link_cut_tree {
         }
     }
 
-    void push_rec(node *t) {
+    static void push_rec(node *t) {
         if (t->fake) push_rec(t->p);
         push(t);
     }
@@ -448,6 +452,7 @@ struct lazy_augmented_link_cut_tree {
         return v->p;
     }
 
+public:
     node *expose(node *u) {
         node *v = u;
         splay_heavy(u);

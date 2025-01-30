@@ -22,7 +22,7 @@ struct basic_rbst {
             : node(T()) {}
     };
 
-    i32 size(node *t) const {
+    static i32 size(node *t) {
         return t != nullptr ? t->sz : 0;
     }
 
@@ -91,7 +91,8 @@ struct basic_rbst {
         return t;
     }
 
-    node *update(node *t) {
+private:
+    static node *update(node *t) {
         t->sz = 1;
         if (t->l != nullptr) t->sz += t->l->sz;
         if (t->r != nullptr) t->sz += t->r->sz;
@@ -99,12 +100,12 @@ struct basic_rbst {
         return t;
     }
 
-    void toggle(node *t) {
+    static void toggle(node *t) {
         std::swap(t->l, t->r);
         t->rev ^= true;
     }
 
-    void push(node *t) {
+    static void push(node *t) {
         if (t->rev) {
             if (t->l != nullptr) toggle(t->l);
             if (t->r != nullptr) toggle(t->r);
@@ -112,7 +113,8 @@ struct basic_rbst {
         }
     }
 
-    node *merge(node *l, node *r) {
+public:
+    static node *merge(node *l, node *r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
         if (MT() % (l->sz + r->sz) < l->sz) {
@@ -126,7 +128,7 @@ struct basic_rbst {
         }
     }
 
-    std::pair<node *, node *> split(node *&root, i32 k) {
+    static std::pair<node *, node *> split(node *&root, i32 k) {
         if (k >= size(root)) return {root, nullptr};
 
         push(root);
@@ -147,7 +149,7 @@ struct basic_rbst {
         insert(root, p, make_node(x));
     }
 
-    void insert(node *&root, i32 p, node *t) {
+    static void insert(node *&root, i32 p, node *t) {
         assert(0 <= p && p <= size(root));
 
         auto [l, r] = split(root, p);
@@ -162,7 +164,7 @@ struct basic_rbst {
         root = merge(l, b);
     }
 
-    void set(node *&root, i32 p, T x) {
+    static void set(node *&root, i32 p, const T &x) {
         assert(0 <= p && p < size(root));
 
         auto [l, r] = split(root, p);
@@ -172,34 +174,17 @@ struct basic_rbst {
         root = merge(l, merge(a, b));
     }
 
-    T get(node *&root, i32 p) {
+    static T get(node *&root, i32 p) {
         assert(0 <= p && p < size(root));
 
         return prod(root, p, p + 1);
     }
 
-    void dump(node *root, std::vector<T> &v) {
-        if (root == nullptr) return;
-
-        push(root);
-        dump(root->l, v);
-        v.push_back(root->val);
-        dump(root->r, v);
-    }
-
-    std::vector<T> get_all(node *&root) {
-        std::vector<T> v;
-        v.reserve(size(root));
-
-        dump(root, v);
-        return v;
-    }
-
-    void reverse(node *&root) {
+    static void reverse(node *&root) {
         toggle(root);
     }
 
-    void reverse(node *&root, i32 l, i32 r) {
+    static void reverse(node *&root, i32 l, i32 r) {
         assert(0 <= l && l <= r && r <= size(root));
 
         if (l + 1 >= r) return;
@@ -209,6 +194,23 @@ struct basic_rbst {
 
         reverse(q);
         root = merge(merge(p, q), y);
+    }
+
+    static void dump(node *root, std::vector<T> &v) {
+        if (root == nullptr) return;
+
+        push(root);
+        dump(root->l, v);
+        v.push_back(root->val);
+        dump(root->r, v);
+    }
+
+    static std::vector<T> get_all(node *&root) {
+        std::vector<T> v;
+        v.reserve(size(root));
+
+        dump(root, v);
+        return v;
     }
 };
 
