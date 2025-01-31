@@ -1,32 +1,27 @@
 #ifndef LIB_RANGE_GRAPH_HPP
 #define LIB_RANGE_GRAPH_HPP 1
 
-#include <vector>
-
 #include <lib/csr_graph.hpp>
 
-template <typename W>
 struct range_graph {
     i32 n, m;
-
-    using edge = weighted_edge<W>;
-    std::vector<std::pair<i32, edge>> es;
-
     range_graph() {}
 
-    explicit range_graph(i32 p) {
-        build(p);
+    template <typename F>
+    explicit range_graph(i32 p, F f) {
+        build(p, f);
     }
 
-    void build(i32 p) {
+    template <typename F>
+    void build(i32 p, F f) {
         n = p;
         m = 3 * n;
         
         for (i32 i = 2; i < n + n; ++i)
-            es.emplace_back(uid(i / 2), edge{uid(i), 0});
+            f(uid(i / 2), uid(i));
 
         for (i32 i = 2; i < n + n; ++i)
-            es.emplace_back(lid(i), edge{lid(i / 2), 0});
+            f(lid(i), lid(i / 2));
     }
 
     inline i32 uid(i32 i) const {
@@ -37,28 +32,32 @@ struct range_graph {
         return i >= n ? i - n : n + n + i;
     }
 
-    void add(i32 u, i32 v, W w) {
-        es.emplace_back(u, edge{v, w});
+    template <typename F>
+    void add(i32 u, i32 v, F f) {
+        f(u, v);
     }
 
-    void add_from(i32 l, i32 r, i32 v, W w) {
+    template <typename F>
+    void add_from(i32 l, i32 r, i32 v, F f) {
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) add(lid(l++), v, w);  
-            if (r & 1) add(lid(--r), v, w);  
+            if (l & 1) add(lid(l++), v, f);
+            if (r & 1) add(lid(--r), v, f);  
         }
     }
 
-    void add_to(i32 u, i32 l, i32 r, W w) {
+    template <typename F>
+    void add_to(i32 u, i32 l, i32 r, F f) {
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) add(u, uid(l++), w);  
-            if (r & 1) add(u, uid(--r), w);  
+            if (l & 1) add(u, uid(l++), f);  
+            if (r & 1) add(u, uid(--r), f);  
         }
     }
 
-    void add_range(i32 ul, i32 ur, i32 vl, i32 vr, W w) {
+    template <typename F>
+    void add_range(i32 ul, i32 ur, i32 vl, i32 vr, F f) {
         const i32 z = m++;
-        add_from(ul, ur, z, w);
-        add_to(z, vl, vr, W(0));
+        add_from(ul, ur, z, f);
+        add_to(z, vl, vr, f);
     }
 };
 
