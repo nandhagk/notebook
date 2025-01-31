@@ -112,8 +112,6 @@ struct basic_treap {
 private:
     static node *update(node *t) {
         t->sz = 1;
-        t->mus = t->sum = t->val;
-
         if (t->l != nullptr) t->sz += t->l->sz;
         if (t->r != nullptr) t->sz += t->r->sz;
 
