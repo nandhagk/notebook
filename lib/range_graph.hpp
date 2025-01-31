@@ -1,14 +1,15 @@
 #ifndef LIB_RANGE_GRAPH_HPP
 #define LIB_RANGE_GRAPH_HPP 1
 
-#include <lib/csr_graph.hpp>
+#include <lib/prelude.hpp>
 
 struct range_graph {
     i32 n, m;
+
     range_graph() {}
 
     template <typename F>
-    explicit range_graph(i32 p, F f) {
+    range_graph(i32 p, F f) {
         build(p, f);
     }
 
@@ -33,12 +34,12 @@ struct range_graph {
     }
 
     template <typename F>
-    void add(i32 u, i32 v, F f) {
+    void add(i32 u, i32 v, F f) const {
         f(u, v);
     }
 
     template <typename F>
-    void add_from(i32 l, i32 r, i32 v, F f) {
+    void add_from(i32 l, i32 r, i32 v, F f) const {
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1) add(lid(l++), v, f);
             if (r & 1) add(lid(--r), v, f);  
@@ -46,7 +47,7 @@ struct range_graph {
     }
 
     template <typename F>
-    void add_to(i32 u, i32 l, i32 r, F f) {
+    void add_to(i32 u, i32 l, i32 r, F f) const {
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1) add(u, uid(l++), f);  
             if (r & 1) add(u, uid(--r), f);  
@@ -56,6 +57,7 @@ struct range_graph {
     template <typename F>
     void add_range(i32 ul, i32 ur, i32 vl, i32 vr, F f) {
         const i32 z = m++;
+
         add_from(ul, ur, z, f);
         add_to(z, vl, vr, f);
     }
