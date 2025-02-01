@@ -48,6 +48,19 @@ struct monoid_xor_basis {
         }
     }
 
+    static constexpr bool belongs(const X &x, T t) {
+        const auto &[sz, b] = x;
+
+        for (i32 i = 0; i < W; ++i) {
+            if (!((t >> i) & 1)) continue;
+
+            if (!b[i]) return false;
+            t ^= b[i];
+        }
+
+        return true;
+    }
+
     static constexpr bool commutative = true;
 };
 
