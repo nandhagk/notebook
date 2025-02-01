@@ -14,8 +14,8 @@ struct monoid_mxss {
         if (x == unit()) return y;
         if (y == unit()) return x;
 
-        const auto [a, b, c, d] = x;
-        const auto [p, q, r, s] = y;
+        const auto &[a, b, c, d] = x;
+        const auto &[p, q, r, s] = y;
 
         return {a + p, std::max(b, a + q), std::max(r, c + p), std::max({d, s, c + q})};
     }

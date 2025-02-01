@@ -8,7 +8,7 @@ struct monoid_assign {
     using X = std::optional<T>;
     using ValueT = X;
 
-    static constexpr X op(X x, X y) {
+    static constexpr X op(const X &x, const X &y) {
         return y == std::nullopt ? x : y;
     }
 

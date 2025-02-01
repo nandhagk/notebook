@@ -2,7 +2,6 @@
 #define LIB_SPARSE_LAZY_SEGMENT_TREE_HPP 1
 
 #include <algorithm>
-#include <vector>
 
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
@@ -265,109 +264,6 @@ public:
             }
 
             return MX::op(self(self, v->l), MX::op(mid, self(self, v->r)));
-        };
-
-        return dfs(dfs, root);
-    }
-
-    template <typename G>
-    T max_right(G g, T l) {
-        assert(g(MX::unit()));
-
-        X lsum = MX::unit();
-        const auto dfs = [&](auto &&self, node *v) -> void {
-            if (!v) return;
-            if (v->Lx == l && g(MX::op(lsum, v->sum_subtree))) {
-                l = v->Rx;
-                lsum = MX::op(lsum, v->sum_subtree);
-                return;
-            }
-
-            push_down(v);
-            if (v->rx <= l) {
-                self(self, v->r);
-                return;
-            }
-
-            if (l < v->lx) self(self, v->l);
-            if (l < v->lx) return;
-
-            X x = (v->lx == l ? v->sum : pow_monoid(v->val, v->rx - l));
-            if (g(MX::op(lsum, x))) {
-                l = v->rx;
-                lsum = MX::op(lsum, x);
-            } else {
-                T len = 1;
-                std::vector<X> p2{v->val};
-
-                while (len < v->rx - l) {
-                    X s = p2.back();
-                    p2.push_back(MX::op(s, s));
-                    len *= 2;
-                }
-
-                for (i32 i = static_cast<i32>(p2.size()) - 1; i >= 0; i--) {
-                    len = T(1) << i;
-                    if ((v->rx - l) >= len && g(MX::op(lsum, p2[i]))) {
-                        l += len;
-                        lsum = MX::op(lsum, p2[i]);
-                    }
-                }
-                return;
-            }
-
-            self(self, v->r);
-        };
-
-        return dfs(dfs, root);
-    }
-
-    template <typename G>
-    T min_left(G g, T r) {
-        assert(g(MX::unit()));
-
-        X rsum = MX::unit();
-        const auto dfs = [&](auto &&self, node *v) -> void {
-            if (!v) return;
-            if (v->Rx == r && g(MX::op(v->sum_subtree, rsum))) {
-                r = v->Lx;
-                rsum = MX::op(v->sum_subtree, rsum);
-                return;
-            }
-
-            push_down(v);
-            if (v->lx >= r) {
-                self(self, v->l);
-                return;
-            }
-
-            if (r > v->rx) self(self, v->r);
-            if (r > v->rx) return;
-
-            X x = (v->rx == r ? v->sum : pow_monoid(v->val, r - v->lx));
-            if (g(MX::op(x, rsum))) {
-                r = v->lx;
-                rsum = MX::op(x, rsum);
-            } else {
-                T len = 1;
-                std::vector<X> p2{v->val};
-                while (len < r - v->lx) {
-                    X s = p2.back();
-                    p2.push_back(MX::op(s, s));
-                    len *= 2;
-                }
-
-                for (i32 i = static_cast<i32>(p2.size()) - 1; i >= 0; i--) {
-                    len = T(1) << i;
-                    if ((r - v->lx) >= len && MX::op(p2[i], rsum)) {
-                        r -= len;
-                        rsum = MX::op(p2[i], rsum);
-                    }
-                }
-                return;
-            }
-
-            self(self, v->l);
         };
 
         return dfs(dfs, root);

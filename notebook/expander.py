@@ -37,6 +37,7 @@ STD_HEADERS = (
     "set",
     "map",
     "limits",
+    "tuple",
     "optional",
 )
 
