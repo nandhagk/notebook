@@ -16,7 +16,7 @@ struct monoid_xor_basis {
         X z = x;
 
         const auto &[sz, b] = y;
-        for (i32 i = 0; i < sz; ++i) insert(z, b[i]);
+        for (i32 i = 0; i < W; ++i) insert(z, b[i]);
 
         return z;
     }
@@ -34,9 +34,18 @@ struct monoid_xor_basis {
 
     static constexpr void insert(X &x, T t) {
         auto &[sz, b] = x;
-        for (i32 i = 0; i < sz; ++i) t = std::min(t, t ^ b[i]);
+        for (i32 i = 0; i < W; ++i) {
+            if (!((t >> i) & 1)) continue;
 
-        if (t) b[sz++] = t;
+            if (!b[i]) {
+                b[i] = t;
+                ++sz;
+
+                return;
+            }
+
+            t ^= b[i];
+        }
     }
 
     static constexpr bool commutative = true;
