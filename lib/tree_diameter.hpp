@@ -1,5 +1,5 @@
-#ifndef LIB_DIAMETER_HPP
-#define LIB_DIAMETER_HPP 1
+#ifndef LIB_TREE_DIAMETER_HPP
+#define LIB_TREE_DIAMETER_HPP 1
 
 #include <algorithm>
 #include <vector>
@@ -8,7 +8,7 @@
 #include <lib/type_traits.hpp>
 
 template <typename Graph>
-inline std::tuple<i32, i32, std::vector<graph_weight_t<Graph>>, std::vector<i32>> diameter(const Graph &g) {
+inline std::tuple<i32, i32, std::vector<graph_weight_t<Graph>>, std::vector<i32>> tree_diameter(const Graph &g) {
     using W = graph_weight_t<Graph>;
     const i32 n = static_cast<i32>(g.size());
 
@@ -40,4 +40,4 @@ inline std::tuple<i32, i32, std::vector<graph_weight_t<Graph>>, std::vector<i32>
     return {s, t, std::move(dst), std::move(prv)};
 }
 
-#endif // LIB_DIAMETER_HPP
+#endif // LIB_TREE_DIAMETER_HPP
