@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include <lib/ctd.hpp>
+#include <lib/centroids.hpp>
 #include <lib/prelude.hpp>
 #include <lib/rooted_tree_isomorphism.hpp>
 

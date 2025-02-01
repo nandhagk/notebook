@@ -5,30 +5,63 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::vector<i32> centroids(const Graph &g) {
-    const i32 n = static_cast<i32>(g.size());
+struct ctd {
+    i32 n;
+    std::vector<i32> sz, par, depth;
 
-    std::vector<i32> ctds;
-    std::vector<i32> sz(n, 1);
-    const auto dfs = [&](auto &&self, i32 u, i32 t = -1) -> void {
-        bool flag = false;
+    ctd() {}
+
+    template <typename Graph>
+    explicit ctd(const Graph &g) {
+        build(g);
+    }
+
+    template <typename Graph>
+    void build(const Graph &g) {
+        n = static_cast<i32>(g.size());
+
+        sz.assign(n, 0);
+        par.assign(n, -1);
+        depth.assign(n, n);
+
+        dfs(g, 0, -1, n, 0);
+    }
+
+private:
+    template <typename Graph>
+    std::pair<i32, i32> dfs(const Graph &g, i32 u, i32 t, const i32 m, const i32 rnk) {
+        i32 size = 1;
         for (const i32 v : g[u]) {
-            if (v == t) continue;
+            if (v == t || depth[v] < rnk) continue;
 
-            self(self, v, u);
-            if (sz[v] > n / 2) flag = true;
-            sz[u] += sz[v];
+            const auto &[z, c] = dfs(g, v, u, m, rnk);
+            if (z == -1) return {-1, c};
+
+            sz[v] = z;
+            size += z;
         }
 
-        if (flag) return;
-        if (n - sz[u] > n / 2) return;
+        if (size * 2 >= m) {
+            sz[u] = m;
+            depth[u] = rnk;
 
-        ctds.push_back(u);
-    };
+            for (const i32 v : g[u]) {
+                if (v == t || depth[v] < rnk) continue;
 
-    dfs(dfs, 0);
-    return ctds;
-}
+                const auto &[z, c] = dfs(g, v, -1, sz[v], rnk + 1);
+                par[c] = u;
+            }
+
+            if (t != -1) {
+                const auto &[z, c] = dfs(g, t, -1, m - size, rnk + 1);
+                par[c] = u;
+            }
+
+            return {-1, u};
+        }
+
+        return {size, -1};
+    }
+};
 
 #endif // LIB_CTD_HPP

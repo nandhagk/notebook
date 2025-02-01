@@ -40,12 +40,12 @@ struct functional_graph {
         return h.is_ancestor(v, b) ? h.depth[u] - h.depth[r] + h.depth[b] - h.depth[v] + 1 : -1;
     }
 
-    i32 jump(i32 u, i32 k) const {
+    i32 jump(i32 u, i64 k) const {
         assert(0 <= u && u < n);
         assert(0 <= k);
 
         const i32 d = h.depth[u];
-        if (k <= d - 1) return *h.jump(u, k);
+        if (k <= d - 1) return *h.jump(u, static_cast<i32>(k));
 
         u = root[u];
         k -= d - 1;
@@ -54,7 +54,7 @@ struct functional_graph {
         const i32 c = h.depth[b];
 
         k %= c;
-        return k == 0 ? u : *h.jump(b, k - 1);
+        return k == 0 ? u : *h.jump(b, static_cast<i32>(k) - 1);
     }
 
     void build(const std::vector<i32> &t) {
