@@ -177,7 +177,13 @@ public:
     static T get(node *&root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        return prod(root, p, p + 1);
+        auto [l, r] = split(root, p);
+        auto [a, b] = split(r, 1);
+
+        T x = a->val;
+        root = merge(l, merge(a, b));
+
+        return x;
     }
 
     static void reverse(node *&root) {

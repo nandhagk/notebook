@@ -36,7 +36,7 @@ struct swag {
         return MX::op(suml.back(), sumr.back());
     }
 
-    void push_back(X x) {
+    void push_back(const X &x) {
         q.push_back(x);
         sumr.push_back(MX::op(sumr.back(), x));
     }
@@ -61,7 +61,7 @@ struct swag {
         for (i32 i = 0; i < lsz; ++i) suml[i + 1] = MX::op(q[lsz - 1 - i], suml[i]);
     }
 
-    void push_front(X x) {
+    void push_front(const X &x) {
         q.push_front(x);
         suml.push_back(MX::op(x, suml.back()));
     }
