@@ -115,6 +115,18 @@ struct has_pow<
 template <typename T>
 constexpr bool has_pow_v = has_pow<T>::value;
 
+template <typename, typename = std::void_t<>>
+struct has_fail : std::false_type {};
+
+template <typename T>
+struct has_fail<
+    T, std::enable_if_t<std::is_same_v<decltype(T::failed(std::declval<typename T::ValueT>())), bool>>>
+    : std::true_type {};
+
+template <typename T>
+constexpr bool has_fail_v = has_fail<T>::value;
+
+
 template <typename Graph>
 constexpr auto graph_weight(const Graph &g) {
     const auto &[_, w] = g[0][0];

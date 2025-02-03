@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
 struct lazy_splay_tree {
@@ -121,10 +122,16 @@ private:
 
     static void all_apply(node *t, const A &a) {
         t->val = AM::act(t->val, a, 1);
-        t->sum = AM::act(t->sum, a, t->sz);
         t->lz = MA::op(t->lz, a);
 
+        t->sum = AM::act(t->sum, a, t->sz);
         if constexpr (!MX::commutative) t->mus = AM::act(t->mus, a, t->sz);
+
+        if constexpr (has_fail_v<MX>)
+            if (MX::failed(t->sum)) {
+                push(t);
+                update(t);
+            }
     }
 
     static void toggle(node *t) {

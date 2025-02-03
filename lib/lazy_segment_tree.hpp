@@ -206,7 +206,15 @@ private:
         const i32 sz = 1 << (log - topbit(k));
 
         d[k] = AM::act(d[k], a, sz);
-        if (k < size) z[k] = MA::op(z[k], a);
+        if (k < size) {
+            z[k] = MA::op(z[k], a);
+
+            if constexpr (has_fail_v<MX>)
+                if (MX::failed(d[k])) {
+                    push(k);
+                    update(k);
+                }
+        }
     }
 
     void push(i32 k) {
