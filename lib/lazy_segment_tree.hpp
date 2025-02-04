@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
 struct lazy_segment_tree {
@@ -209,11 +210,12 @@ private:
         if (k < size) {
             z[k] = MA::op(z[k], a);
 
-            if constexpr (has_fail_v<MX>)
+            if constexpr (has_fail_v<MX>) {
                 if (MX::failed(d[k])) {
                     push(k);
                     update(k);
                 }
+            }
         }
     }
 

@@ -127,11 +127,12 @@ private:
         t->sum = AM::act(t->sum, a, t->sz);
         if constexpr (!MX::commutative) t->mus = AM::act(t->mus, a, t->sz);
 
-        if constexpr (has_fail_v<MX>)
+        if constexpr (has_fail_v<MX>) {
             if (MX::failed(t->sum)) {
                 push(t);
                 update(t);
             }
+        }
     }
 
     static void toggle(node *t) {

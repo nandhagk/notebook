@@ -1,5 +1,5 @@
-#ifndef LIB_BEATS_SUM_MIN_MAX_HPP
-#define LIB_BEATS_SUM_MIN_MAX_HPP 1
+#ifndef LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP
+#define LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP 1
 
 #include <algorithm>
 
@@ -7,7 +7,7 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
-struct sum_min_max {
+struct beats_sum_min_max {
     struct X {
         T sum, min, max, minc, maxc, min2, max2;
         bool fail;
@@ -58,8 +58,8 @@ struct sum_min_max {
 };
 
 template <typename T>
-struct beats_sum_min_max {
-    using MX = sum_min_max<T>;
+struct beats_sum_min_max_add_chmin_chmax {
+    using MX = beats_sum_min_max<T>;
     using MA = monoid_add_chmin_chmax<T>;
 
     using X = typename MX::ValueT;
@@ -113,4 +113,4 @@ struct beats_sum_min_max {
     }
 };
 
-#endif // LIB_BEATS_SUM_MIN_MAX_HPP
+#endif // LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP
