@@ -1,5 +1,5 @@
-#ifndef LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP
-#define LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP 1
+#ifndef LIB_BEATS_SUM_MIN_MAX_ADD_CHMIN_CHMAX_HPP
+#define LIB_BEATS_SUM_MIN_MAX_ADD_CHMIN_CHMAX_HPP 1
 
 #include <algorithm>
 
@@ -113,4 +113,4 @@ struct beats_sum_min_max_add_chmin_chmax {
     }
 };
 
-#endif // LIB_BEATS_SUM_MIN_ADD_CHMIN_CHMAX_HPP
+#endif // LIB_BEATS_SUM_MIN_MAX_ADD_CHMIN_CHMAX_HPP

@@ -24,7 +24,6 @@ private:
 
         if (l + 1 == r) {
             while (k < static_cast<i32>(q.size()) && q[k].first == l) q[k++].second(dsu, j++);
-
             return;
         }
 

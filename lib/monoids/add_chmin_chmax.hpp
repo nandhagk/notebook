@@ -29,19 +29,22 @@ struct monoid_add_chmin_chmax {
         return std::max(std::min(x + a, b), c);
     }
 
-    static X add(T a) {
+    static constexpr X add(T a) {
         return {a, inf<T>, -inf<T>};
     }
-    static X chmin(T b) {
+
+    static constexpr X chmin(T b) {
         return {0, b, -inf<T>};
     }
-    static X chmax(T c) {
+
+    static constexpr X chmax(T c) {
         return {0, inf<T>, c};
     }
 
     static constexpr X unit() {
         return {0, inf<T>, -inf<T>};
     }
+
     static constexpr bool commutative = false;
 };
 

@@ -28,6 +28,7 @@ struct monoid_chmin_chmax {
     static X chmin(T b) {
         return {b, -inf<T>};
     }
+
     static X chmax(T c) {
         return {inf<T>, c};
     }
@@ -35,6 +36,7 @@ struct monoid_chmin_chmax {
     static constexpr X unit() {
         return {inf<T>, -inf<T>};
     }
+
     static constexpr bool commutative = false;
 };
 
