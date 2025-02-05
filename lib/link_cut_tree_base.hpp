@@ -208,6 +208,7 @@ public:
 
     static np jump(np t, i32 k) {
         expose(t);
+
         while (t) {
             t->push();
             if (t->r && t->r->sz > k) {
