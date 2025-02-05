@@ -11,7 +11,7 @@ struct basic_splay_tree_node {
     struct MX {
         using X = T;
         using ValueT = X;
-        
+
         static constexpr X unit() {
             return T();
         }
