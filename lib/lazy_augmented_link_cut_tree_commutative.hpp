@@ -1,5 +1,5 @@
-#ifndef LIB_AUGMENTED_LINK_CUT_TREE_HPP
-#define LIB_AUGMENTED_LINK_CUT_TREE_HPP 1
+#ifndef LIB_LAZY_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP
+#define LIB_LAZY_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP 1
 
 #include <algorithm>
 #include <cassert>
@@ -8,23 +8,23 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
-struct augmented_link_cut_tree_node {
-    struct MA {
-        using ValueT = bool;
-    };
+template <typename ActedMonoid>
+struct lazy_augmented_link_cut_tree_commutative_node {
+    using AM = ActedMonoid;
 
-    using MX = Monoid;
+    using MX = typename AM::MX;
+    using MA = typename AM::MA;
 
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    augmented_link_cut_tree_node *hl, *hr, *ll, *lr, *p;
-    X val, hsum, hmus, lsum, asum;
+    lazy_augmented_link_cut_tree_commutative_node *hl, *hr, *ll, *lr, *p;
+    X val, hsum, lsum, asum;
+    A hlz, llz;
     bool rev, fake;
     i32 hsz, lsz, asz;
 
-    augmented_link_cut_tree_node()
+    lazy_augmented_link_cut_tree_commutative_node()
         : hl{nullptr},
           hr{nullptr},
           ll{nullptr},
@@ -32,18 +32,19 @@ struct augmented_link_cut_tree_node {
           p{nullptr},
           val{MX::unit()},
           hsum{MX::unit()},
-          hmus{MX::unit()},
           lsum{MX::unit()},
           asum{MX::unit()},
+          hlz{MA::unit()},
+          llz{MA::unit()},
           rev{false},
           fake{true},
           hsz{0},
           lsz{0},
           asz{0} {}
 
-    explicit augmented_link_cut_tree_node(const X &x)
-        : augmented_link_cut_tree_node() {
-        val = hsum = hmus = asum = x;
+    explicit lazy_augmented_link_cut_tree_commutative_node(const X &x)
+        : lazy_augmented_link_cut_tree_commutative_node() {
+        val = hsum = asum = x;
         fake = false;
         hsz = asz = 1;
     }
@@ -59,18 +60,16 @@ struct augmented_link_cut_tree_node {
     void update() {
         if (!fake) {
             hsz = 1;
-            hmus = hsum = val;
+            hsum = val;
 
             if (hl != nullptr) {
                 hsz += hl->hsz;
                 hsum = MX::op(hl->hsum, hsum);
-                hmus = MX::op(hmus, hl->hmus);
             }
 
             if (hr != nullptr) {
                 hsz += hr->hsz;
                 hsum = MX::op(hsum, hr->hsum);
-                hmus = MX::op(hr->hmus, hmus);
             }
         }
 
@@ -101,13 +100,50 @@ struct augmented_link_cut_tree_node {
         asum = MX::op(hsum, lsum);
     }
 
+    void push_heavy(const A &a) {
+        if (fake) return;
+
+        val = AM::act(val, a, 1);
+
+        hlz = MA::op(hlz, a);
+        hsum = AM::act(hsum, a, hsz);
+
+        asz = hsz + lsz;
+        asum = MX::op(hsum, lsum);
+    }
+
+    void push_light(bool o, const A &a) {
+        llz = MA::op(llz, a);
+        lsum = AM::act(lsum, a, lsz);
+
+        if (!fake && o) {
+            push_heavy(a);
+        } else {
+            asz = hsz + lsz;
+            asum = MX::op(hsum, lsum);
+        }
+    }
+
     void toggle() {
         std::swap(hl, hr);
-        std::swap(hsum, hmus);
         rev ^= true;
     }
 
     void push() {
+        if (hlz != MA::unit()) {
+            if (hl != nullptr) hl->push_heavy(hlz);
+            if (hr != nullptr) hr->push_heavy(hlz);
+            hlz = MA::unit();
+        }
+
+        if (llz != MA::unit()) {
+            if (hl != nullptr) hl->push_light(false, llz);
+            if (hr != nullptr) hr->push_light(false, llz);
+            if (ll != nullptr) ll->push_light(true, llz);
+            if (lr != nullptr) lr->push_light(true, llz);
+            llz = MA::unit();
+        }
+
         if (rev) {
             if (hl != nullptr) hl->toggle();
             if (hr != nullptr) hr->toggle();
@@ -117,6 +153,7 @@ struct augmented_link_cut_tree_node {
 };
 
 template <typename ActedMonoid>
-using augmented_link_cut_tree = augmented_link_cut_tree_base<augmented_link_cut_tree_node<ActedMonoid>>;
+using lazy_augmented_link_cut_tree_commutative =
+    augmented_link_cut_tree_base<lazy_augmented_link_cut_tree_commutative_node<ActedMonoid>>;
 
-#endif // LIB_AUGMENTED_LINK_CUT_TREE_HPP
+#endif // LIB_LAZY_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP

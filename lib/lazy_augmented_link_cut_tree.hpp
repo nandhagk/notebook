@@ -3,13 +3,13 @@
 
 #include <algorithm>
 #include <cassert>
-#include <vector>
 
+#include <lib/augmented_link_cut_tree_base.hpp>
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
-struct lazy_augmented_link_cut_tree {
+struct lazy_augmented_link_cut_tree_node {
     using AM = ActedMonoid;
 
     using MX = typename AM::MX;
@@ -18,558 +18,146 @@ struct lazy_augmented_link_cut_tree {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    struct node {
-        node *hl, *hr, *ll, *lr, *p;
-        X val, hsum, hmus, lsum, asum;
-        A hlz, llz;
-        bool rev, fake;
-        i32 hsz, lsz, asz;
+    lazy_augmented_link_cut_tree_node *hl, *hr, *ll, *lr, *p;
+    X val, hsum, hmus, lsum, asum;
+    A hlz, llz;
+    bool rev, fake;
+    i32 hsz, lsz, asz;
 
-        node()
-            : hl{nullptr},
-              hr{nullptr},
-              ll{nullptr},
-              lr{nullptr},
-              p{nullptr},
-              val{MX::unit()},
-              hsum{MX::unit()},
-              hmus{MX::unit()},
-              lsum{MX::unit()},
-              asum{MX::unit()},
-              hlz{MA::unit()},
-              llz{MA::unit()},
-              rev{false},
-              fake{true},
-              hsz{0},
-              lsz{0},
-              asz{0} {}
+    lazy_augmented_link_cut_tree_node()
+        : hl{nullptr},
+          hr{nullptr},
+          ll{nullptr},
+          lr{nullptr},
+          p{nullptr},
+          val{MX::unit()},
+          hsum{MX::unit()},
+          hmus{MX::unit()},
+          lsum{MX::unit()},
+          asum{MX::unit()},
+          hlz{MA::unit()},
+          llz{MA::unit()},
+          rev{false},
+          fake{true},
+          hsz{0},
+          lsz{0},
+          asz{0} {}
 
-        explicit node(const X &x)
-            : node() {
-            val = hsum = hmus = asum = x;
-            fake = false;
-            hsz = asz = 1;
-        }
-
-        bool is_root_heavy() {
-            return !p || (p->hl != this && p->hr != this);
-        }
-
-        bool is_root_light() {
-            return !p || (p->ll != this && p->lr != this) || !p->fake;
-        }
-    };
-
-    i32 n, pid;
-    node *pool;
-    std::vector<node *> free;
-
-    lazy_augmented_link_cut_tree()
-        : pool{nullptr} {}
-
-    explicit lazy_augmented_link_cut_tree(i32 m)
-        : lazy_augmented_link_cut_tree() {
-        build(m);
+    explicit lazy_augmented_link_cut_tree_node(const X &x)
+        : lazy_augmented_link_cut_tree_node() {
+        val = hsum = hmus = asum = x;
+        fake = false;
+        hsz = asz = 1;
     }
 
-    ~lazy_augmented_link_cut_tree() {
-        reset();
+    bool is_root_heavy() {
+        return !p || (p->hl != this && p->hr != this);
     }
 
-    void build(i32 m) {
-        reset();
-
-        n = m;
-        pool = new node[2 * n + 5];
-
-        free.reserve(n + 5);
-        for (i32 i = n; i < 2 * n + 5; ++i) free.push_back(&pool[i]);
+    bool is_root_light() {
+        return !p || (p->ll != this && p->lr != this) || !p->fake;
     }
 
-    void reset() {
-        pid = 0;
-        free.clear();
-        delete[] pool;
-    }
+    void update() {
+        if (!fake) {
+            hsz = 1;
+            hmus = hsum = val;
 
-    node *make_node() {
-        return nullptr;
-    }
-
-    node *make_node(const X &x) {
-        assert(pid < n);
-
-        return &(pool[pid++] = node(x));
-    }
-
-private:
-    static void update(node *t) {
-        if (!t->fake) {
-            t->hsz = 1;
-            t->hmus = t->hsum = t->val;
-
-            if (t->hl != nullptr) {
-                t->hsz += t->hl->hsz;
-                t->hsum = MX::op(t->hl->hsum, t->hsum);
-
-                if constexpr (!MX::commutative) t->hmus = MX::op(t->hmus, t->hl->hmus);
+            if (hl != nullptr) {
+                hsz += hl->hsz;
+                hsum = MX::op(hl->hsum, hsum);
+                hmus = MX::op(hmus, hl->hmus);
             }
 
-            if (t->hr != nullptr) {
-                t->hsz += t->hr->hsz;
-                t->hsum = MX::op(t->hsum, t->hr->hsum);
-
-                if constexpr (!MX::commutative) t->hmus = MX::op(t->hr->hmus, t->hmus);
+            if (hr != nullptr) {
+                hsz += hr->hsz;
+                hsum = MX::op(hsum, hr->hsum);
+                hmus = MX::op(hr->hmus, hmus);
             }
         }
 
-        t->lsz = 0;
-        t->lsum = MX::unit();
+        lsz = 0;
+        lsum = MX::unit();
 
-        if (t->hl != nullptr) {
-            t->lsz += t->hl->lsz;
-            t->lsum = MX::op(t->hl->lsum, t->lsum);
+        if (hl != nullptr) {
+            lsz += hl->lsz;
+            lsum = MX::op(hl->lsum, lsum);
         }
 
-        if (t->hr != nullptr) {
-            t->lsz += t->hr->lsz;
-            t->lsum = MX::op(t->lsum, t->hr->lsum);
+        if (hr != nullptr) {
+            lsz += hr->lsz;
+            lsum = MX::op(lsum, hr->lsum);
         }
 
-        if (t->ll != nullptr) {
-            t->lsz += t->ll->asz;
-            t->lsum = MX::op(t->ll->asum, t->lsum);
+        if (ll != nullptr) {
+            lsz += ll->asz;
+            lsum = MX::op(ll->asum, lsum);
         }
 
-        if (t->lr != nullptr) {
-            t->lsz += t->lr->asz;
-            t->lsum = MX::op(t->lsum, t->lr->asum);
+        if (lr != nullptr) {
+            lsz += lr->asz;
+            lsum = MX::op(lsum, lr->asum);
         }
 
-        t->asz = t->hsz + t->lsz;
-        t->asum = MX::op(t->hsum, t->lsum);
+        asz = hsz + lsz;
+        asum = MX::op(hsum, lsum);
     }
 
-    static void push_heavy(node *t, const A &a) {
-        if (t == nullptr || t->fake) return;
+    void push_heavy(const A &a) {
+        if (fake) return;
 
-        t->val = AM::act(t->val, a, 1);
+        val = AM::act(val, a, 1);
 
-        t->hlz = MA::op(t->hlz, a);
-        t->hsum = AM::act(t->hsum, a, t->hsz);
+        hlz = MA::op(hlz, a);
+        hsum = AM::act(hsum, a, hsz);
+        hmus = AM::act(hmus, a, hsz);
 
-        if constexpr (!MX::commutative) t->hmus = AM::act(t->hmus, a, t->hsz);
-
-        t->asz = t->hsz + t->lsz;
-        t->asum = MX::op(t->hsum, t->lsum);
+        asz = hsz + lsz;
+        asum = MX::op(hsum, lsum);
     }
 
-    static void push_light(node *t, bool o, const A &a) {
-        if (t == nullptr) return;
+    void push_light(bool o, const A &a) {
+        llz = MA::op(llz, a);
+        lsum = AM::act(lsum, a, lsz);
 
-        t->llz = MA::op(t->llz, a);
-        t->lsum = AM::act(t->lsum, a, t->lsz);
-
-        if (!t->fake && o) {
-            push_heavy(t, a);
+        if (!fake && o) {
+            push_heavy(a);
         } else {
-            t->asz = t->hsz + t->lsz;
-            t->asum = MX::op(t->hsum, t->lsum);
+            asz = hsz + lsz;
+            asum = MX::op(hsum, lsum);
         }
     }
 
-    static void toggle(node *t) {
-        if (t == nullptr) return;
-
-        std::swap(t->hl, t->hr);
-        if constexpr (!MX::commutative) std::swap(t->hsum, t->hmus);
-
-        t->rev ^= true;
+    void toggle() {
+        std::swap(hl, hr);
+        std::swap(hsum, hmus);
+        rev ^= true;
     }
 
-    static void push(node *t) {
-        if (t == nullptr) return;
-
-        if (t->hlz != MA::unit()) {
-            if (t->hl != nullptr) push_heavy(t->hl, t->hlz);
-            if (t->hr != nullptr) push_heavy(t->hr, t->hlz);
-            t->hlz = MA::unit();
+    void push() {
+        if (hlz != MA::unit()) {
+            if (hl != nullptr) hl->push_heavy(hlz);
+            if (hr != nullptr) hr->push_heavy(hlz);
+            hlz = MA::unit();
         }
 
-        if (t->llz != MA::unit()) {
-            if (t->hl != nullptr) push_light(t->hl, false, t->llz);
-            if (t->hr != nullptr) push_light(t->hr, false, t->llz);
-            if (t->ll != nullptr) push_light(t->ll, true, t->llz);
-            if (t->lr != nullptr) push_light(t->lr, true, t->llz);
-            t->llz = MA::unit();
+        if (llz != MA::unit()) {
+            if (hl != nullptr) hl->push_light(false, llz);
+            if (hr != nullptr) hr->push_light(false, llz);
+            if (ll != nullptr) ll->push_light(true, llz);
+            if (lr != nullptr) lr->push_light(true, llz);
+            llz = MA::unit();
         }
 
-        if (t->rev) {
-            if (t->hl != nullptr) toggle(t->hl);
-            if (t->hr != nullptr) toggle(t->hr);
-            t->rev = false;
+        if (rev) {
+            if (hl != nullptr) hl->toggle();
+            if (hr != nullptr) hr->toggle();
+            rev = false;
         }
-    }
-
-    static void rotate_right_heavy(node *t) {
-        node *x = t->p;
-        node *y = x->p;
-
-        if ((x->hl = t->hr)) t->hr->p = x;
-        t->hr = x;
-        x->p = t;
-
-        update(x);
-        update(t);
-
-        if ((t->p = y)) {
-            if (y->hl == x) y->hl = t;
-            if (y->hr == x) y->hr = t;
-            if (y->ll == x) y->ll = t;
-            if (y->lr == x) y->lr = t;
-            update(y);
-        }
-    }
-
-    static void rotate_left_heavy(node *t) {
-        node *x = t->p;
-        node *y = x->p;
-
-        if ((x->hr = t->hl)) t->hl->p = x;
-        t->hl = x;
-        x->p = t;
-
-        update(x);
-        update(t);
-
-        if ((t->p = y)) {
-            if (y->hl == x) y->hl = t;
-            if (y->hr == x) y->hr = t;
-            if (y->ll == x) y->ll = t;
-            if (y->lr == x) y->lr = t;
-            update(y);
-        }
-    }
-
-    static void splay_heavy(node *t) {
-        push(t);
-
-        while (!t->is_root_heavy()) {
-            node *q = t->p;
-            if (q->is_root_heavy()) {
-                push(q);
-                push(t);
-
-                if (q->hl == t)
-                    rotate_right_heavy(t);
-                else
-                    rotate_left_heavy(t);
-            } else {
-                node *r = q->p;
-
-                push(r);
-                push(q);
-                push(t);
-
-                if (r->hl == q) {
-                    if (q->hl == t)
-                        rotate_right_heavy(q);
-                    else
-                        rotate_left_heavy(t);
-
-                    rotate_right_heavy(t);
-                } else {
-                    if (q->hr == t)
-                        rotate_left_heavy(q);
-                    else
-                        rotate_right_heavy(t);
-
-                    rotate_left_heavy(t);
-                }
-            }
-        }
-    }
-
-    static void rotate_right_light(node *t) {
-        node *x = t->p;
-        node *y = x->p;
-
-        if ((x->ll = t->lr)) t->lr->p = x;
-        t->lr = x;
-        x->p = t;
-
-        update(x);
-        update(t);
-
-        if ((t->p = y)) {
-            if (y->ll == x) y->ll = t;
-            if (y->lr == x) y->lr = t;
-            update(y);
-        }
-    }
-
-    static void rotate_left_light(node *t) {
-        node *x = t->p;
-        node *y = x->p;
-
-        if ((x->lr = t->ll)) t->ll->p = x;
-        t->ll = x;
-        x->p = t;
-
-        update(x);
-        update(t);
-
-        if ((t->p = y)) {
-            if (y->ll == x) y->ll = t;
-            if (y->lr == x) y->lr = t;
-            update(y);
-        }
-    }
-
-    static void splay_light(node *t) {
-        push(t);
-
-        while (!t->is_root_light()) {
-            node *q = t->p;
-            if (q->is_root_light()) {
-                push(q);
-                push(t);
-
-                if (q->ll == t)
-                    rotate_right_light(t);
-                else
-                    rotate_left_light(t);
-            } else {
-                node *r = q->p;
-
-                push(r);
-                push(q);
-                push(t);
-
-                if (r->ll == q) {
-                    if (q->ll == t)
-                        rotate_right_light(q);
-                    else
-                        rotate_left_light(t);
-
-                    rotate_right_light(t);
-                } else {
-                    if (q->lr == t)
-                        rotate_left_light(q);
-                    else
-                        rotate_right_light(t);
-
-                    rotate_left_light(t);
-                }
-            }
-        }
-    }
-
-    static void push_rec(node *t) {
-        if (t->fake) push_rec(t->p);
-        push(t);
-    }
-
-    void add(node *u, node *v) {
-        if (v == nullptr) return;
-
-        if (u->ll == nullptr) {
-            u->ll = v;
-            v->p = u;
-
-            update(u);
-            return;
-        }
-
-        if (u->lr == nullptr) {
-            u->lr = v;
-            v->p = u;
-
-            update(u);
-            return;
-        }
-
-        node *w = free.back();
-        free.pop_back();
-
-        w->ll = u->ll;
-        u->ll->p = w;
-
-        w->lr = v;
-        v->p = w;
-
-        u->ll = w;
-        w->p = u;
-
-        update(w);
-        update(u);
-    }
-
-    void rem(node *u) {
-        node *v = u->p;
-        push_rec(v);
-
-        if (v->fake) {
-            node *w = v->p;
-
-            if (w->ll == v) {
-                if (v->ll == u) {
-                    w->ll = v->lr;
-                    v->lr->p = w;
-                } else {
-                    w->ll = v->ll;
-                    v->ll->p = w;
-                }
-            } else if (v->lr == u) {
-                w->lr = v->ll;
-                v->ll->p = w;
-            } else {
-                w->lr = v->lr;
-                v->lr->p = w;
-            }
-
-            update(w);
-            if (w->fake) splay_light(w);
-
-            free.push_back(v);
-        } else {
-            if (v->ll == u)
-                v->ll = nullptr;
-            else
-                v->lr = nullptr;
-
-            update(v);
-        }
-
-        u->p = nullptr;
-    }
-
-    node *par(node *u) {
-        node *v = u->p;
-        if (!v->fake) return v;
-
-        splay_light(v);
-        return v->p;
-    }
-
-public:
-    node *expose(node *u) {
-        node *v = u;
-        splay_heavy(u);
-
-        add(u, u->hr);
-
-        u->hr = nullptr;
-        update(u);
-
-        while (u->p) {
-            v = par(u);
-
-            splay_heavy(v);
-            rem(u);
-
-            add(v, v->hr);
-
-            v->hr = u;
-            u->p = v;
-
-            update(v);
-            splay_heavy(u);
-        }
-
-        return v;
-    }
-
-    void evert(node *t) {
-        expose(t);
-        toggle(t);
-        push(t);
-    }
-
-    void link(node *u, node *v) {
-        evert(u);
-        expose(v);
-        add(v, u);
-    }
-
-    void cut(node *u, node *v) {
-        evert(u);
-        expose(v);
-        v->hl = u->p = nullptr;
-        update(v);
-    }
-
-    node *lca(node *u, node *v) {
-        expose(u);
-        return expose(v);
-    }
-
-    void set(node *t, const X &x) {
-        expose(t);
-        t->val = x;
-        update(t);
-    }
-
-    void multiply(node *t, const X &x) {
-        expose(t);
-        t->val = MX::op(t->val, x);
-        update(t);
-    }
-
-    X get(node *t) {
-        expose(t);
-        return t->val;
-    }
-
-    X prod_path(node *u, node *v) {
-        evert(u);
-        expose(v);
-
-        return v->hsum;
-    }
-
-    void apply_path(node *u, node *v, const A &a) {
-        evert(u);
-        expose(v);
-
-        push_heavy(v, a);
-    }
-
-    void apply_subtree(node *u, const A &a) {
-        expose(u);
-
-        u->val = AM::act(u->val, a, 1);
-        push_light(u->ll, true, a);
-        push_light(u->lr, true, a);
-    }
-
-    void apply_subtree(node *u, node *p, const A &a) {
-        evert(p);
-        apply_subtree(u, a);
-    }
-
-    X prod_subtree(node *u) {
-        static_assert(MX::commutative);
-
-        expose(u);
-
-        X res = u->val;
-        if (u->ll != nullptr) res = MX::op(u->ll->asum, res);
-        if (u->lr != nullptr) res = MX::op(res, u->lr->asum);
-
-        return res;
-    }
-
-    X prod_subtree(node *u, node *p) {
-        evert(p);
-        return prod_subtree(u);
-    }
-
-    bool is_connected(node *u, node *v) {
-        expose(u);
-        expose(v);
-        return u == v || u->p;
     }
 };
+
+template <typename ActedMonoid>
+using lazy_augmented_link_cut_tree = augmented_link_cut_tree_base<lazy_augmented_link_cut_tree_node<ActedMonoid>>;
 
 #endif // LIB_LAZY_AUGMENTED_LINK_CUT_TREE_HPP

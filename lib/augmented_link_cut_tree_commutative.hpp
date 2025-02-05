@@ -1,5 +1,5 @@
-#ifndef LIB_AUGMENTED_LINK_CUT_TREE_HPP
-#define LIB_AUGMENTED_LINK_CUT_TREE_HPP 1
+#ifndef LIB_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP
+#define LIB_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP 1
 
 #include <algorithm>
 #include <cassert>
@@ -9,7 +9,7 @@
 #include <lib/type_traits.hpp>
 
 template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
-struct augmented_link_cut_tree_node {
+struct augmented_link_cut_tree_commutative_node {
     struct MA {
         using ValueT = bool;
     };
@@ -19,12 +19,12 @@ struct augmented_link_cut_tree_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    augmented_link_cut_tree_node *hl, *hr, *ll, *lr, *p;
-    X val, hsum, hmus, lsum, asum;
+    augmented_link_cut_tree_commutative_node *hl, *hr, *ll, *lr, *p;
+    X val, hsum, lsum, asum;
     bool rev, fake;
     i32 hsz, lsz, asz;
 
-    augmented_link_cut_tree_node()
+    augmented_link_cut_tree_commutative_node()
         : hl{nullptr},
           hr{nullptr},
           ll{nullptr},
@@ -32,7 +32,6 @@ struct augmented_link_cut_tree_node {
           p{nullptr},
           val{MX::unit()},
           hsum{MX::unit()},
-          hmus{MX::unit()},
           lsum{MX::unit()},
           asum{MX::unit()},
           rev{false},
@@ -41,9 +40,9 @@ struct augmented_link_cut_tree_node {
           lsz{0},
           asz{0} {}
 
-    explicit augmented_link_cut_tree_node(const X &x)
-        : augmented_link_cut_tree_node() {
-        val = hsum = hmus = asum = x;
+    explicit augmented_link_cut_tree_commutative_node(const X &x)
+        : augmented_link_cut_tree_commutative_node() {
+        val = hsum = asum = x;
         fake = false;
         hsz = asz = 1;
     }
@@ -59,18 +58,16 @@ struct augmented_link_cut_tree_node {
     void update() {
         if (!fake) {
             hsz = 1;
-            hmus = hsum = val;
+            hsum = val;
 
             if (hl != nullptr) {
                 hsz += hl->hsz;
                 hsum = MX::op(hl->hsum, hsum);
-                hmus = MX::op(hmus, hl->hmus);
             }
 
             if (hr != nullptr) {
                 hsz += hr->hsz;
                 hsum = MX::op(hsum, hr->hsum);
-                hmus = MX::op(hr->hmus, hmus);
             }
         }
 
@@ -103,7 +100,6 @@ struct augmented_link_cut_tree_node {
 
     void toggle() {
         std::swap(hl, hr);
-        std::swap(hsum, hmus);
         rev ^= true;
     }
 
@@ -117,6 +113,7 @@ struct augmented_link_cut_tree_node {
 };
 
 template <typename ActedMonoid>
-using augmented_link_cut_tree = augmented_link_cut_tree_base<augmented_link_cut_tree_node<ActedMonoid>>;
+using augmented_link_cut_tree_commutative =
+    augmented_link_cut_tree_base<augmented_link_cut_tree_commutative_node<ActedMonoid>>;
 
-#endif // LIB_AUGMENTED_LINK_CUT_TREE_HPP
+#endif // LIB_AUGMENTED_LINK_CUT_TREE_COMMUTATIVE_HPP
