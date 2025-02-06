@@ -1,0 +1,4 @@
+#ifndef LIB_WAVELET_TREE_HPP
+#define LIB_WAVELET_TREE_HPP 1
+
+#endif // LIB_WAVELET_TREE_HPP

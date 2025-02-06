@@ -6,6 +6,7 @@
 
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
+#include <lib/type_traits.hpp>
 
 template <typename Node>
 struct rbst_base {
@@ -194,7 +195,16 @@ struct rbst_base {
     static X get(np &root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        return prod(root, p, p + 1);
+        if constexpr (is_monoid_v<MX>) return prod(root, p, p + 1);
+        
+        auto [x, y] = split(root, p);
+        auto [a, b] = split(y, 1);
+
+        if (a != nullptr) a->push();
+        X v = a->val;
+
+        root = merge(x, merge(a, b));
+        return v;
     }
 
     static void reverse(np &root) {
