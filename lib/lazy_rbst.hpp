@@ -29,7 +29,7 @@ struct lazy_rbst_node {
     lazy_rbst_node()
         : lazy_rbst_node(MX::unit()) {}
 
-    lazy_rbst_node *update() {
+    void update() {
         sz = 1;
         mus = sum = val;
 
@@ -44,8 +44,6 @@ struct lazy_rbst_node {
             sum = MX::op(sum, r->sum);
             mus = MX::op(r->mus, mus);
         }
-
-        return this;
     }
 
     void all_apply(const A &a) {

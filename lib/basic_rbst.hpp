@@ -36,12 +36,10 @@ struct basic_rbst_node {
     basic_rbst_node()
         : basic_rbst_node(MX::unit()) {}
 
-    basic_rbst_node *update() {
+    void update() {
         sz = 1;
         if (l != nullptr) sz += l->sz;
         if (r != nullptr) sz += r->sz;
-
-        return this;
     }
 
     void toggle() {

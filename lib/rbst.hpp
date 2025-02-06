@@ -29,7 +29,7 @@ struct rbst_node {
     rbst_node()
         : rbst_node(MX::unit()) {}
 
-    rbst_node *update() {
+    void update() {
         sz = 1;
         mus = sum = val;
 
@@ -44,8 +44,6 @@ struct rbst_node {
             sum = MX::op(sum, r->sum);
             mus = MX::op(r->mus, mus);
         }
-
-        return this;
     }
 
     void toggle() {

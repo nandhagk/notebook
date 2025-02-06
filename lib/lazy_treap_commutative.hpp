@@ -31,7 +31,7 @@ struct lazy_treap_commutative_node {
     lazy_treap_commutative_node()
         : lazy_treap_commutative_node(MX::unit()) {}
 
-    lazy_treap_commutative_node *update() {
+    void update() {
         sz = 1;
         sum = val;
 
@@ -44,8 +44,6 @@ struct lazy_treap_commutative_node {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
         }
-
-        return this;
     }
 
     void all_apply(const A &a) {

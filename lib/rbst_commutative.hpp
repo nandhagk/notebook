@@ -29,7 +29,7 @@ struct rbst_commutative_node {
     rbst_commutative_node()
         : rbst_commutative_node(MX::unit()) {}
 
-    rbst_commutative_node *update() {
+    void update() {
         sz = 1;
         sum = val;
 
@@ -42,8 +42,6 @@ struct rbst_commutative_node {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
         }
-
-        return this;
     }
 
     void toggle() {

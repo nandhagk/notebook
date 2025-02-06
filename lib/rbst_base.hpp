@@ -92,11 +92,15 @@ struct rbst_base {
         if ((MT() % (l->sz + r->sz)) < l->sz) {
             l->push();
             l->r = merge(l->r, r);
-            return l->update();
+            l->update();
+
+            return l;
         } else {
             r->push();
             r->l = merge(l, r->l);
-            return r->update();
+            r->update();
+
+            return r;
         }
     }
 
@@ -107,11 +111,15 @@ struct rbst_base {
         if (const i32 lsz = size(root->l); k > lsz) {
             auto [l, r] = split(root->r, k - lsz - 1);
             root->r = l;
-            return {root->update(), r};
+            root->update();
+
+            return {root, r};
         } else {
             auto [l, r] = split(root->l, k);
             root->l = r;
-            return {l, root->update()};
+            root->update();
+
+            return {l, root};
         }
     }
 

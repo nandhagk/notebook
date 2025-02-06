@@ -31,7 +31,7 @@ struct treap_commutative_node {
     treap_commutative_node()
         : treap_commutative_node(MX::unit()) {}
 
-    treap_commutative_node *update() {
+    void update() {
         sz = 1;
         sum = val;
 
@@ -44,8 +44,6 @@ struct treap_commutative_node {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
         }
-
-        return this;
     }
 
     void toggle() {

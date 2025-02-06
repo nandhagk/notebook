@@ -31,7 +31,7 @@ struct treap_node {
     treap_node()
         : treap_node(MX::unit()) {}
 
-    treap_node *update() {
+    void update() {
         sz = 1;
         mus = sum = val;
 
@@ -46,8 +46,6 @@ struct treap_node {
             sum = MX::op(sum, r->sum);
             mus = MX::op(r->mus, mus);
         }
-
-        return this;
     }
 
     void toggle() {
