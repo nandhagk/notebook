@@ -1,5 +1,5 @@
-#ifndef LIB_BASIC_LINK_CUT_TREE_HPP
-#define LIB_BASIC_LINK_CUT_TREE_HPP 1
+#ifndef LIB_LINK_CUT_TREE_HPP
+#define LIB_LINK_CUT_TREE_HPP 1
 
 #include <cassert>
 
@@ -7,34 +7,27 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename T>
-struct basic_link_cut_tree_node {
+template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
+struct link_cut_tree_node {
     struct MA {
         using ValueT = bool;
     };
 
-    struct MX {
-        using X = T;
-        using ValueT = X;
-
-        static constexpr X unit() {
-            return T();
-        }
-    };
+    using MX = Monoid;
 
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    basic_link_cut_tree_node *l, *r, *p;
-    X val;
+    link_cut_tree_node *l, *r, *p;
+    X val, sum, mus;
     bool rev;
     i32 sz;
 
-    explicit basic_link_cut_tree_node(const X &x)
-        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, rev{false}, sz{1} {}
+    explicit link_cut_tree_node(const X &x)
+        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
 
-    basic_link_cut_tree_node()
-        : basic_link_cut_tree_node(MX::unit()) {}
+    link_cut_tree_node()
+        : link_cut_tree_node(MX::unit()) {}
 
     bool is_root() const {
         return !p || (p->l != this && p->r != this);
@@ -42,12 +35,24 @@ struct basic_link_cut_tree_node {
 
     void update() {
         sz = 1;
-        if (l != nullptr) sz += l->sz;
-        if (r != nullptr) sz += r->sz;
+        mus = sum = val;
+
+        if (l != nullptr) {
+            sz += l->sz;
+            sum = MX::op(l->sum, sum);
+            mus = MX::op(mus, l->mus);
+        }
+
+        if (r != nullptr) {
+            sz += r->sz;
+            sum = MX::op(sum, r->sum);
+            mus = MX::op(r->mus, mus);
+        }
     }
 
     void toggle() {
         std::swap(l, r);
+        std::swap(sum, mus);
         rev ^= true;
     }
 
@@ -60,7 +65,7 @@ struct basic_link_cut_tree_node {
     }
 };
 
-template <typename T>
-using basic_link_cut_tree = link_cut_tree_base<basic_link_cut_tree_node<T>>;
+template <typename Monoid>
+using link_cut_tree = link_cut_tree_base<link_cut_tree_node<Monoid>>;
 
-#endif // LIB_BASIC_LINK_CUT_TREE_HPP
+#endif // LIB_LINK_CUT_TREE_HPP

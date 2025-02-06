@@ -210,7 +210,7 @@ struct treap_base {
         assert(0 <= p && p < size(root));
 
         if constexpr (is_monoid_v<MX>) return prod(root, p, p + 1);
-        
+
         auto [x, y] = split(root, p);
         auto [a, b] = split(y, 1);
 
