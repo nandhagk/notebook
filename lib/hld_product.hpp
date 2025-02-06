@@ -55,12 +55,12 @@ struct hld_product {
         return st.get(h.tin[u]);
     }
 
-    void set(i32 u, X x) {
+    void set(i32 u, const X &x) {
         st.set(h.tin[u], x);
         if constexpr (!MX::commutative) rst.set(h.tin[u], x);
     }
 
-    void multiply(i32 u, X x) {
+    void multiply(i32 u, const X &x) {
         st.multiply(h.tin[u], x);
         if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
     }

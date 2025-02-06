@@ -25,8 +25,8 @@ struct hld_lazy_segment_tree {
         using X = typename MX::ValueT;
         using A = typename MA::ValueT;
 
-        static constexpr X act(const X &x, const A &a, const i64 size) {
-            return AM::act(x, a, size);
+        static constexpr X act(const X &x, const A &a, i32 sz) {
+            return AM::act(x, a, sz);
         }
     };
 
@@ -67,12 +67,12 @@ struct hld_lazy_segment_tree {
         return st.get(h.tin[u]);
     }
 
-    void set(i32 u, X x) {
+    void set(i32 u, const X &x) {
         st.set(h.tin[u], x);
         if constexpr (!MX::commutative) rst.set(h.tin[u], x);
     }
 
-    void multiply(i32 u, X x) {
+    void multiply(i32 u, const X &x) {
         st.multiply(h.tin[u], x);
         if constexpr (!MX::commutative) rst.multiply(h.tin[u], x);
     }
@@ -93,7 +93,7 @@ struct hld_lazy_segment_tree {
         return st.prod_all();
     }
 
-    void apply_path(i32 u, i32 v, A a) {
+    void apply_path(i32 u, i32 v, const A &a) {
         for (const auto &[s, t] : h.decompose(u, v)) {
             const auto &[x, y] = std::minmax(h.tin[s], h.tin[t]);
 
@@ -102,7 +102,7 @@ struct hld_lazy_segment_tree {
         }
     }
 
-    void apply_subtree(i32 u, A a) {
+    void apply_subtree(i32 u, const A &a) {
         const i32 x = h.tin[u];
         const i32 y = h.tin[u] + h.sz[u];
 

@@ -55,14 +55,14 @@ struct rect_wavelet_matrix_product {
         return prod(x, x + 1, y, y + 1);
     }
 
-    void multiply(T x, T y, X v) {
+    void multiply(T x, T y, const X &v) {
         const i32 p = id(x, y);
         wm.multiply(p, v);
     }
 
-    void set(T x, T y, X v) {
+    void set(T x, T y, const X &v) {
         const i32 p = id(x, y);
-        wm.multiply(p, v);
+        wm.set(p, v);
     }
 
 private:

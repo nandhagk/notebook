@@ -46,8 +46,8 @@ struct dual_hld_product {
         return st.get(h.tin[u]);
     }
 
-    void set(i32 u, const A &x) {
-        st.set(h.tin[u], x);
+    void set(i32 u, const A &a) {
+        st.set(h.tin[u], a);
     }
 
     void apply_path(i32 u, i32 v, const A &a) {

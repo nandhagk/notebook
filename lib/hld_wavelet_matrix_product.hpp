@@ -124,11 +124,11 @@ struct hld_wavelet_matrix_product {
         return wm.kth(h.tin[u], h.tin[u] + h.sz[u], k);
     }
 
-    void set(i32 u, X x) {
+    void set(i32 u, const X &x) {
         wm.set(h.tin[u], x);
     }
 
-    void multiply(i32 u, X x) {
+    void multiply(i32 u, const X &x) {
         wm.mutiply(h.tin[u], x);
     }
 };

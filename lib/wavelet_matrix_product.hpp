@@ -181,7 +181,7 @@ struct wavelet_matrix_product {
         return {rv[p], x};
     }
 
-    void set(i32 p, X x) {
+    void set(i32 p, const X &x) {
         assert(0 <= p && p < n);
 
         i32 l = p;
@@ -207,7 +207,7 @@ struct wavelet_matrix_product {
         }
     }
 
-    void multiply(i32 p, X x) {
+    void multiply(i32 p, const X &x) {
         assert(0 <= p && p < n);
 
         i32 l = p;
