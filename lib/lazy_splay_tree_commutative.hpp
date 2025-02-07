@@ -17,14 +17,14 @@ struct lazy_splay_tree_commutative_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    lazy_splay_tree_commutative_node *l, *r;
+    lazy_splay_tree_commutative_node *l, *r, *p;
     X val, sum;
     A lz;
     bool rev;
     i32 sz;
 
     explicit lazy_splay_tree_commutative_node(const X &x)
-        : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
     lazy_splay_tree_commutative_node()
         : lazy_splay_tree_commutative_node(MX::unit()) {}

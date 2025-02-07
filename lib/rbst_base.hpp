@@ -90,7 +90,7 @@ struct rbst_base {
     static np merge(np l, np r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
-        if ((MT() % (l->sz + r->sz)) < l->sz) {
+        if (static_cast<i32>(MT() % (l->sz + r->sz)) < l->sz) {
             l->push();
             l->r = merge(l->r, r);
             l->update();
@@ -122,6 +122,17 @@ struct rbst_base {
 
             return {l, root};
         }
+    }
+
+    static std::tuple<np, np, np> split3(np &root, i32 l, i32 r) {
+        auto [a, b] = split(root, l);
+        auto [c, d] = split(b, r - l);
+
+        return {a, c, d};
+    }
+
+    static np merge3(np a, np b, np c) {
+        return merge(a, merge(b, c));
     }
 
     void insert(np &root, i32 p, const X &x) {

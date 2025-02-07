@@ -18,13 +18,13 @@ struct splay_tree_commutative_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    splay_tree_commutative_node *l, *r;
+    splay_tree_commutative_node *l, *r, *p;
     X val, sum;
     bool rev;
     i32 sz;
 
     explicit splay_tree_commutative_node(const X &x)
-        : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
     splay_tree_commutative_node()
         : splay_tree_commutative_node(MX::unit()) {}

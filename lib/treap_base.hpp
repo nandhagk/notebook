@@ -138,6 +138,17 @@ struct treap_base {
         }
     }
 
+    static std::tuple<np, np, np> split3(np &root, i32 l, i32 r) {
+        auto [a, b] = split(root, l);
+        auto [c, d] = split(b, r - l);
+
+        return {a, c, d};
+    }
+
+    static np merge3(np a, np b, np c) {
+        return merge(a, merge(b, c));
+    }
+
     void insert(np &root, i32 p, const X &x) {
         assert(0 <= p && p <= size(root));
 

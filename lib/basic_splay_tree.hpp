@@ -24,13 +24,13 @@ struct basic_splay_tree_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    basic_splay_tree_node *l, *r;
+    basic_splay_tree_node *l, *r, *p;
     X val;
     bool rev;
     i32 sz;
 
     explicit basic_splay_tree_node(const X &x)
-        : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, rev{false}, sz{1} {}
 
     basic_splay_tree_node()
         : basic_splay_tree_node(MX::unit()) {}
@@ -55,7 +55,7 @@ struct basic_splay_tree_node {
     }
 };
 
-template <typename Monoid>
-using basic_splay_tree = splay_tree_base<basic_splay_tree_node<Monoid>>;
+template <typename T>
+using basic_splay_tree = splay_tree_base<basic_splay_tree_node<T>>;
 
 #endif // LIB_BASIC_SPLAY_TREE_HPP
