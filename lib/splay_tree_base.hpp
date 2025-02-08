@@ -7,6 +7,7 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
+// Can be O(n) with cut and paste use treap instead
 template <typename Node>
 struct splay_tree_base {
     using np = Node *;
