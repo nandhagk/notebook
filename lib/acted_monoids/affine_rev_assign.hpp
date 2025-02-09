@@ -1,0 +1,20 @@
+#ifndef LIB_ACTED_MONOID_AFFINE_REV_ASSIGN_HPP
+#define LIB_ACTED_MONOID_AFFINE_REV_ASSIGN_HPP 1
+
+#include <lib/monoids/affine_rev.hpp>
+#include <lib/monoids/assign.hpp>
+
+template <typename T>
+struct acted_monoid_affine_rev_assign {
+    using MX = monoid_affine_rev<T>;
+    using MA = monoid_assign<typename MX::ValueT>;
+
+    using X = typename MX::ValueT;
+    using A = typename MA::ValueT;
+
+    static constexpr X act(const X &x, const A &a, i32 sz) {
+        return a ? MX::pow(*a, sz) : x;
+    }
+};
+
+#endif // LIB_ACTED_MONOID_AFFINE_REV_ASSIGN_HPP

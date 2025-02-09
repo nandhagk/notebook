@@ -224,7 +224,7 @@ struct treap_base {
 
         auto [a, b, c] = split3(root, l, r);
 
-        if (b != nullptr) b->push();
+        b->push();
         X v = b->sum;
 
         root = merge3(a, b, c);
@@ -236,7 +236,7 @@ struct treap_base {
 
         auto [a, b, c] = split3(root, p, p + 1);
 
-        if (b != nullptr) b->push();
+        b->push();
         X v = b->val;
 
         root = merge3(a, b, c);
