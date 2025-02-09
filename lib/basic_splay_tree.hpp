@@ -24,13 +24,13 @@ struct basic_splay_tree_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    basic_splay_tree_node *l, *r, *p;
+    basic_splay_tree_node *l, *r;
     X val;
     bool rev;
     i32 sz;
 
     explicit basic_splay_tree_node(const X &x)
-        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, val{x}, rev{false}, sz{1} {}
 
     basic_splay_tree_node()
         : basic_splay_tree_node(MX::unit()) {}

@@ -28,7 +28,7 @@ struct monoid_mnss {
     static constexpr X unit() {
         return from_element(inf<T>);
     }
-    
+
     static constexpr X rev(const X &x) {
         const auto &[a, b, c, d] = x;
         return {a, c, b, d};

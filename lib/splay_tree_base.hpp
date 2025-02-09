@@ -63,7 +63,7 @@ struct splay_tree_base {
             *t = Node(x);
             return t;
         }
- 
+
         assert(pid < n);
         return &(pool[pid++] = Node(x));
     }
