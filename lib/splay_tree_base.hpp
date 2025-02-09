@@ -277,7 +277,7 @@ public:
         dump(root->r, v);
     }
 
-    static std::vector<X> get_all(np &root) {
+    static std::vector<X> get_all(np root) {
         std::vector<X> v;
         v.reserve(size(root));
 

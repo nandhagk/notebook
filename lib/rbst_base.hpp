@@ -145,35 +145,32 @@ struct rbst_base {
         assert(0 <= p && p <= size(root));
 
         auto [l, r] = split(root, p);
-        root = merge(l, merge(t, r));
+        root = merge3(l, t, r);
     }
 
     void erase(np &root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        auto [l, r] = split(root, p);
-        auto [_, b] = split(r, 1);
-        root = merge(l, b);
+        auto [l, _, r] = split3(root, p, p + 1);
+        root = merge(l, r);
     }
 
     static void set(np &root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
-        auto [l, r] = split(root, p);
-        auto [a, b] = split(r, 1);
+        auto [a, b, c] = split3(root, p, p + 1);
 
-        *a = node(x);
-        root = merge(l, merge(a, b));
+        *b = node(x);
+        root = merge3(a, b, c);
     }
 
     static void multiply(np &root, i32 p, const X &x) {
         assert(0 <= p && p < size(root));
 
-        auto [l, r] = split(root, p);
-        auto [a, b] = split(r, 1);
+        auto [a, b, c] = split3(root, p, p + 1);
 
-        *a = node(MX::op(a->val, x));
-        root = merge(l, merge(a, b));
+        *b = node(MX::op(b->val, x));
+        root = merge3(a, b, c);
     }
 
     static void apply(np &root, i32 l, i32 r, const A &a) {
@@ -181,11 +178,10 @@ struct rbst_base {
 
         if (l == r) return;
 
-        auto [x, y] = split(root, l);
-        auto [p, q] = split(y, r - l);
+        auto [x, y, z] = split3(root, l, r);
 
-        p->all_apply(a);
-        root = merge(x, merge(p, q));
+        y->all_apply(a);
+        root = merge3(x, y, z);
     }
 
     static X prod(np &root, i32 l, i32 r) {
@@ -193,33 +189,25 @@ struct rbst_base {
 
         if (l == r) return MX::unit();
 
-        auto [x, y] = split(root, l);
-        auto [p, q] = split(y, r - l);
+        auto [a, b, c] = split3(root, l, r);
 
-        if (p != nullptr) p->push();
-        X v = p->sum;
+        if (b != nullptr) b->push();
+        X v = b->sum;
 
-        root = merge(x, merge(p, q));
+        root = merge3(a, b, c);
         return v;
     }
 
     static X get(np &root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        if constexpr (is_monoid_v<MX>) return prod(root, p, p + 1);
+        auto [a, b, c] = split3(root, p, p + 1);
 
-        auto [x, y] = split(root, p);
-        auto [a, b] = split(y, 1);
+        if (b != nullptr) b->push();
+        X v = b->val;
 
-        if (a != nullptr) a->push();
-        X v = a->val;
-
-        root = merge(x, merge(a, b));
+        root = merge3(a, b, c);
         return v;
-    }
-
-    static void reverse(np &root) {
-        root->toggle();
     }
 
     static void reverse(np &root, i32 l, i32 r) {
@@ -227,11 +215,10 @@ struct rbst_base {
 
         if (l == r) return;
 
-        auto [x, y] = split(root, r);
-        auto [p, q] = split(x, l);
+        auto [a, b, c] = split3(root, l, r);
 
-        reverse(q);
-        root = merge(merge(p, q), y);
+        b->toggle();
+        root = merge3(a, b, c);
     }
 
     static void dump(np root, std::vector<X> &v) {
@@ -243,7 +230,7 @@ struct rbst_base {
         dump(root->r, v);
     }
 
-    static std::vector<X> get_all(np &root) {
+    static std::vector<X> get_all(np root) {
         std::vector<X> v;
         v.reserve(size(root));
 
