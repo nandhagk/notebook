@@ -24,6 +24,7 @@ struct splay_tree_base {
 
     i32 n, pid;
     np pool;
+    std::vector<np> free;
 
     splay_tree_base()
         : pool{nullptr} {}
@@ -46,6 +47,7 @@ struct splay_tree_base {
 
     void reset() {
         pid = 0;
+        free.clear();
         delete[] pool;
     }
 
@@ -54,8 +56,15 @@ struct splay_tree_base {
     }
 
     np make_node(const X &x) {
-        assert(pid < n);
+        if (!free.empty()) {
+            np t = free.back();
+            free.pop_back();
 
+            *t = Node(x);
+            return t;
+        }
+ 
+        assert(pid < n);
         return &(pool[pid++] = Node(x));
     }
 
@@ -131,6 +140,14 @@ private:
     }
 
 public:
+    void destroy(np t) {
+        if (t == nullptr) return;
+
+        free.push_back(t);
+        destroy(t->l);
+        destroy(t->r);
+    }
+
     static np merge(np l, np r) {
         if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
 
@@ -205,6 +222,8 @@ public:
         assert(0 <= p && p < size(root));
 
         root = splay(root, p);
+        free.push_back(root);
+
         root = merge(root->l, root->r);
     }
 

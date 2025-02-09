@@ -24,6 +24,7 @@ struct treap_base {
 
     i32 n, pid;
     np pool;
+    std::vector<np> free;
 
     treap_base()
         : pool{nullptr} {}
@@ -46,6 +47,7 @@ struct treap_base {
 
     void reset() {
         pid = 0;
+        free.clear();
         delete[] pool;
     }
 
@@ -54,8 +56,15 @@ struct treap_base {
     }
 
     np make_node(const X &x) {
-        assert(pid < n);
+        if (!free.empty()) {
+            np t = free.back();
+            free.pop_back();
 
+            *t = Node(x);
+            return t;
+        }
+
+        assert(pid < n);
         return &(pool[pid++] = Node(x));
     }
 
@@ -99,6 +108,14 @@ struct treap_base {
 
         for (i32 i = static_cast<i32>(st.size()) - 1; i >= 0; --i) st[i]->update();
         return st[0];
+    }
+
+    void destroy(np t) {
+        if (t == nullptr) return;
+
+        free.push_back(t);
+        destroy(t->l);
+        destroy(t->r);
     }
 
     static np merge(np l, np r) {
@@ -165,7 +182,9 @@ struct treap_base {
     void erase(np &root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        auto [l, _, r] = split3(root, p, p + 1);
+        auto [l, a, r] = split3(root, p, p + 1);
+        free.push_back(a);
+
         root = merge(l, r);
     }
 

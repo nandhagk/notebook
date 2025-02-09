@@ -19,36 +19,34 @@ struct rbst_node {
     using A = typename MA::ValueT;
 
     rbst_node *l, *r;
-    X val, sum, mus;
+    X val, sum;
     bool rev;
     i32 sz;
 
     explicit rbst_node(const X &x)
-        : l{nullptr}, r{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
     rbst_node()
         : rbst_node(MX::unit()) {}
 
     void update() {
         sz = 1;
-        mus = sum = val;
+        sum = val;
 
         if (l != nullptr) {
             sz += l->sz;
             sum = MX::op(l->sum, sum);
-            mus = MX::op(mus, l->mus);
         }
 
         if (r != nullptr) {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
-            mus = MX::op(r->mus, mus);
         }
     }
 
     void toggle() {
         std::swap(l, r);
-        std::swap(sum, mus);
+        if constexpr (has_rev_v<MX>) sum = MX::rev(sum);
         rev ^= true;
     }
 

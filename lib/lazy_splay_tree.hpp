@@ -17,32 +17,30 @@ struct lazy_splay_tree_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    lazy_splay_tree_node *l, *r, *p;
-    X val, sum, mus;
+    lazy_splay_tree_node *l, *r;
+    X val, sum;
     A lz;
     bool rev;
     i32 sz;
 
     explicit lazy_splay_tree_node(const X &x)
-        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, lz{MA::unit()}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, val{x}, sum{x}, lz{MA::unit()}, rev{false}, sz{1} {}
 
     lazy_splay_tree_node()
         : lazy_splay_tree_node(MX::unit()) {}
 
     void update() {
         sz = 1;
-        mus = sum = val;
+        sum = val;
 
         if (l != nullptr) {
             sz += l->sz;
             sum = MX::op(l->sum, sum);
-            mus = MX::op(mus, l->mus);
         }
 
         if (r != nullptr) {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
-            mus = MX::op(r->mus, mus);
         }
     }
 
@@ -51,8 +49,6 @@ struct lazy_splay_tree_node {
         lz = MA::op(lz, a);
 
         sum = AM::act(sum, a, sz);
-        mus = AM::act(mus, a, sz);
-
         if constexpr (has_fail_v<MX>) {
             if (MX::failed(sum)) {
                 push();
@@ -63,7 +59,7 @@ struct lazy_splay_tree_node {
 
     void toggle() {
         std::swap(l, r);
-        std::swap(sum, mus);
+        if constexpr (has_rev_v<MX>) sum = MX::rev(sum);
         rev ^= true;
     }
 

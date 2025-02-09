@@ -116,6 +116,17 @@ template <typename T>
 constexpr bool has_pow_v = has_pow<T>::value;
 
 template <typename, typename = std::void_t<>>
+struct has_rev : std::false_type {};
+
+template <typename T>
+struct has_rev<
+    T, std::enable_if_t<std::is_same_v<decltype(T::rev(std::declval<typename T::ValueT>())), typename T::ValueT>>>
+    : std::true_type {};
+
+template <typename T>
+constexpr bool has_rev_v = has_rev<T>::value;
+
+template <typename, typename = std::void_t<>>
 struct has_fail : std::false_type {};
 
 template <typename T>

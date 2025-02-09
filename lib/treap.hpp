@@ -20,37 +20,35 @@ struct treap_node {
     using A = typename MA::ValueT;
 
     treap_node *l, *r;
-    X val, sum, mus;
+    X val, sum;
     bool rev;
     i32 sz;
     u64 pr;
 
     explicit treap_node(const X &x)
-        : l{nullptr}, r{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1}, pr{MT()} {}
+        : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1}, pr{MT()} {}
 
     treap_node()
         : treap_node(MX::unit()) {}
 
     void update() {
         sz = 1;
-        mus = sum = val;
+        sum = val;
 
         if (l != nullptr) {
             sz += l->sz;
             sum = MX::op(l->sum, sum);
-            mus = MX::op(mus, l->mus);
         }
 
         if (r != nullptr) {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
-            mus = MX::op(r->mus, mus);
         }
     }
 
     void toggle() {
         std::swap(l, r);
-        std::swap(sum, mus);
+        if constexpr (has_rev_v<MX>) sum = MX::rev(sum);
         rev ^= true;
     }
 

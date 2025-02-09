@@ -24,6 +24,7 @@ struct rbst_base {
 
     i32 n, pid;
     np pool;
+    std::vector<np> free;
 
     rbst_base()
         : pool{nullptr} {}
@@ -46,6 +47,7 @@ struct rbst_base {
 
     void reset() {
         pid = 0;
+        free.clear();
         delete[] pool;
     }
 
@@ -53,9 +55,16 @@ struct rbst_base {
         return nullptr;
     }
 
-    np make_node(X x) {
-        assert(pid < n);
+    np make_node(const X &x) {
+        if (!free.empty()) {
+            np t = free.back();
+            free.pop_back();
 
+            *t = Node(x);
+            return t;
+        }
+
+        assert(pid < n);
         return &(pool[pid++] = Node(x));
     }
 
@@ -85,6 +94,14 @@ struct rbst_base {
 
         t->update();
         return t;
+    }
+
+    void destroy(np t) {
+        if (t == nullptr) return;
+
+        free.push_back(t);
+        destroy(t->l);
+        destroy(t->r);
     }
 
     static np merge(np l, np r) {
@@ -151,7 +168,9 @@ struct rbst_base {
     void erase(np &root, i32 p) {
         assert(0 <= p && p < size(root));
 
-        auto [l, _, r] = split3(root, p, p + 1);
+        auto [l, a, r] = split3(root, p, p + 1);
+        free.push_back(a);
+
         root = merge(l, r);
     }
 

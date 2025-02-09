@@ -2,8 +2,9 @@
 #define LIB_MONOID_MNSS_HPP 1
 
 #include <algorithm>
-#include <lib/prelude.hpp>
 #include <tuple>
+
+#include <lib/prelude.hpp>
 
 template <typename T>
 struct monoid_mnss {
@@ -26,6 +27,11 @@ struct monoid_mnss {
 
     static constexpr X unit() {
         return from_element(inf<T>);
+    }
+    
+    static constexpr X rev(const X &x) {
+        const auto &[a, b, c, d] = x;
+        return {a, c, b, d};
     }
 
     static constexpr bool commutative = false;

@@ -18,37 +18,35 @@ struct splay_tree_node {
     using X = typename MX::ValueT;
     using A = typename MA::ValueT;
 
-    splay_tree_node *l, *r, *p;
-    X val, sum, mus;
+    splay_tree_node *l, *r;
+    X val, sum;
     bool rev;
     i32 sz;
 
     explicit splay_tree_node(const X &x)
-        : l{nullptr}, r{nullptr}, p{nullptr}, val{x}, sum{x}, mus{x}, rev{false}, sz{1} {}
+        : l{nullptr}, r{nullptr}, val{x}, sum{x}, rev{false}, sz{1} {}
 
     splay_tree_node()
         : splay_tree_node(MX::unit()) {}
 
     void update() {
         sz = 1;
-        mus = sum = val;
+        sum = val;
 
         if (l != nullptr) {
             sz += l->sz;
             sum = MX::op(l->sum, sum);
-            mus = MX::op(mus, l->mus);
         }
 
         if (r != nullptr) {
             sz += r->sz;
             sum = MX::op(sum, r->sum);
-            mus = MX::op(r->mus, mus);
         }
     }
 
     void toggle() {
         std::swap(l, r);
-        std::swap(sum, mus);
+        if constexpr (has_rev_v<MX>) sum = MX::rev(sum);
         rev ^= true;
     }
 

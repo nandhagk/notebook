@@ -20,7 +20,7 @@ struct augmented_link_cut_tree_node {
     using A = typename MA::ValueT;
 
     augmented_link_cut_tree_node *hl, *hr, *ll, *lr, *p;
-    X val, hsum, hmus, lsum, asum;
+    X val, hsum, lsum, asum;
     bool rev, fake;
     i32 hsz, lsz, asz;
 
@@ -32,7 +32,6 @@ struct augmented_link_cut_tree_node {
           p{nullptr},
           val{MX::unit()},
           hsum{MX::unit()},
-          hmus{MX::unit()},
           lsum{MX::unit()},
           asum{MX::unit()},
           rev{false},
@@ -43,7 +42,7 @@ struct augmented_link_cut_tree_node {
 
     explicit augmented_link_cut_tree_node(const X &x)
         : augmented_link_cut_tree_node() {
-        val = hsum = hmus = asum = x;
+        val = hsum = asum = x;
         fake = false;
         hsz = asz = 1;
     }
@@ -59,18 +58,16 @@ struct augmented_link_cut_tree_node {
     void update() {
         if (!fake) {
             hsz = 1;
-            hmus = hsum = val;
+            hsum = val;
 
             if (hl != nullptr) {
                 hsz += hl->hsz;
                 hsum = MX::op(hl->hsum, hsum);
-                hmus = MX::op(hmus, hl->hmus);
             }
 
             if (hr != nullptr) {
                 hsz += hr->hsz;
                 hsum = MX::op(hsum, hr->hsum);
-                hmus = MX::op(hr->hmus, hmus);
             }
         }
 
@@ -103,7 +100,7 @@ struct augmented_link_cut_tree_node {
 
     void toggle() {
         std::swap(hl, hr);
-        std::swap(hsum, hmus);
+        if constexpr (has_rev_v<MX>) hsum = MX::rev(hsum);
         rev ^= true;
     }
 
