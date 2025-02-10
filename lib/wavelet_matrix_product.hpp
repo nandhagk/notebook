@@ -224,7 +224,6 @@ struct wavelet_matrix_product {
         }
 
         return {rv[p], x};
- 
     }
 
     void set(i32 p, const X &x) {
