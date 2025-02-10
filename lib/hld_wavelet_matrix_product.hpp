@@ -76,48 +76,7 @@ struct hld_wavelet_matrix_product {
             segments.emplace_back(x, y + 1);
         }
 
-        i32 cnt{}, p{};
-        X x = MX::unit();
-        for (i32 d = wm.log - 1; d >= 0; --d) {
-            i32 c = 0;
-            for (const auto &[l, r] : segments) {
-                const i32 l0 = wm.bv[d].rank0(l);
-                const i32 r0 = wm.bv[d].rank0(r);
-                c += r0 - l0;
-            }
-
-            if (cnt + c > k) {
-                for (auto &&[l, r] : segments) {
-                    const i32 l0 = wm.bv[d].rank0(l);
-                    const i32 r0 = wm.bv[d].rank0(r);
-
-                    l = l0;
-                    r = r0;
-                }
-            } else {
-                cnt += c;
-                p |= 1 << d;
-
-                for (auto &&[l, r] : segments) {
-                    const i32 l0 = wm.bv[d].rank0(l);
-                    const i32 r0 = wm.bv[d].rank0(r);
-
-                    x = MX::op(x, wm.sg[d].prod(l0, r0));
-
-                    l += wm.md[d] - l0;
-                    r += wm.md[d] - r0;
-                }
-            }
-        }
-
-        for (const auto &[l, r] : segments) {
-            const i32 t = std::min(r - l, k - cnt);
-
-            x = MX::op(x, wm.sg[0].prod(l, l + t));
-            cnt += t;
-        }
-
-        return {wm.rv[p], x};
+        return wm.kth(std::move(segments), k);
     }
 
     std::pair<T, X> kth_subtree(i32 u, i32 k) const {

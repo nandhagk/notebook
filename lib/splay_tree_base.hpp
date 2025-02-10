@@ -236,6 +236,15 @@ public:
         root->update();
     }
 
+    static void multiply(np &root, i32 p, const X &x) {
+        assert(0 <= p && p < size(root));
+
+        root = splay(root, p);
+        root->val = MX::op(root->val, x);
+
+        root->update();
+    }
+
     static void apply(np &root, i32 l, i32 r, const A &a) {
         assert(0 <= l && l <= r && r <= size(root));
 
@@ -258,15 +267,6 @@ public:
         root = merge3(a, b, c);
 
         return x;
-    }
-
-    static void multiply(np &root, i32 p, const X &x) {
-        assert(0 <= p && p < size(root));
-
-        root = splay(root, p);
-        root->val = MX::op(root->val, x);
-
-        root->update();
     }
 
     static X get(np &root, i32 p) {

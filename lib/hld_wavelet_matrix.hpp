@@ -63,38 +63,7 @@ struct hld_wavelet_matrix {
             segments.emplace_back(x, y + 1);
         }
 
-        i32 cnt{}, p{};
-        for (i32 d = wm.log - 1; d >= 0; --d) {
-            i32 c = 0;
-            for (const auto &[l, r] : segments) {
-                const i32 l0 = wm.bv[d].rank0(l);
-                const i32 r0 = wm.bv[d].rank0(r);
-                c += r0 - l0;
-            }
-
-            if (cnt + c > k) {
-                for (auto &&[l, r] : segments) {
-                    const i32 l0 = wm.bv[d].rank0(l);
-                    const i32 r0 = wm.bv[d].rank0(r);
-
-                    l = l0;
-                    r = r0;
-                }
-            } else {
-                cnt += c;
-                p |= 1 << d;
-
-                for (auto &&[l, r] : segments) {
-                    const i32 l0 = wm.bv[d].rank0(l);
-                    const i32 r0 = wm.bv[d].rank0(r);
-
-                    l += wm.md[d] - l0;
-                    r += wm.md[d] - r0;
-                }
-            }
-        }
-
-        return wm.rv[p];
+        return wm.kth(std::move(segments), k);
     }
 
     T kth_subtree(i32 u, i32 k) const {

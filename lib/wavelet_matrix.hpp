@@ -125,6 +125,41 @@ struct wavelet_matrix {
         return rv[p];
     }
 
+    T kth(std::vector<std::pair<i32, i32>> segments, i32 k) const {
+        i32 cnt{}, p{};
+        for (i32 d = log - 1; d >= 0; --d) {
+            i32 c = 0;
+            for (const auto &[l, r] : segments) {
+                const i32 l0 = bv[d].rank0(l);
+                const i32 r0 = bv[d].rank0(r);
+                c += r0 - l0;
+            }
+
+            if (cnt + c > k) {
+                for (auto &&[l, r] : segments) {
+                    const i32 l0 = bv[d].rank0(l);
+                    const i32 r0 = bv[d].rank0(r);
+
+                    l = l0;
+                    r = r0;
+                }
+            } else {
+                cnt += c;
+                p |= 1 << d;
+
+                for (auto &&[l, r] : segments) {
+                    const i32 l0 = bv[d].rank0(l);
+                    const i32 r0 = bv[d].rank0(r);
+
+                    l += md[d] - l0;
+                    r += md[d] - r0;
+                }
+            }
+        }
+
+        return rv[p];
+    }
+
     std::optional<T> next(i32 l, i32 r, T a) const {
         const auto it = std::upper_bound(rv.begin(), rv.end(), a);
         if (it == rv.end()) return a;

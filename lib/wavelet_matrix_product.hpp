@@ -181,6 +181,52 @@ struct wavelet_matrix_product {
         return {rv[p], x};
     }
 
+    std::pair<T, X> kth(std::vector<std::pair<i32, i32>> segments, i32 k) const {
+        i32 cnt{}, p{};
+        X x = MX::unit();
+        for (i32 d = log - 1; d >= 0; --d) {
+            i32 c = 0;
+            for (const auto &[l, r] : segments) {
+                const i32 l0 = bv[d].rank0(l);
+                const i32 r0 = bv[d].rank0(r);
+                c += r0 - l0;
+            }
+
+            if (cnt + c > k) {
+                for (auto &&[l, r] : segments) {
+                    const i32 l0 = bv[d].rank0(l);
+                    const i32 r0 = bv[d].rank0(r);
+
+                    l = l0;
+                    r = r0;
+                }
+            } else {
+                cnt += c;
+                p |= 1 << d;
+
+                for (auto &&[l, r] : segments) {
+                    const i32 l0 = bv[d].rank0(l);
+                    const i32 r0 = bv[d].rank0(r);
+
+                    x = MX::op(x, sg[d].prod(l0, r0));
+
+                    l += md[d] - l0;
+                    r += md[d] - r0;
+                }
+            }
+        }
+
+        for (const auto &[l, r] : segments) {
+            const i32 t = std::min(r - l, k - cnt);
+
+            x = MX::op(x, sg[0].prod(l, l + t));
+            cnt += t;
+        }
+
+        return {rv[p], x};
+ 
+    }
+
     void set(i32 p, const X &x) {
         assert(0 <= p && p < n);
 
