@@ -151,7 +151,8 @@ private:
         if (v->lx < l) a = new node(v->lx, l, v->val);
         if (r < v->rx) c = new node(r, v->rx, v->val);
 
-        v->lx = l, v->rx = r;
+        v->lx = l;
+        v->rx = r;
         v->sum = pow_monoid(v->val, r - l);
 
         return {a, c};

@@ -24,7 +24,7 @@ inline bool erdos_gallai(std::vector<i32> deg) {
         for (i32 j = 0; j < cnt[i]; ++j) deg[--p] = i;
 
     std::vector<i64> h(n);
-    std::inclusive_scan(deg.begin(), deg.end(), h.begin());
+    std::partial_sum(deg.cbegin(), deg.cend(), h.begin());
 
     i32 w = n - 1;
     for (i32 i = 0; i < n; ++i) {

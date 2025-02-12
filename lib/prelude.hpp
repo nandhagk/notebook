@@ -39,51 +39,51 @@ inline constexpr f64 inf<f64> = inf<i64>;
 template <>
 inline constexpr f80 inf<f80> = inf<i64>;
 
-inline i32 popcnt(i32 x) {
+inline constexpr i32 popcnt(i32 x) {
     return __builtin_popcount(static_cast<u32>(x));
 }
 
-inline i32 popcnt(u32 x) {
+inline constexpr i32 popcnt(u32 x) {
     return __builtin_popcount(x);
 }
 
-inline i32 popcnt(i64 x) {
+inline constexpr i32 popcnt(i64 x) {
     return __builtin_popcountll(static_cast<u64>(x));
 }
 
-inline i32 popcnt(u64 x) {
+inline constexpr i32 popcnt(u64 x) {
     return __builtin_popcountll(x);
 }
 
-inline i32 topbit(i32 x) {
+inline constexpr i32 topbit(i32 x) {
     return 31 - __builtin_clz(static_cast<u32>(x));
 }
 
-inline i32 topbit(u32 x) {
+inline constexpr i32 topbit(u32 x) {
     return 31 - __builtin_clz(x);
 }
 
-inline i32 topbit(i64 x) {
+inline constexpr i32 topbit(i64 x) {
     return 63 - __builtin_clzll(static_cast<u64>(x));
 }
 
-inline i32 topbit(u64 x) {
+inline constexpr i32 topbit(u64 x) {
     return 63 - __builtin_clzll(x);
 }
 
-inline i32 lowbit(i32 x) {
+inline constexpr i32 lowbit(i32 x) {
     return __builtin_ctz(static_cast<u32>(x));
 }
 
-inline i32 lowbit(u32 x) {
+inline constexpr i32 lowbit(u32 x) {
     return __builtin_ctz(x);
 }
 
-inline i32 lowbit(i64 x) {
+inline constexpr i32 lowbit(i64 x) {
     return __builtin_ctzll(static_cast<u64>(x));
 }
 
-inline i32 lowbit(u64 x) {
+inline constexpr i32 lowbit(u64 x) {
     return __builtin_ctzll(x);
 }
 

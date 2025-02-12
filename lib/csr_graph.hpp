@@ -76,7 +76,7 @@ struct csr_graph {
             ++outdeg[u];
         }
 
-        std::inclusive_scan(outdeg.begin(), outdeg.end(), start.begin());
+        std::partial_sum(outdeg.cbegin(), outdeg.cend(), start.begin());
         for (const auto &[u, e] : es) elist[--start[u]] = e;
     }
 

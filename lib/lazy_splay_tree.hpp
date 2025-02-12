@@ -76,10 +76,6 @@ struct lazy_splay_tree_node {
             rev = false;
         }
     }
-
-    static constexpr X unit() {
-        return MX::unit();
-    }
 };
 
 template <typename ActedMonoid>
