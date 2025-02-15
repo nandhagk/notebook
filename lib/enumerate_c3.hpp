@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <lib/prelude.hpp>
 #include <lib/csr_graph.hpp>
+#include <lib/prelude.hpp>
 
 template <typename Graph, typename F>
 inline void enumerate_c3(const Graph &g, F f) {
@@ -20,8 +20,10 @@ inline void enumerate_c3(const Graph &g, F f) {
         for (const i32 v : g[u]) {
             if (u >= v) continue;
 
-            if (deg[u] <= deg[v]) es.emplace_back(v, u);
-            else es.emplace_back(u, v);
+            if (deg[u] <= deg[v])
+                es.emplace_back(v, u);
+            else
+                es.emplace_back(u, v);
         }
     }
 
@@ -31,9 +33,10 @@ inline void enumerate_c3(const Graph &g, F f) {
     for (i32 u = 0; u < n; ++u) {
         for (const i32 v : h[u]) x[v] = true;
 
-        for (const i32 v : h[u])
-            for (const i32 w : h[v]) 
+        for (const i32 v : h[u]) {
+            for (const i32 w : h[v])
                 if (x[w]) f(u, v, w);
+        }
 
         for (const i32 v : h[u]) x[v] = false;
     }
