@@ -13,7 +13,5 @@ i32 main() {
     i32 t;
     std::cin >> t;
 
-    while (t--) {
-        solve();
-    }
+    while (t--) solve();
 }
