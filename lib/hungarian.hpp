@@ -26,8 +26,8 @@ std::vector<i32> hungarian(const std::vector<std::vector<T>> &cost) {
 
             i32 i0 = p[j0];
             T delta = inf<T>;
-            i32 j1{};
 
+            i32 j1{};
             for (i32 j = 1; j <= m; ++j) {
                 if (used[j]) continue;
 

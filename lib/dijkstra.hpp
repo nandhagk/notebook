@@ -11,6 +11,7 @@
 template <typename Graph>
 inline std::pair<std::vector<graph_weight_t<Graph>>, std::vector<i32>> dijkstra(const Graph &g, i32 s, i32 t = -1) {
     using W = graph_weight_t<Graph>;
+
     const i32 n = static_cast<i32>(g.size());
 
     assert(0 <= s && s < n);

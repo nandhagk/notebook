@@ -66,7 +66,7 @@ public:
         for (i32 i = 0; i < size; ++i) nd[size + i] = node(i, (i < n ? f(i) : 0));
         for (i32 i = size - 1; i >= 1; --i) pull(i);
     }
- 
+
     T get(i32 p) {
         assert(0 <= p && p < n);
 

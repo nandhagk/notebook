@@ -1,3 +1,6 @@
+#ifndef LIB_MAXIMUM_MATCHING_HPP
+#define LIB_MAXIMUM_MATCHING_HPP 1
+
 #include <cassert>
 #include <vector>
 
@@ -399,3 +402,5 @@ private:
     i32 time_current, time_augment;
     i32 contract_count, outer_id;
 };
+
+#endif // LIB_MAXIMUM_MATCHING_HPP
