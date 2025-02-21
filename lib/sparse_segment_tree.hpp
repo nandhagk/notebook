@@ -185,7 +185,7 @@ public:
                 return v->val;
     }
 
-    X all_prod() {
+    X prod_all() {
         return (root ? root->sum_subtree : MX::unit());
     }
 
