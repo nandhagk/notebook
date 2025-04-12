@@ -1,5 +1,5 @@
-#ifndef LIB_INCREMENTAL_SCC_HPP
-#define LIB_INCREMENTAL_SCC_HPP 1
+#ifndef LIB_INCREMENTAL_SCC_OFFLINE_HPP
+#define LIB_INCREMENTAL_SCC_OFFLINE_HPP 1
 
 #include <vector>
 
@@ -8,7 +8,7 @@
 #include <lib/prelude.hpp>
 #include <lib/scc.hpp>
 
-inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, i32>> &es) {
+inline std::vector<i32> incremental_scc_offline(i32 n, const std::vector<std::pair<i32, i32>> &es) {
     if (es.empty()) return {};
 
     const i32 m = static_cast<i32>(es.size());
@@ -86,4 +86,4 @@ inline std::vector<i32> incremental_scc(i32 n, const std::vector<std::pair<i32, 
     return t;
 }
 
-#endif // LIB_INCREMENTAL_SCC_HPP
+#endif // LIB_INCREMENTAL_SCC_OFFLINE_HPP
