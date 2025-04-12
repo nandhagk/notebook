@@ -43,4 +43,25 @@ inline std::vector<std::pair<U, i32>> factorize(U m) {
     return fs;
 }
 
+template <typename U, is_unsigned_integral_t<U> * = nullptr>
+inline std::vector<U> factors(U m) {
+    const auto ps = factorize(m);
+
+    std::vector<U> fs;
+    fs.push_back(1);
+
+    for (const auto &[p, c] : ps) {
+        const i32 k = static_cast<i32>(fs.size());
+
+        U a = 1;
+        for (i32 z = 1; z <= c; ++z) {
+            a *= p;
+            for (i32 i = 0; i < k; ++i) fs.push_back(fs[i] * a);
+        }
+    }
+
+    std::sort(fs.begin(), fs.end());
+    return fs;
+}
+
 #endif // LIB_FACTORIZE_HPP
