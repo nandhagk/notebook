@@ -16,7 +16,22 @@ struct lcp {
         build(s);
     }
 
+    template <typename T>
+    explicit lcp(const std::vector<T> &s) {
+        build(s);
+    }
+
     void build(const std::string &s) {
+        const i32 p = static_cast<i32>(s.size());
+
+        std::vector<i32> t(p);
+        for (i32 i = 0; i < p; ++i) t[i] = s[i];
+
+        build(t);
+    }
+
+    template <typename T>
+    void build(const std::vector<T> &s) {
         n = static_cast<i32>(s.size());
 
         const auto sa = suffix_array(s);

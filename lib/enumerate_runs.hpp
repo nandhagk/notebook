@@ -12,7 +12,8 @@
 // Reference:
 // [1] H. Bannai et al., "The "Runs" Theorem,"
 // SIAM Journal on Computing, 46.5, 1501-1514, 2017.
-inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
+template <typename T>
+std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::vector<T> s) {
     if (s.empty()) return {};
 
     lcp rh(s);
@@ -25,7 +26,7 @@ inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
 
     const auto lo = *std::min_element(s.begin(), s.end());
     const auto hi = *std::max_element(s.begin(), s.end());
-    for (auto &c : t) c = static_cast<char>(hi - (c - lo));
+    for (auto &c : t) c = hi - (c - lo);
 
     const auto l1 = longest_lyndon_prefixes(s, rh);
     const auto l2 = longest_lyndon_prefixes(t, rh);
@@ -51,6 +52,15 @@ inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
     ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
 
     return ret;
+}
+
+inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
+    const i32 n = static_cast<i32>(s.size());
+
+    std::vector<i32> t(n);
+    for (i32 i = 0; i < n; ++i) t[i] = s[i];
+
+    return enumerate_runs(t);
 }
 
 #endif // LIB_ENUMERATE_RUNS_HPP
