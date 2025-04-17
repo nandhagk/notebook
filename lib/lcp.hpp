@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include <lib/prelude.hpp>
-#include <lib/suffix_array.hpp>
 #include <lib/lcp_array.hpp>
 #include <lib/monoids/min.hpp>
+#include <lib/prelude.hpp>
 #include <lib/sparse_table.hpp>
+#include <lib/suffix_array.hpp>
 
 struct lcp {
     lcp() {}

@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <lib/prelude.hpp>
 #include <lib/lyndon.hpp>
+#include <lib/prelude.hpp>
 
 // Compute all runs in given string
 // Complexity: $O(N \log N)$ in this implementation (Theoretically $O(N)$ achievable)
@@ -22,7 +22,7 @@ inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
     std::reverse(s.begin(), s.end());
 
     auto t = s;
-    
+
     const auto lo = *std::min_element(s.begin(), s.end());
     const auto hi = *std::max_element(s.begin(), s.end());
     for (auto &c : t) c = static_cast<char>(hi - (c - lo));
@@ -43,7 +43,7 @@ inline std::vector<std::tuple<i32, i32, i32>> enumerate_runs(std::string s) {
             j = i + l2[i];
             L = i - rrev.prod(n - i, n - j);
             R = j + rh.prod(i, j);
-            if (R - L >= (j  - i) * 2) ret.emplace_back(j - i, L, R);
+            if (R - L >= (j - i) * 2) ret.emplace_back(j - i, L, R);
         }
     }
 

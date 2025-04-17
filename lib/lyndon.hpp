@@ -1,11 +1,11 @@
 #ifndef LIB_LYNDON_HPP
 #define LIB_LYNDON_HPP 1
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include <lib/prelude.hpp>
 #include <lib/lcp.hpp>
+#include <lib/prelude.hpp>
 
 // Lyndon factorization based on Duval's algorithm
 // **NOT VERIFIED YET**
@@ -17,10 +17,10 @@
 //     Journal of Algorithms, 4(4), 363-381, 1983.
 // - https://cp-algorithms.com/string/lyndon_factorization.html
 // - https://qiita.com/nakashi18/items/66882bd6e0127174267a
-template <typename T> 
+template <typename T>
 std::vector<std::pair<i32, i32>> lyndon_factorization(const std::vector<T> &s) {
     const i32 n = static_cast<i32>(s.size());
-    
+
     std::vector<std::pair<i32, i32>> ret;
     for (i32 l = 0; l < n;) {
         i32 i = l;
@@ -28,11 +28,11 @@ std::vector<std::pair<i32, i32>> lyndon_factorization(const std::vector<T> &s) {
 
         while (j < n && s[i] <= s[j]) {
             i = (s[i] == s[j] ? i + 1 : l);
-            j++;
+            ++j;
         }
 
-        ret.emplace_back(l, j - i);
-        l += j - i;
+        const i32 m = (j - l) / (j - i);
+        for (i32 t = 0; t < m; t++) ret.emplace_back(l, j - i), l += j - i;
     }
 
     return ret;
