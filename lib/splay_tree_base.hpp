@@ -7,7 +7,6 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-// Can be O(n) sometimes (not amortized just for all operations with cut and paste)?!
 template <typename Node>
 struct splay_tree_base {
     using np = Node *;
@@ -24,7 +23,6 @@ struct splay_tree_base {
 
     i32 n, pid;
     np pool;
-    std::vector<np> free;
 
     splay_tree_base()
         : pool{nullptr} {}
@@ -47,7 +45,6 @@ struct splay_tree_base {
 
     void reset() {
         pid = 0;
-        free.clear();
         delete[] pool;
     }
 
@@ -56,15 +53,8 @@ struct splay_tree_base {
     }
 
     np make_node(const X &x) {
-        if (!free.empty()) {
-            np t = free.back();
-            free.pop_back();
-
-            *t = Node(x);
-            return t;
-        }
-
         assert(pid < n);
+
         return &(pool[pid++] = Node(x));
     }
 
@@ -89,219 +79,273 @@ struct splay_tree_base {
         const i32 m = (l + r) / 2;
 
         np t = make_node(f(m));
-        t->l = assign(l, m, f);
-        t->r = assign(m + 1, r, f);
+        np a = assign(l, m, f);
+        np b = assign(m + 1, r, f);
+
+        t->l = a;
+        t->r = b;
+
+        if (a) a->p = t;
+        if (b) b->p = t;
 
         t->update();
         return t;
-    }
-
-private:
-    static np rotate_right(np t) {
-        np l = t->l;
-        t->l = l->r;
-        l->r = t;
-
-        t->update();
-        l->update();
-
-        return l;
-    }
-
-    static np rotate_left(np t) {
-        np r = t->r;
-        t->r = r->l;
-        r->l = t;
-
-        t->update();
-        r->update();
-
-        return r;
-    }
-
-    static np splay(np t, i32 k) {
-        if (t == nullptr) return t;
-
-        t->push();
-
-        const i32 lsz = size(t->l);
-        if (k == lsz) return t;
-
-        if (k < lsz) {
-            t->l = splay(t->l, k);
-            t = rotate_right(t);
-        } else {
-            t->r = splay(t->r, k - lsz - 1);
-            t = rotate_left(t);
-        }
-
-        t->update();
-        return t;
-    }
-
-public:
-    void destroy(np t) {
-        if (t == nullptr) return;
-
-        free.push_back(t);
-        destroy(t->l);
-        destroy(t->r);
     }
 
     static np merge(np l, np r) {
-        if (l == nullptr || r == nullptr) return l != nullptr ? l : r;
+        if (!l) return r;
+        if (!r) return l;
+        assert((!l->p) && (!r->p));
 
-        r = splay(r, 0);
+        splay_kth(r, 0);
         r->l = l;
+        l->p = r;
         r->update();
 
         return r;
     }
 
-    static std::pair<np, np> split(np &root, i32 k) {
-        if (k >= size(root)) return {root, nullptr};
-
-        root = splay(root, k);
-        np l = root->l;
-        root->l = nullptr;
-
-        root->update();
-        return {l, root};
-    }
-
-    static std::tuple<np, np, np> split3(np &root, i32 l, i32 r) {
-        if (l == 0) {
-            auto [b, c] = split(root, r);
-            return {nullptr, b, c};
-        }
-
-        root = splay(root, l - 1);
-        auto [b, c] = split(root->r, r - l);
-        root->r = nullptr;
-
-        root->update();
-        return {root, b, c};
-    }
-
     static np merge3(np a, np b, np c) {
-        np t = merge(b, c);
-        if (a == nullptr) return t;
-
-        a->r = t;
-        a->update();
-
-        return a;
+        return merge(merge(a, b), c);
     }
 
-    void insert(np &root, i32 p, const X &x) {
-        insert(root, p, make_node(x));
+    static np merge4(np a, np b, np c, np d) {
+        return merge(merge(merge(a, b), c), d);
     }
 
-    static void insert(np &root, i32 p, np t) {
-        assert(0 <= p && p <= size(root));
+    static std::pair<np, np> split(np root, i32 k) {
+        assert(!root || !root->p);
 
-        if (p == size(root)) {
-            t->l = root;
-            t->update();
-            root = t;
-        } else if (p == 0) {
-            t->r = root;
-            t->update();
-            root = t;
-        } else {
-            root = splay(root, p);
-            t->l = root->l;
-            root->l = t;
+        if (k == 0) return {nullptr, root};
+        if (k == size(root)) return {root, nullptr};
 
-            t->update();
-            root->update();
-        }
-    }
+        splay_kth(root, k - 1);
 
-    void erase(np &root, i32 p) {
-        assert(0 <= p && p < size(root));
-
-        root = splay(root, p);
-        free.push_back(root);
-
-        root = merge(root->l, root->r);
-    }
-
-    static void set(np &root, i32 p, const X &x) {
-        assert(0 <= p && p < size(root));
-
-        root = splay(root, p);
-        root->val = x;
+        np r = root->r;
+        root->r = nullptr;
+        r->p = nullptr;
 
         root->update();
+        return {root, r};
     }
 
-    static void multiply(np &root, i32 p, const X &x) {
-        assert(0 <= p && p < size(root));
-
-        root = splay(root, p);
-        root->val = MX::op(root->val, x);
-
-        root->update();
+    static std::tuple<np, np, np> split3(np root, i32 l, i32 r) {
+        np nm, nr;
+        std::tie(root, nr) = split(root, r);
+        std::tie(root, nm) = split(root, l);
+        return {root, nm, nr};
     }
 
-    static void apply(np &root, i32 l, i32 r, const A &a) {
-        assert(0 <= l && l <= r && r <= size(root));
-
-        if (l == r) return;
-
-        auto [x, y, z] = split3(root, l, r);
-        y->all_apply(a);
-
-        root = merge3(x, y, z);
+    void insert(np &root, i32 k, const X &x) {
+        insert(root, k, make_node(x));
     }
 
-    static X prod(np &root, i32 l, i32 r) {
-        assert(0 <= l && l <= r && r <= size(root));
-
-        if (l == r) return MX::unit();
-
-        auto [a, b, c] = split3(root, l, r);
-
-        X x = b->sum;
-        root = merge3(a, b, c);
-
-        return x;
+    void erase(np &root, i32 k) {
+        const auto [a, b, c] = split3(root, k, k + 1);
+        root = merge(a, c);
     }
 
-    static X get(np &root, i32 p) {
-        assert(0 <= p && p < size(root));
+    static void insert(np &root, i32 k, np t) {
+        const auto [a, b] = split(root, k);
+        root = merge3(a, t, b);
+    }
 
-        root = splay(root, p);
+    static std::vector<X> get_all(const np &root) {
+        std::vector<X> res;
+        res.reserve(size(root));
+
+        const auto dfs = [&](auto &&self, np t) -> void {
+            if (!t) return;
+
+            t->push();
+            self(self, t->l);
+            res.push_back(t->val);
+            self(self, t->r);
+        };
+
+        dfs(dfs, root);
+        return res;
+    }
+
+    static X get(np &root, i32 k) {
+        assert(root == nullptr || !root->p);
+
+        splay_kth(root, k);
         return root->val;
     }
 
-    static void reverse(np &root, i32 l, i32 r) {
-        assert(0 <= l && l <= r && r <= size(root));
+    static void set(np &root, i32 k, const X &x) {
+        assert(root != nullptr && !root->p);
 
+        splay_kth(root, k);
+        root->val = x;
+        root->update();
+    }
+
+    static void multiply(np &root, i32 k, const X &x) {
+        assert(root != nullptr && !root->p);
+
+        splay_kth(root, k);
+        root->val = MX::op(root->val, x);
+        root->update();
+    }
+
+    static X prod(np &root, i32 l, i32 r) {
+        assert(root == nullptr || !root->p);
+        if (l == r) return MX::unit();
+
+        assert(0 <= l && l < r && r <= size(root));
+
+        goto_between(root, l, r);
+        X res = root->sum;
+        splay(root, true);
+        return res;
+    }
+
+    static X prod_all(np &root) {
+        assert(root == nullptr || !root->p);
+        return (root ? root->sum : MX::unit());
+    }
+
+    static void apply(np &root, i32 l, i32 r, const A &a) {
         if (l == r) return;
 
-        auto [a, b, c] = split3(root, l, r);
-        b->toggle();
+        assert(0 <= l && l < r && r <= size(root));
+        goto_between(root, l, r);
 
-        root = merge3(a, b, c);
+        root->all_apply(a);
+        splay(root, true);
     }
 
-    static void dump(np root, std::vector<X> &v) {
-        if (root == nullptr) return;
-
-        root->push();
-        dump(root->l, v);
-        v.push_back(root->val);
-        dump(root->r, v);
+    static void apply(np &root, const A &a) {
+        if (!root) return;
+        root->all_apply(a);
     }
 
-    static std::vector<X> get_all(np root) {
-        std::vector<X> v;
-        v.reserve(size(root));
+    static void reverse(np &root, i32 l, i32 r) {
+        assert(root == nullptr || !root->p);
 
-        dump(root, v);
-        return v;
+        if (l == r) return;
+        assert(0 <= l && l < r && r <= size(root));
+
+        goto_between(root, l, r);
+        root->toggle();
+        splay(root, true);
+    }
+
+    static void reverse(np root) {
+        if (!root) return;
+        root->toggle();
+    }
+
+private:
+    static void rotate(np n) {
+        np pp, p, c;
+        p = n->p;
+        pp = p->p;
+
+        if (p->l == n) {
+            c = n->r;
+            n->r = p;
+            p->l = c;
+        } else {
+            c = n->l;
+            n->l = p;
+            p->r = c;
+        }
+
+        if (pp && pp->l == p) pp->l = n;
+        if (pp && pp->r == p) pp->r = n;
+        n->p = pp;
+        p->p = n;
+        if (c) c->p = p;
+    }
+
+    static void prop_from_root(np c) {
+        if (!c->p) {
+            c->push();
+            return;
+        }
+
+        prop_from_root(c->p);
+        c->push();
+    }
+
+    static void splay(np me, bool prop_from_root_done) {
+        if (!prop_from_root_done) prop_from_root(me);
+
+        me->push();
+        while (me->p) {
+            np p = me->p;
+            np pp = p->p;
+            if (!pp) {
+                rotate(me);
+                p->update();
+                break;
+            }
+
+            bool same = (p->l == me && pp->l == p) || (p->r == me && pp->r == p);
+            if (same) {
+                rotate(p);
+                rotate(me);
+            } else {
+                rotate(me);
+                rotate(me);
+            }
+
+            pp->update();
+            p->update();
+        }
+
+        me->update();
+    }
+
+    static void splay_kth(np &root, i32 k) {
+        assert(0 <= k && k < size(root));
+
+        for (;;) {
+            root->push();
+            i32 sl = size(root->l);
+            if (k == sl) break;
+            if (k < sl) {
+                root = root->l;
+            } else {
+                k -= sl + 1;
+                root = root->r;
+            }
+        }
+
+        splay(root, true);
+    }
+
+    static void goto_between(np &root, i32 l, i32 r) {
+        if (l == 0 && r == size(root)) return;
+
+        if (l == 0) {
+            splay_kth(root, r);
+            root = root->l;
+            return;
+        }
+
+        if (r == size(root)) {
+            splay_kth(root, l - 1);
+            root = root->r;
+            return;
+        }
+
+        splay_kth(root, r);
+
+        np rp = root;
+        root = rp->l;
+        root->p = nullptr;
+
+        splay_kth(root, l - 1);
+
+        root->p = rp;
+        rp->l = root;
+        rp->update();
+
+        root = root->r;
     }
 };
 
