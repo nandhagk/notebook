@@ -39,6 +39,7 @@ STD_HEADERS = (
     "limits",
     "tuple",
     "optional",
+    "valarray",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

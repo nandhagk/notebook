@@ -1,8 +1,8 @@
 #ifndef LIB_ENUMERATE_QUOTIENTS_HPP
 #define LIB_ENUMERATE_QUOTIENTS_HPP 1
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>

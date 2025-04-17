@@ -39,7 +39,7 @@ template <typename... T>
 struct hash<std::tuple<T...>> {
     u64 operator()(const std::tuple<T...> &a) const {
         u64 value = FIXED_RANDOM;
-        std::apply([&value](T const &...args) { (hash_combine(value, args), ...); }, a);
+        std::apply([&value](const T &...args) { (hash_combine(value, args), ...); }, a);
         return value;
     }
 };

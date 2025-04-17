@@ -2,9 +2,9 @@
 #define LIB_DYNAMIC_SUFFIX_ARRAY_HPP 1
 
 #include <algorithm>
+#include <cassert>
 #include <string>
 #include <vector>
-#include <cassert>
 
 #include <lib/prelude.hpp>
 
@@ -233,7 +233,7 @@ private:
 
     node *find(i32 i) const {
         node *x = root;
-        
+
         for (;;) {
             if (i < size(x->l)) {
                 x = x->l;
@@ -297,7 +297,6 @@ public:
     i32 lcp(i32 i) const {
         return find(i)->lcp;
     }
-
 };
 
 #endif // LIB_DYNAMIC_SUFFIX_ARRAY_HPP
