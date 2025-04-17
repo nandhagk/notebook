@@ -117,6 +117,7 @@ private:
 
         std::vector<node *> v;
         flatten(v, x);
+
         build(v, x, p, 0, static_cast<i32>(v.size()) - 1, l, r);
     }
 
@@ -160,8 +161,9 @@ private:
             node *prv = prev(x);
             node *nxt = next(x);
 
-            i32 lcp_cur = get_lcp(prv, x);
-            i32 lcp_nxt = get_lcp(x, nxt);
+            const i32 lcp_cur = get_lcp(prv, x);
+            const i32 lcp_nxt = get_lcp(x, nxt);
+
             if (nxt) {
                 nxt->lcp = lcp_nxt;
                 fix_path(nxt);
@@ -201,7 +203,10 @@ private:
             if (x) x->p = p;
         } else {
             for (tmp = x->l, p = x; tmp->r; tmp = tmp->r) p = tmp;
-            x->sa = tmp->sa, x->lcp = tmp->lcp;
+
+            x->sa = tmp->sa;
+            x->lcp = tmp->lcp;
+
             if (tmp->l) tmp->l->p = p;
             if (p->l == tmp)
                 p->l = tmp->l;
@@ -224,6 +229,24 @@ private:
         ans = std::min(ans, prod(x->r, tag[x->sa] + 1, r, a, b));
 
         return ans;
+    }
+
+    node *find(i32 i) const {
+        node *x = root;
+        
+        for (;;) {
+            if (i < size(x->l)) {
+                x = x->l;
+            } else {
+                i -= size(x->l);
+                if (i == 0) return x;
+
+                --i;
+                x = x->r;
+            }
+        }
+
+        assert(0);
     }
 
 public:
@@ -268,39 +291,11 @@ public:
     }
 
     i32 sa(i32 i) const {
-        node *x = root;
-        
-        for (;;) {
-            if (i < size(x->l)) {
-                x = x->l;
-            } else {
-                i -= size(x->l);
-                if (i == 0) return mirror(x->sa);
-
-                i--;
-                x = x->r;
-            }
-        }
-
-        assert(0);
+        return mirror(find(i)->sa);
     }
 
     i32 lcp(i32 i) const {
-        node *x = root;
-        
-        for (;;) {
-            if (i < size(x->l)) {
-                x = x->l;
-            } else {
-                i -= size(x->l);
-                if (i == 0) return x->lcp;
-
-                i--;
-                x = x->r;
-            }
-        }
-
-        assert(0);
+        return find(i)->lcp;
     }
 
 };
