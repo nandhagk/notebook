@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include <lib/prelude.hpp>
 #include <lib/manacher.hpp>
 #include <lib/monoids/add.hpp>
+#include <lib/prelude.hpp>
 #include <lib/static_product.hpp>
 #include <lib/wavelet_matrix_product.hpp>
 
