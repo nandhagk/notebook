@@ -12,8 +12,7 @@ std::pair<std::vector<i32>, std::vector<i32>> manacher(const std::vector<T> &s) 
     const i32 n = static_cast<i32>(s.size());
 
     // odd[i] = length of palindrome centered at i
-    // even[i] = length of palindrome centered at space before
-    // i
+    // even[i] = length of palindrome centered at space before i
     std::vector<i32> odd(n), even(n);
     for (i32 i = 0, l = 0, r = -1; i < n; ++i) {
         i32 len = (i > r) ? 1 : std::min(odd[l + r - i], r - i + 1);
