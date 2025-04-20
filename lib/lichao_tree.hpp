@@ -1,141 +1,208 @@
 #ifndef LIB_LICHAO_TREE_HPP
 #define LIB_LICHAO_TREE_HPP 1
 
-#include <algorithm>
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
-template <typename T>
-struct line {
-    using ValueT = T;
-
-    T a, b;
-
-    line()
-        : line(0, 0) {}
-
-    explicit line(T d)
-        : line(0, d) {}
-
-    line(T c, T d)
-        : a{c}, b{d} {}
-
-    T eval(T x) const {
-        return a * x + b;
-    }
-
-    T operator()(T x) const {
-        return eval(x);
-    }
-};
-
-template <typename L, bool MIN = true>
+template <typename T, T xmin, T xmax, is_integral_t<T> * = nullptr>
 struct lichao_tree {
-    using T = typename L::ValueT;
+    struct line {
+        T a, b;
 
-    i32 n, log, size;
-    std::vector<T> x;
-    std::vector<L> d;
+        line(T p, T q)
+            : a(p), b(q) {}
 
-    lichao_tree() {}
-
-    explicit lichao_tree(const std::vector<T> &p, const L &f) {
-        x = p;
-
-        std::sort(x.begin(), x.end());
-        x.erase(std::unique(x.begin(), x.end()), x.end());
-        x.shrink_to_fit();
-
-        n = static_cast<i32>(x.size());
-
-        log = 1;
-        while ((1 << log) < n) ++log;
-
-        size = 1 << log;
-        d.assign(size << 1, f);
-    }
-
-    void add_line(const L &f) {
-        add_line_at(1, f);
-    }
-
-    void add_segment(T xl, T xr, const L &f) {
-        for (i32 l = idx(xl) + size, r = idx(xr) + size; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) add_line_at(l++, f);
-            if (r & 1) add_line_at(--r, f);
-        }
-    }
-
-    std::pair<T, L> query(T z) const {
-        L f = d[0];
-        T a = f(z);
-
-        for (i32 i = idx(z) + size; i; i >>= 1) {
-            L g = d[i];
-            T b = g(z);
-
-            if ((MIN && b < a) || (!MIN && b > a)) {
-                f = g;
-                a = b;
-            }
+        inline T get(T x) const {
+            return a * x + b;
         }
 
-        return {a, f};
-    }
+        friend bool operator==(const line &lhs, const line &rhs) {
+            return lhs.a == rhs.a && lhs.b == rhs.b;
+        }
+
+        friend bool operator!=(const line &lhs, const line &rhs) {
+            return !(lhs == rhs);
+        }
+    };
 
 private:
-    inline i32 idx(T z) const {
-        return static_cast<i32>(std::lower_bound(x.begin(), x.end(), z) - x.begin());
-    }
+    struct node {
+        line x;
+        node *l, *r;
 
-    inline T eval(const L &f, i32 i) const {
-        return f(x[std::min(i, n - 1)]);
-    }
+        explicit node(const line &z)
+            : x(z), l(nullptr), r(nullptr) {}
+    };
 
-    void add_line_at(i32 i, L f) {
-        const i32 k = topbit(i);
+    node *root;
+    node *add_line(node *v, line &x, T l, T r, T x_l, T x_r) {
+        if (!v) return new node(x);
 
-        i32 l = (size >> k) * (i - (1 << k));
-        i32 r = l + (size >> k);
-
-        while (l < r) {
-            const L g = d[i];
-
-            const T fl = eval(f, l);
-            const T fr = eval(f, r - 1);
-            const T gl = eval(g, l);
-            const T gr = eval(g, r - 1);
-
-            const bool bl = MIN ? fl < gl : fl > gl;
-            const bool br = MIN ? fr < gr : fr > gr;
-
-            if (bl && br) {
-                d[i] = f;
-                return;
-            }
-
-            if (!bl && !br) return;
-
-            const i32 m = (l + r) / 2;
-
-            const T fm = eval(f, m);
-            const T gm = eval(g, m);
-
-            const bool bm = MIN ? fm < gm : fm > gm;
-            if (bm) {
-                d[i] = f;
-                f = g;
-            }
-
-            if (bm ^ bl) {
-                i = (i << 1) | 0;
-                r = m;
+        T t_l = v->x.get(l), t_r = v->x.get(r);
+        if (l + 1 == r) {
+            if (x_l < t_l) v->x = x;
+            return v;
+        } else if (t_l <= x_l && t_r <= x_r) {
+            return v;
+        } else if (t_l >= x_l && t_r >= x_r) {
+            v->x = x;
+            return v;
+        } else {
+            const T m = (l + r) / 2;
+            const T t_m = v->x.get(m), x_m = x.get(m);
+            if (t_m > x_m) {
+                std::swap(v->x, x);
+                if (x_l >= t_l)
+                    v->l = add_line(v->l, x, l, m, t_l, t_m);
+                else
+                    v->r = add_line(v->r, x, m, r, t_m, t_r);
             } else {
-                i = (i << 1) | 1;
-                l = m;
+                if (t_l >= x_l)
+                    v->l = add_line(v->l, x, l, m, x_l, x_m);
+                else
+                    v->r = add_line(v->r, x, m, r, x_m, x_r);
             }
+
+            return v;
         }
+    }
+
+    node *add_segment(node *v, line &x, T a, T b, T l, T r, T x_l, T x_r) {
+        if (r <= a || b <= l) return v;
+        if (a <= l && r <= b) {
+            line y(x);
+            return add_line(v, y, l, r, x_l, x_r);
+        }
+
+        if (v) {
+            T t_l = v->x.get(l), t_r = v->x.get(r);
+            if (t_l <= x_l && t_r <= x_r) return v;
+        } else {
+            v = new node(line(0, inf<T>));
+        }
+
+        const T m = (l + r) / 2;
+        const T x_m = x.get(m);
+
+        v->l = add_segment(v->l, x, a, b, l, m, x_l, x_m);
+        v->r = add_segment(v->r, x, a, b, m, r, x_m, x_r);
+        return v;
+    }
+
+    T min(node *v, T l, T r, T x) const {
+        if (!v) return inf<T>;
+        if (l + 1 == r) return v->x.get(x);
+
+        const T m = (l + r) / 2;
+        if (x < m)
+            return std::min(v->x.get(x), min(v->l, l, m, x));
+        else
+            return std::min(v->x.get(x), min(v->r, m, r, x));
+    }
+
+    line min_line(node *v, T l, T r, T x) const {
+        if (!v) return line(0, inf<T>);
+        if (l + 1 == r) return v->x;
+
+        const T m = (l + r) / 2;
+        const line res = x < m ? min_line(v->l, l, m, x) : min_line(v->r, m, r, x);
+
+        return v->x.get(x) <= res.get(x) ? v->x : res;
+    }
+
+    void enumerate(node *v, T l, T r, std::vector<line> &L, std::vector<std::pair<T, line>> &res) {
+        L.push_back(v->x);
+
+        const T m = (l + r) / 2;
+        const auto calc = [&](T lx, T rx) -> void {
+            for (;;) {
+                const line a = min_line(lx);
+                if (res.empty() || res.back().second != a) res.push_back({lx, a});
+                if (a.b == inf<T>) return;
+
+                T intersection = rx; // min(ceil(交点))
+                line next_line = line(0, inf<T>);
+                for (i32 i = 0; i < static_cast<i32>(L.size()); ++i) {
+                    if (L[i].b == inf<T> || L[i].a >= a.a) continue;
+                    // (a.a - L[i].a) x = L[i].b - a.b
+                    const T diff_a = a.a - L[i].a;
+                    const T ceil_x = (L[i].b - a.b + diff_a - 1) / diff_a;
+                    if (lx < ceil_x && ceil_x < intersection) {
+                        assert(lx < ceil_x);
+
+                        next_line = L[i];
+                        intersection = ceil_x;
+                    }
+                }
+
+                if (intersection == rx) break;
+                lx = intersection;
+            }
+        };
+
+        if (v->l && v->r) {
+            enumerate(v->l, l, m, L, res);
+            enumerate(v->r, m, r, L, res);
+        } else if (!v->l && !v->r) {
+            calc(l, r);
+        } else if (!v->l) {
+            calc(l, m);
+            enumerate(v->r, m, r, L, res);
+        } else {
+            enumerate(v->l, l, m, L, res);
+            calc(m, r);
+        }
+
+        L.pop_back();
+    }
+
+    void clear(node *v) {
+        if (v == nullptr) return;
+
+        clear(v->l);
+        clear(v->r);
+
+        delete v;
+    }
+
+public:
+    lichao_tree()
+        : root(nullptr) {}
+
+    ~lichao_tree() {
+        clear();
+    }
+
+    void clear() {
+        clear(root);
+    }
+
+    void add_line(T a, T b) {
+        line x(a, b);
+        root = add_line(root, x, xmin, xmax + 1, x.get(xmin), x.get(xmax + 1));
+    }
+
+    void add_segment(T l, T r, T a, T b) {
+        line x(a, b);
+        root = add_segment(root, x, l, r, xmin, xmax + 1, x.get(xmin), x.get(xmax + 1));
+    }
+
+    T min(T x) const {
+        return min(root, xmin, xmax + 1, x);
+    }
+
+    line min_line(T x) const {
+        return min_line(root, xmin, xmax + 1, x);
+    }
+
+    std::vector<std::pair<T, line>> enumerate() {
+        if (!root) return {{xmin, line(0, inf<T>)}};
+        std::vector<std::pair<T, line>> res;
+        std::vector<line> L;
+        enumerate(root, xmin, xmax + 1, L, res);
+        return res;
     }
 };
 
