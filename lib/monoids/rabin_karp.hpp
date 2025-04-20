@@ -32,7 +32,7 @@ struct tuple : public std::tuple<Zs...> {
     }
 
 private:
-    template <typename Op, typename... Ts, std::size_t... Is>
+    template <typename Op, typename... Ts, usize... Is>
     static constexpr tuple<Ts...> h(const Op &op, const tuple<Ts...> &t1, const tuple<Ts...> &t2,
                                     const std::index_sequence<Is...> &) {
         return {op(std::get<Is>(t1), std::get<Is>(t2))...};
@@ -43,7 +43,7 @@ private:
         return h(op, t1, t2, std::index_sequence_for<Zs...>{});
     }
 
-    template <typename Op, typename... Ts, std::size_t... Is>
+    template <typename Op, typename... Ts, usize... Is>
     static constexpr tuple<Ts...> h(const Op &op, const tuple<Ts...> &t1, const std::index_sequence<Is...> &) {
         return {op(std::get<Is>(t1))...};
     }
@@ -76,6 +76,11 @@ struct rabin_karp {
         return {1, {static_cast<Zs>(c)...}};
     }
 
+    static Z base;
+
+    static constexpr bool commutative = false;
+
+private:
     static Z pow(i32 n) {
         static std::vector<Z> pows{{static_cast<Zs>(1)...}};
 
@@ -84,10 +89,6 @@ struct rabin_karp {
 
         return pows[n];
     }
-
-    static Z base;
-
-    static constexpr bool commutative = false;
 };
 
 #endif // LIB_RABIN_KARP_HPP
