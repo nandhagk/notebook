@@ -1,173 +1,207 @@
 #ifndef LIB_SPARSE_LICHAO_TREE_HPP
 #define LIB_SPARSE_LICHAO_TREE_HPP 1
 
-#include <cassert>
 #include <vector>
 
 #include <lib/prelude.hpp>
+#include <lib/type_traits.hpp>
 
-template <typename L, bool MIN = true, bool PERSIST = false>
+template <typename T, T xmin, T xmax, is_integral_t<T> * = nullptr>
 struct sparse_lichao_tree {
-    using T = typename L::ValueT;
+    struct line {
+        T a, b;
 
-    std::vector<L> d;
+        line(T p, T q)
+            : a(p), b(q) {}
 
-    struct node {
-        i32 i;
-        node *l, *r;
+        inline T get(T x) const {
+            return a * x + b;
+        }
 
-        node()
-            : i{-1}, l{nullptr}, r{nullptr} {}
+        friend bool operator==(const line &lhs, const line &rhs) {
+            return lhs.a == rhs.a && lhs.b == rhs.b;
+        }
+
+        friend bool operator!=(const line &lhs, const line &rhs) {
+            return !(lhs == rhs);
+        }
     };
 
-    using np = node *;
-
-    np pool;
-
-    i32 n, pid;
-    T xmin, xmax;
-
-    sparse_lichao_tree()
-        : pool{nullptr} {}
-
-    sparse_lichao_tree(T mi, T ma, i32 m)
-        : n{m}, pid{0}, xmin{mi}, xmax{ma} {
-        pool = new node[n];
-    }
-
-    ~sparse_lichao_tree() {
-        reset();
-    }
-
-    void reset() {
-        pid = 0;
-        d.clear();
-        delete[] pool;
-    }
-
-    np make_root() {
-        return nullptr;
-    }
-
-    np make_node() {
-        assert(pid < n);
-
-        return &(pool[pid++] = node());
-    }
-
-    np add_line(np root, L f) {
-        const i32 i = static_cast<i32>(d.size());
-        d.push_back(f);
-
-        if (root == nullptr) root = make_node();
-        return add_line_rec(root, i, xmin, xmax);
-    }
-
-    np add_segment(np root, T xl, T xr, L f) {
-        const i32 i = static_cast<i32>(d.size());
-        d.push_back(f);
-
-        if (root == nullptr) root = make_node();
-        return add_segment_rec(root, xl, xr, i, xmin, xmax);
-    }
-
-    std::pair<T, i32> query(np root, T x) {
-        assert(xmin <= x && x <= xmax);
-
-        if (root == nullptr) return MIN ? std::pair<T, i32>{inf<T>, -1} : std::pair<T, i32>{-inf<T>, -1};
-        return query_rec(root, x, xmin, xmax);
-    }
-
 private:
-    np copy_node(np c) {
-        if constexpr (!PERSIST) return c;
-        if (c == nullptr) return c;
+    struct node {
+        line x;
+        node *l, *r;
 
-        assert(pid < n);
-        return &(pool[pid++] = node(*c));
-    }
+        explicit node(const line &z)
+            : x(z), l(nullptr), r(nullptr) {}
+    };
 
-    inline T eval(i32 i, T x) const {
-        if (i == -1) return MIN ? inf<T> : -inf<T>;
-        return eval(d[i], x);
-    }
+    node *root;
+    node *add_line(node *v, line &x, T l, T r, T x_l, T x_r) {
+        if (!v) return new node(x);
 
-    static inline T eval(const L &f, T x) {
-        return f(x);
-    }
-
-    np add_segment_rec(np c, T xl, T xr, i32 i, T l, T r) {
-        xl = std::max(xl, l);
-        xr = std::min(xr, r);
-
-        if (xl >= xr) return c;
-        if (l < xl || xr < r) {
-            c = copy_node(c);
-            T m = (l + r) / 2;
-            if (!c->l) c->l = make_node();
-            if (!c->r) c->r = make_node();
-            c->l = add_segment_rec(c->l, xl, xr, i, l, m);
-            c->r = add_segment_rec(c->r, xl, xr, i, m, r);
-            return c;
-        }
-
-        return add_line_rec(c, i, l, r);
-    }
-
-    np add_line_rec(np c, i32 i, T l, T r) {
-        i32 j = c->i;
-        T fl = eval(i, l), fr = eval(i, r - 1);
-        T gl = eval(j, l), gr = eval(j, r - 1);
-        bool bl = (MIN ? fl < gl : fl > gl);
-        bool br = (MIN ? fr < gr : fr > gr);
-        if (bl && br) {
-            c = copy_node(c);
-            c->i = i;
-            return c;
-        }
-        if (!bl && !br) return c;
-
-        c = copy_node(c);
-        T m = (l + r) / 2;
-        auto fm = eval(i, m), gm = eval(j, m);
-        bool bm = (MIN ? fm < gm : fm > gm);
-        if (bm) {
-            c->i = i;
-            if (bl) {
-                if (!c->r) c->r = make_node();
-                c->r = add_line_rec(c->r, j, m, r);
-            } else {
-                if (!c->l) c->l = make_node();
-                c->l = add_line_rec(c->l, j, l, m);
-            }
+        T t_l = v->x.get(l), t_r = v->x.get(r);
+        if (l + 1 == r) {
+            if (x_l < t_l) v->x = x;
+            return v;
+        } else if (t_l <= x_l && t_r <= x_r) {
+            return v;
+        } else if (t_l >= x_l && t_r >= x_r) {
+            v->x = x;
+            return v;
         } else {
-            if (!bl) {
-                if (!c->r) c->r = make_node();
-                c->r = add_line_rec(c->r, i, m, r);
+            const T m = (l + r) / 2;
+            const T t_m = v->x.get(m), x_m = x.get(m);
+            if (t_m > x_m) {
+                std::swap(v->x, x);
+                if (x_l >= t_l)
+                    v->l = add_line(v->l, x, l, m, t_l, t_m);
+                else
+                    v->r = add_line(v->r, x, m, r, t_m, t_r);
             } else {
-                if (!c->l) c->l = make_node();
-                c->l = add_line_rec(c->l, i, l, m);
+                if (t_l >= x_l)
+                    v->l = add_line(v->l, x, l, m, x_l, x_m);
+                else
+                    v->r = add_line(v->r, x, m, r, x_m, x_r);
             }
-        }
 
-        return c;
+            return v;
+        }
     }
 
-    std::pair<T, i32> query_rec(np c, T x, T l, T r) {
-        i32 i = c->i;
-        std::pair<T, i32> res = {eval(i, x), i};
+    node *add_segment(node *v, line &x, T a, T b, T l, T r, T x_l, T x_r) {
+        if (r <= a || b <= l) return v;
+        if (a <= l && r <= b) {
+            line y(x);
+            return add_line(v, y, l, r, x_l, x_r);
+        }
+
+        if (v) {
+            T t_l = v->x.get(l), t_r = v->x.get(r);
+            if (t_l <= x_l && t_r <= x_r) return v;
+        } else {
+            v = new node(line(0, inf<T>));
+        }
 
         const T m = (l + r) / 2;
-        if (x < m && c->l) {
-            const auto res1 = query_rec(c->l, x, l, m);
-            res = (MIN ? std::min(res, res1) : std::max(res, res1));
+        const T x_m = x.get(m);
+
+        v->l = add_segment(v->l, x, a, b, l, m, x_l, x_m);
+        v->r = add_segment(v->r, x, a, b, m, r, x_m, x_r);
+        return v;
+    }
+
+    T min(node *v, T l, T r, T x) const {
+        if (!v) return inf<T>;
+        if (l + 1 == r) return v->x.get(x);
+
+        const T m = (l + r) / 2;
+        if (x < m)
+            return std::min(v->x.get(x), min(v->l, l, m, x));
+        else
+            return std::min(v->x.get(x), min(v->r, m, r, x));
+    }
+
+    line min_line(node *v, T l, T r, T x) const {
+        if (!v) return line(0, inf<T>);
+        if (l + 1 == r) return v->x;
+
+        const T m = (l + r) / 2;
+        const line res = x < m ? min_line(v->l, l, m, x) : min_line(v->r, m, r, x);
+
+        return v->x.get(x) <= res.get(x) ? v->x : res;
+    }
+
+    void enumerate(node *v, T l, T r, std::vector<line> &L, std::vector<std::pair<T, line>> &res) {
+        L.push_back(v->x);
+
+        const T m = (l + r) / 2;
+        const auto calc = [&](T lx, T rx) -> void {
+            for (;;) {
+                const line a = min_line(lx);
+                if (res.empty() || res.back().second != a) res.push_back({lx, a});
+                if (a.b == inf<T>) return;
+
+                T intersection = rx; // min(ceil(交点))
+                line next_line = line(0, inf<T>);
+                for (i32 i = 0; i < static_cast<i32>(L.size()); ++i) {
+                    if (L[i].b == inf<T> || L[i].a >= a.a) continue;
+                    // (a.a - L[i].a) x = L[i].b - a.b
+                    const T diff_a = a.a - L[i].a;
+                    const T ceil_x = (L[i].b - a.b + diff_a - 1) / diff_a;
+                    if (lx < ceil_x && ceil_x < intersection) {
+                        assert(lx < ceil_x);
+
+                        next_line = L[i];
+                        intersection = ceil_x;
+                    }
+                }
+
+                if (intersection == rx) break;
+                lx = intersection;
+            }
+        };
+
+        if (v->l && v->r) {
+            enumerate(v->l, l, m, L, res);
+            enumerate(v->r, m, r, L, res);
+        } else if (!v->l && !v->r) {
+            calc(l, r);
+        } else if (!v->l) {
+            calc(l, m);
+            enumerate(v->r, m, r, L, res);
+        } else {
+            enumerate(v->l, l, m, L, res);
+            calc(m, r);
         }
 
-        if (x >= m && c->r) {
-            const auto res1 = query_rec(c->r, x, m, r);
-            res = (MIN ? std::min(res, res1) : std::max(res, res1));
-        }
+        L.pop_back();
+    }
 
+    void clear(node *v) {
+        if (v == nullptr) return;
+
+        clear(v->l);
+        clear(v->r);
+
+        delete v;
+    }
+
+public:
+    sparse_lichao_tree()
+        : root(nullptr) {}
+
+    ~sparse_lichao_tree() {
+        clear();
+    }
+
+    void clear() {
+        clear(root);
+    }
+
+    void add_line(T a, T b) {
+        line x(a, b);
+        root = add_line(root, x, xmin, xmax + 1, x.get(xmin), x.get(xmax + 1));
+    }
+
+    void add_segment(T l, T r, T a, T b) {
+        line x(a, b);
+        root = add_segment(root, x, l, r, xmin, xmax + 1, x.get(xmin), x.get(xmax + 1));
+    }
+
+    T min(T x) const {
+        return min(root, xmin, xmax + 1, x);
+    }
+
+    line min_line(T x) const {
+        return min_line(root, xmin, xmax + 1, x);
+    }
+
+    std::vector<std::pair<T, line>> enumerate() {
+        if (!root) return {{xmin, line(0, inf<T>)}};
+        std::vector<std::pair<T, line>> res;
+        std::vector<line> L;
+        enumerate(root, xmin, xmax + 1, L, res);
         return res;
     }
 };
