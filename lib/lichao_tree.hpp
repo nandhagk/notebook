@@ -58,7 +58,6 @@ struct lichao_tree {
 
         size = 1 << log;
         d.assign(size << 1, f);
-
     }
 
     void add_line(const L &f) {

@@ -162,7 +162,7 @@ struct wavelet_matrix {
 
     std::optional<T> next(i32 l, i32 r, T a) const {
         const auto it = std::upper_bound(rv.begin(), rv.end(), a);
-        if (it == rv.end()) return a;
+        if (it == rv.end()) return std::nullopt;
 
         const i32 k = count(l, r, *it);
         if (k == r - l) return std::nullopt;
@@ -172,7 +172,9 @@ struct wavelet_matrix {
 
     std::optional<T> prev(i32 l, i32 r, T a) const {
         const auto it = std::lower_bound(rv.begin(), rv.end(), a);
-        if (it == rv.begin()) return a;
+
+        if (it == rv.begin()) return std::nullopt;
+        if (it == rv.end()) return kth(l, r, r - l - 1);
 
         const i32 k = count(l, r, *it);
         if (k == 0) return std::nullopt;
