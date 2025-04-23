@@ -11,7 +11,7 @@ struct rational {
     rational()
         : rational(0, 1) {}
 
-    explicit rational(T v)
+    rational(T v)
         : rational(v, 1) {}
 
     rational(T n, T d)

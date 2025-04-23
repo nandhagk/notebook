@@ -71,7 +71,7 @@ struct lichao_tree {
         }
     }
 
-    std::pair<T, L> query(T z) const {
+    std::pair<T, L> prod(T z) const {
         L f = d[0];
         T a = f(z);
 
