@@ -21,7 +21,7 @@ struct rational {
             den = -den;
         }
 
-        reduce();
+        if (AUTO_REDUCE) reduce();
     }
 
     friend std::istream &operator>>(std::istream &is, rational &r) {
