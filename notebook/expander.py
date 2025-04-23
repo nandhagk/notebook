@@ -40,6 +40,7 @@ STD_HEADERS = (
     "tuple",
     "optional",
     "valarray",
+    "iterator",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")

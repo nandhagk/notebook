@@ -72,7 +72,7 @@ struct rabin_karp {
         return X{};
     }
 
-    static constexpr X from_element(i32 c) {
+    static constexpr X from_element(i64 c) {
         return {1, {static_cast<Zs>(c)...}};
     }
 

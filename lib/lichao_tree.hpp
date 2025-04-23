@@ -41,6 +41,10 @@ struct lichao_tree {
     lichao_tree() {}
 
     explicit lichao_tree(const std::vector<T> &p, const L &f) {
+        build(p, f);
+    }
+
+    void build(const std::vector<T> &p, const L &f) {
         x = p;
 
         std::sort(x.begin(), x.end());
@@ -54,6 +58,7 @@ struct lichao_tree {
 
         size = 1 << log;
         d.assign(size << 1, f);
+
     }
 
     void add_line(const L &f) {
