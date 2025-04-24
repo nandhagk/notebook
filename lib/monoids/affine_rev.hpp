@@ -34,6 +34,11 @@ struct monoid_affine_rev {
         return z;
     }
 
+    static constexpr X rev(const X &x) {
+        const auto &[a, b, c] = x;
+        return {a, c, b};
+    }
+
     static constexpr bool commutative = false;
 };
 
