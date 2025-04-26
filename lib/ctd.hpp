@@ -1,12 +1,13 @@
 #ifndef LIB_CTD_HPP
 #define LIB_CTD_HPP 1
 
+#include <algorithm>
 #include <vector>
 
 #include <lib/prelude.hpp>
 
 struct ctd {
-    i32 n;
+    i32 n, root;
     std::vector<i32> sz, par, depth;
 
     ctd() {}
@@ -25,6 +26,7 @@ struct ctd {
         depth.assign(n, n);
 
         dfs(g, 0, -1, n, 0);
+        root = static_cast<i32>(std::find(par.begin(), par.end(), -1) - par.begin());
     }
 
 private:

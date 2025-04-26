@@ -1,18 +1,18 @@
 #ifndef LIB_LCA_HPP
 #define LIB_LCA_HPP 1
 
-#include <vector>
 #include <cassert>
+#include <vector>
 
-#include <lib/prelude.hpp>
 #include <lib/monoids/min.hpp>
+#include <lib/prelude.hpp>
 #include <lib/sparse_table.hpp>
 
 struct lca {
     lca() {}
 
     template <typename Graph>
-    lca(const Graph &g) 
+    lca(const Graph &g)
         : lca(g, 0) {}
 
     template <typename Graph>
@@ -71,6 +71,5 @@ private:
     std::vector<i32> s, p, e;
     sparse_table<monoid_min<i32>> sp;
 };
-
 
 #endif // LIB_LCA_HPP
