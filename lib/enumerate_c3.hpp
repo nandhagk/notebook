@@ -7,7 +7,7 @@
 #include <lib/prelude.hpp>
 
 template <typename Graph, typename F>
-inline void enumerate_c3(const Graph &g, F f) {
+void enumerate_c3(const Graph &g, F f) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);
