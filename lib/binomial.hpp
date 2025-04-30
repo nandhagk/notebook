@@ -1,8 +1,8 @@
 #ifndef LIB_BINOMIAL_HPP
 #define LIB_BINOMIAL_HPP 1
 
-#include <vector>
 #include <cassert>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
