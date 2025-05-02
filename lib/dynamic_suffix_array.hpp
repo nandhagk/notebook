@@ -273,7 +273,7 @@ public:
         return prod(root, 0, inf<i64>, std::min(a, b) + 1, std::max(a, b));
     }
 
-    i32 isa(i32 i) const {
+    i32 rnk(i32 i) const {
         i = mirror(i);
         node *x = root;
 
