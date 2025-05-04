@@ -8,8 +8,8 @@
 #include <lib/topological_sort.hpp>
 
 // https://codeforces.com/blog/entry/80391?#comment-667198
-template <typename Graph>
-inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const Graph &h) {
+template <typename DAG>
+inline std::vector<std::pair<i32, i32>> strong_connectivity_augmentation(const DAG &h) {
     assert(topological_sort(h));
 
     const i32 k = static_cast<i32>(h.size());

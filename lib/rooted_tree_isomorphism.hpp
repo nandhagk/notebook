@@ -7,8 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Map, typename Graph>
-inline std::vector<i32> rooted_tree_isomorphism(Map &k, const Graph &g, i32 root = 0) {
+template <typename Map, typename Tree>
+inline std::vector<i32> rooted_tree_isomorphism(Map &k, const Tree &g, i32 root = 0) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> out(n);
@@ -33,8 +33,8 @@ inline std::vector<i32> rooted_tree_isomorphism(Map &k, const Graph &g, i32 root
     return out;
 }
 
-template <typename Graph>
-inline std::vector<i32> rooted_tree_isomorphism(const Graph &g, i32 root = 0) {
+template <typename Tree>
+inline std::vector<i32> rooted_tree_isomorphism(const Tree &g, i32 root = 0) {
     std::map<std::vector<i32>, i32> k;
     return rooted_tree_isomorphism(k, g, root);
 }
