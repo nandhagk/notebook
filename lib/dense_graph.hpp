@@ -101,7 +101,7 @@ struct dense_graph {
         return edge_range(adj[u]);
     }
 
-    dense_graph reverse() const {
+    dense_graph transpose() const {
         dense_graph h(n);
 
         for (i32 u = 0; u < n; ++u)

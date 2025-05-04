@@ -4,7 +4,7 @@
 #include <queue>
 #include <vector>
 
-#include <lib/csr_graph.hpp>
+#include <lib/graph.hpp>
 #include <lib/dijkstra.hpp>
 #include <lib/prelude.hpp>
 
@@ -39,20 +39,16 @@ template <typename Graph>
 inline std::vector<graph_weight_t<Graph>> eppstein(const Graph &g, i32 s, i32 t, i32 k) {
     using W = graph_weight_t<Graph>;
 
-    const auto r = g.reverse();
+    const auto r = g.transpose();
     const auto [d, prv] = dijkstra(r, t);
 
     if (d[s] == inf<W>) return {};
 
     const i32 n = static_cast<i32>(g.size());
 
-    std::vector<std::pair<i32, simple_edge>> es;
-    es.reserve(n);
-
+    graph<simple_edge> z(n, n);
     for (i32 u = 0; u < n; ++u)
-        if (prv[u] != -1) es.emplace_back(prv[u], u);
-
-    csr_graph z(n, es);
+        if (prv[u] != -1) z.add_edge(prv[u], u);
 
     using heap_t = leftist_heap<W, i32>;
     std::vector<heap_t *> h(n, nullptr);

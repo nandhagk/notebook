@@ -154,9 +154,31 @@ struct graph {
         return head.size();
     }
 
+    graph transpose() const {
+        const i32 n = static_cast<i32>(size());
+
+        graph h(n, static_cast<i32>(edges.size()));
+        for (i32 u = 0; u < n; ++u) {
+            for (i32 cur = head[u]; cur != -1;) {
+                auto e = edges[cur];
+                cur = e.n;
+
+                const i32 v = e;
+                e.v = u;
+                e.n = h.head[v];
+
+                h.edges.push_back(e);
+                h.update(v, u);
+            }
+        }
+
+        return h;
+    }
+
     std::vector<i32> head;
     std::vector<usize> indeg, outdeg;
     std::vector<E> edges;
+
 
 private:
     inline void update(i32 u, i32 v) {

@@ -28,7 +28,7 @@ inline std::vector<i32> dominator_tree(const Graph &g, const i32 root) {
     dfs(dfs, root);
     const i32 k = static_cast<i32>(seen.size());
 
-    const auto h = g.reverse();
+    const auto h = g.transpose();
 
     std::vector<i32> sdom(n), mi(n), anc(n, -1), us(n);
     std::iota(mi.begin(), mi.end(), 0);

@@ -120,7 +120,7 @@ struct csr_graph {
         return edge_range(elist.data() + start[u], outdeg[u]);
     }
 
-    csr_graph<E> reverse() const {
+    csr_graph<E> transpose() const {
         std::vector<std::pair<i32, E>> es;
         es.reserve(m);
 
