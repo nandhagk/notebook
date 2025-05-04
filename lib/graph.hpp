@@ -49,63 +49,6 @@ struct weighted_edge {
 };
 
 template <typename E>
-struct edge_range {
-    const E *es;
-    const i32 start;
-    const usize sz;
-
-    struct edge_iterator {
-        const E *es;
-        i32 i;
-
-        explicit constexpr edge_iterator(const E *e, const i32 j)
-            : es{e}, i{j} {}
-
-        constexpr const edge_iterator &operator++() {
-            i = es[i].n;
-            return *this;
-        }
-
-        constexpr const edge_iterator operator++(int) {
-            auto temp = *this;
-            return operator++(), temp;
-        }
-
-        constexpr auto operator*() const {
-            return es[i].data();
-        }
-
-        constexpr bool operator!=(const edge_iterator &it) const {
-            return i != it.i;
-        }
-
-        constexpr bool operator==(const edge_iterator &it) const {
-            return i == it.i;
-        }
-    };
-
-    constexpr edge_iterator begin() {
-        return edge_iterator(es, start);
-    }
-
-    constexpr edge_iterator end() {
-        return edge_iterator(es, -1);
-    }
-
-    constexpr edge_iterator begin() const {
-        return edge_iterator(es, start);
-    }
-
-    constexpr edge_iterator end() const {
-        return edge_iterator(es, -1);
-    }
-
-    constexpr usize size() const {
-        return sz;
-    }
-};
-
-template <typename E>
 constexpr bool is_simple_edge_v = std::is_same_v<E, simple_edge>;
 
 template <typename E>
@@ -142,11 +85,67 @@ struct graph {
         update(u, v);
     }
 
-    edge_range<E> operator[](i32 u) {
+    struct edge_range {
+        const E *es;
+        const i32 start;
+        const usize sz;
+
+        struct edge_iterator {
+            const E *es;
+            i32 i;
+
+            explicit constexpr edge_iterator(const E *e, const i32 j)
+                : es{e}, i{j} {}
+
+            constexpr const edge_iterator &operator++() {
+                i = es[i].n;
+                return *this;
+            }
+
+            constexpr const edge_iterator operator++(int) {
+                auto temp = *this;
+                return operator++(), temp;
+            }
+
+            constexpr auto operator*() const {
+                return es[i].data();
+            }
+
+            constexpr bool operator!=(const edge_iterator &it) const {
+                return i != it.i;
+            }
+
+            constexpr bool operator==(const edge_iterator &it) const {
+                return i == it.i;
+            }
+        };
+
+        constexpr edge_iterator begin() {
+            return edge_iterator(es, start);
+        }
+
+        constexpr edge_iterator end() {
+            return edge_iterator(es, -1);
+        }
+
+        constexpr edge_iterator begin() const {
+            return edge_iterator(es, start);
+        }
+
+        constexpr edge_iterator end() const {
+            return edge_iterator(es, -1);
+        }
+
+        constexpr usize size() const {
+            return sz;
+        }
+    };
+
+    edge_range operator[](i32 u) {
         return {edges.data(), head[u], outdeg[u]};
     }
 
-    edge_range<E> operator[](i32 u) const {
+    edge_range operator[](i32 u) const {
         return {edges.data(), head[u], outdeg[u]};
     }
 
