@@ -1,8 +1,8 @@
 #ifndef LIB_GRAPH_HPP
 #define LIB_GRAPH_HPP 1
 
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 #include <lib/prelude.hpp>
 
@@ -178,7 +178,6 @@ struct graph {
     std::vector<i32> head;
     std::vector<usize> indeg, outdeg;
     std::vector<E> edges;
-
 
 private:
     inline void update(i32 u, i32 v) {

@@ -4,8 +4,8 @@
 #include <queue>
 #include <vector>
 
-#include <lib/graph.hpp>
 #include <lib/dijkstra.hpp>
+#include <lib/graph.hpp>
 #include <lib/prelude.hpp>
 
 template <typename Key, typename Value>
