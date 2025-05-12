@@ -138,7 +138,7 @@ constexpr bool has_fail_v = has_fail<T>::value;
 
 template <typename Graph>
 constexpr auto graph_weight(const Graph &g) {
-    const auto &[_, w] = g[0][0];
+    const auto &[_, w] = *g[0].begin();
     return w;
 }
 
