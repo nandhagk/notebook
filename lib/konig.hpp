@@ -8,7 +8,7 @@
 #include <lib/prelude.hpp>
 
 template <typename Graph>
-inline std::vector<bool> konig(const Graph &g, const std::vector<i32> &color, const std::vector<i32> &mate) {
+inline std::vector<i32> konig(const Graph &g, const std::vector<i32> &color, const std::vector<i32> &mate) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<bool> z(n, false);
@@ -35,12 +35,18 @@ inline std::vector<bool> konig(const Graph &g, const std::vector<i32> &color, co
         }
     }
 
-    std::vector<bool> cover(n, false);
+    std::vector<bool> ok(n, false);
     for (i32 u = 0; u < n; ++u) {
         const bool a = color[u] == 0 && !z[u];
         const bool b = color[u] == 1 && z[u];
-        cover[u] = a || b;
+        ok[u] = a || b;
     }
+
+    std::vector<i32> cover;
+    cover.reserve(n);
+
+    for (i32 u = 0; u < n; ++u)
+        if (ok[u]) cover.push_back(u);
 
     return cover;
 }

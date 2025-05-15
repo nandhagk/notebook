@@ -1,5 +1,5 @@
-#ifndef LIB_MAXIMUM_INDEPENDENT_SET_HPP
-#define LIB_MAXIMUM_INDEPENDENT_SET_HPP 1
+#ifndef LIB_INDEPENDENT_SET_HPP
+#define LIB_INDEPENDENT_SET_HPP 1
 
 #include <tr2/dynamic_bitset>
 #include <vector>
@@ -7,7 +7,7 @@
 #include <lib/prelude.hpp>
 
 template <typename Graph>
-std::vector<i32> maximum_independent_set(const Graph &g) {
+std::vector<i32> independent_set(const Graph &g) {
     using bs = std::tr2::dynamic_bitset<>;
 
     const i32 n = static_cast<i32>(g.size());
@@ -78,4 +78,4 @@ std::vector<i32> maximum_independent_set(const Graph &g) {
     return out;
 };
 
-#endif // LIB_MAXIMUM_INDEPENDENT_SET_HPP
+#endif // LIB_INDEPENDENT_SET_HPP
