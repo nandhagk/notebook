@@ -34,6 +34,12 @@ struct sieve {
         }
     }
 
+    inline bool is_prime(i32 k) const {
+        assert(k <= n);
+
+        return lp[k] == k;
+    }
+
     std::vector<std::pair<i32, i32>> factorize(i32 k) const {
         assert(k <= n);
 
