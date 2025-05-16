@@ -63,6 +63,14 @@ struct dual_hld_product {
 
         st.apply(x, y, a);
     }
+
+    void apply_outtree(i32 u, const A &a) {
+        const i32 x = h.tin[u];
+        const i32 y = h.tin[u] + h.sz[u];
+
+        st.apply(0, x, a);
+        st.apply(x, y, a);
+    }
 };
 
 #endif // LIB_DUAL_HLD_PRODUCT_HPP

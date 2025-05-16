@@ -110,6 +110,18 @@ struct hld_lazy_segment_tree {
         if constexpr (!MX::commutative) rst.apply(x, y, a);
     }
 
+    void apply_outtree(i32 u, const A &a) {
+        const i32 x = h.tin[u];
+        const i32 y = h.tin[u] + h.sz[u];
+
+        st.apply(0, x, a);
+        st.apply(y, h.n, a);
+        if constexpr (!MX::commutative) {
+            rst.apply(0, x, a);
+            rst.apply(y, h.n, a);
+        }
+    }
+
 private:
     X prod(i32 u, i32 v) {
         const i32 a = h.tin[u];
