@@ -69,7 +69,7 @@ struct dual_hld_product {
         const i32 y = h.tin[u] + h.sz[u];
 
         st.apply(0, x, a);
-        st.apply(x, y, a);
+        st.apply(y, h.n, a);
     }
 };
 
