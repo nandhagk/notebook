@@ -36,7 +36,7 @@ struct static_mex {
     i32 prod(i32 l, i32 r) const {
         assert(0 <= l && l <= r && r <= n);
 
-        if (l == r) return 0;
+        if (l == r) return -1;
 
         i32 lo = -1;
         i32 hi = n;

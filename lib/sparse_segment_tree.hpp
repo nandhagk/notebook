@@ -145,8 +145,15 @@ private:
     }
 
 public:
-    sparse_segment_tree(T minf, T inf)
-        : root(new node(minf, inf, MX::unit())) {}
+    sparse_segment_tree() {}
+
+    sparse_segment_tree(T minf, T inf) {
+        build(minf, inf);
+    }
+
+    void build(T minf, T inf) {
+        root = new node(minf, inf, MX::unit());
+    }
 
     ~sparse_segment_tree() {
         clear(root);
