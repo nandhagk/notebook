@@ -41,6 +41,7 @@ STD_HEADERS = (
     "optional",
     "valarray",
     "iterator",
+    "cmath",
 )
 
 STD_HEADER_REGEX = re.compile(rf"#include\s*<({'|'.join(STD_HEADERS)})>\s*")
