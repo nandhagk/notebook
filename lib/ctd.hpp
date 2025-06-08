@@ -12,13 +12,13 @@ struct ctd {
 
     ctd() {}
 
-    template <typename Graph>
-    explicit ctd(const Graph &g) {
+    template <typename Tree>
+    explicit ctd(const Tree &g) {
         build(g);
     }
 
-    template <typename Graph>
-    void build(const Graph &g) {
+    template <typename Tree>
+    void build(const Tree &g) {
         n = static_cast<i32>(g.size());
 
         sz.assign(n, 0);
@@ -30,8 +30,8 @@ struct ctd {
     }
 
 private:
-    template <typename Graph>
-    std::pair<i32, i32> dfs(const Graph &g, i32 u, i32 t, const i32 m, const i32 rnk) {
+    template <typename Tree>
+    std::pair<i32, i32> dfs(const Tree &g, i32 u, i32 t, const i32 m, const i32 rnk) {
         i32 size = 1;
         for (const i32 v : g[u]) {
             if (v == t || depth[v] < rnk) continue;

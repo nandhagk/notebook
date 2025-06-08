@@ -6,8 +6,8 @@
 #include <lib/csr_graph.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Graph, typename F>
-void enumerate_c3(const Graph &g, F f) {
+template <typename UndirectedGraph, typename F>
+void enumerate_c3(const UndirectedGraph &g, F f) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);

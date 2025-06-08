@@ -8,8 +8,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::optional<std::vector<i32>> st_numbering(const Graph &g, i32 s, i32 t) {
+template <typename UndirectedGraph>
+inline std::optional<std::vector<i32>> st_numbering(const UndirectedGraph &g, i32 s, i32 t) {
     const i32 n = static_cast<i32>(g.size());
 
     if (n == 1) return std::vector<i32>{0};

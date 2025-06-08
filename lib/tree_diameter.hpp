@@ -7,9 +7,9 @@
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Graph>
-inline std::tuple<i32, i32, std::vector<graph_weight_t<Graph>>, std::vector<i32>> tree_diameter(const Graph &g) {
-    using W = graph_weight_t<Graph>;
+template <typename Tree>
+inline std::tuple<i32, i32, std::vector<graph_weight_t<Tree>>, std::vector<i32>> tree_diameter(const Tree &g) {
+    using W = graph_weight_t<Tree>;
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<W> dst(n, inf<W>);

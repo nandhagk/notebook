@@ -37,33 +37,33 @@ struct ctd_product {
 
     ctd_product() {}
 
-    template <typename Graph>
-    explicit ctd_product(const Graph &g) {
+    template <typename Tree>
+    explicit ctd_product(const Tree &g) {
         build(g);
     }
 
-    template <typename Graph>
-    ctd_product(const Graph &g, const std::vector<X> &a) {
+    template <typename Tree>
+    ctd_product(const Tree &g, const std::vector<X> &a) {
         build(g, a);
     }
 
-    template <typename Graph, typename F>
-    ctd_product(const Graph &g, F f) {
+    template <typename Tree, typename F>
+    ctd_product(const Tree &g, F f) {
         build(g, f);
     }
 
-    template <typename Graph>
-    void build(const Graph &g) {
+    template <typename Tree>
+    void build(const Tree &g) {
         build(g, [&](i32) -> X { return MX::unit(); });
     }
 
-    template <typename Graph>
-    void build(const Graph &g, const std::vector<X> &a) {
+    template <typename Tree>
+    void build(const Tree &g, const std::vector<X> &a) {
         build(g, [&](i32 i) -> X { return a[i]; });
     }
 
-    template <typename Graph, typename F>
-    void build(const Graph &g, F f) {
+    template <typename Tree, typename F>
+    void build(const Tree &g, F f) {
         n = static_cast<i32>(g.size());
 
         nodes.resize(n);
@@ -260,8 +260,8 @@ struct ctd_product {
     }
 
 private:
-    template <typename Graph>
-    void reorder(const Graph &g, i32 s) {
+    template <typename Tree>
+    void reorder(const Tree &g, i32 s) {
         ord.assign(n, -1);
 
         std::queue<i32> q;

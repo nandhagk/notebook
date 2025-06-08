@@ -8,9 +8,9 @@
 #include <lib/rollback_dsu.hpp>
 #include <lib/type_traits.hpp>
 
-template <typename Graph>
-inline std::vector<i32> directed_mst(const Graph &g, const i32 root) {
-    using T = graph_weight_t<Graph>;
+template <typename DirectedGraph>
+inline std::vector<i32> directed_mst(const DirectedGraph &g, const i32 root) {
+    using T = graph_weight_t<DirectedGraph>;
     const i32 n = static_cast<i32>(g.size());
 
     assert(0 <= root && root < n);

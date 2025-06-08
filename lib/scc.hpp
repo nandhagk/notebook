@@ -8,8 +8,8 @@
 #include <lib/dense_graph.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::pair<i32, std::vector<i32>> scc(const Graph &g) {
+template <typename DirectedGraph>
+inline std::pair<i32, std::vector<i32>> scc(const DirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> seen, low(n), tin(n, -1), ids(n);
@@ -51,8 +51,8 @@ inline std::pair<i32, std::vector<i32>> scc(const Graph &g) {
     return {group, std::move(ids)};
 }
 
-template <typename Graph>
-inline csr_graph<simple_edge> scc_dag(const Graph &g, const std::vector<i32> &ids) {
+template <typename DirectedGraph>
+inline csr_graph<simple_edge> scc_dag(const DirectedGraph &g, const std::vector<i32> &ids) {
     const i32 n = static_cast<i32>(g.size());
     const i32 k = *std::max_element(ids.begin(), ids.end()) + 1;
 

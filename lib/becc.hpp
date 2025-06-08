@@ -6,8 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::pair<i32, std::vector<i32>> becc(const Graph &g) {
+template <typename UndirectedGraph>
+inline std::pair<i32, std::vector<i32>> becc(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> dep(n, -1), cnt(n), par(n), ids(n), vs;

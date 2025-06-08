@@ -7,8 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::optional<std::vector<i32>> cycle_directed(const Graph &g) {
+template <typename DirectedGraph>
+inline std::optional<std::vector<i32>> cycle_directed(const DirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> state(n);
@@ -42,8 +42,8 @@ inline std::optional<std::vector<i32>> cycle_directed(const Graph &g) {
     return std::nullopt;
 }
 
-template <typename Graph>
-inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> cycle_undirected(const Graph &g) {
+template <typename UndirectedGraph>
+inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> cycle_undirected(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> buf(n, -1);

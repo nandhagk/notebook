@@ -14,22 +14,22 @@ struct hld {
 
     hld() {}
 
-    template <typename Graph>
-    explicit hld(const Graph &g)
+    template <typename Tree>
+    explicit hld(const Tree &g)
         : hld(g, 0) {}
 
-    template <typename Graph>
-    hld(const Graph &g, i32 root) {
+    template <typename Tree>
+    hld(const Tree &g, i32 root) {
         build(g, root);
     }
 
-    template <typename Graph>
-    void build(const Graph &g) {
+    template <typename Tree>
+    void build(const Tree &g) {
         build(g, 0);
     }
 
-    template <typename Graph>
-    void build(const Graph &g, i32 root) {
+    template <typename Tree>
+    void build(const Tree &g, i32 root) {
         n = static_cast<i32>(g.size());
         time = 0;
 
@@ -146,8 +146,8 @@ struct hld {
     }
 
 private:
-    template <typename Graph>
-    void dfs_sz(const Graph &g, i32 u) {
+    template <typename Tree>
+    void dfs_sz(const Tree &g, i32 u) {
         i32 &x = best[u];
         const i32 t = par[u];
 
@@ -164,8 +164,8 @@ private:
         }
     }
 
-    template <typename Graph>
-    void dfs_hld(const Graph &g, i32 u) {
+    template <typename Tree>
+    void dfs_hld(const Tree &g, i32 u) {
         tour[time] = u;
         tin[u] = time++;
 

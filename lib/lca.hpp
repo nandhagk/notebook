@@ -11,22 +11,22 @@
 struct lca {
     lca() {}
 
-    template <typename Graph>
-    lca(const Graph &g)
+    template <typename Tree>
+    lca(const Tree &g)
         : lca(g, 0) {}
 
-    template <typename Graph>
-    lca(const Graph &g, i32 root) {
+    template <typename Tree>
+    lca(const Tree &g, i32 root) {
         build(g, root);
     }
 
-    template <typename Graph>
-    void build(const Graph &g) {
+    template <typename Tree>
+    void build(const Tree &g) {
         build(g, 0);
     }
 
-    template <typename Graph>
-    void build(const Graph &g, i32 root) {
+    template <typename Tree>
+    void build(const Tree &g, i32 root) {
         n = static_cast<i32>(g.size());
 
         s.assign(n, -1);
@@ -50,8 +50,8 @@ struct lca {
     };
 
 private:
-    template <typename Graph>
-    void dfs(const Graph &g, i32 u, i32 t = -1) {
+    template <typename Tree>
+    void dfs(const Tree &g, i32 u, i32 t = -1) {
         s[u] = static_cast<i32>(p.size());
 
         p.push_back(u);

@@ -6,8 +6,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-std::vector<i32> independent_set(const Graph &g) {
+template <typename UndirectedGraph>
+std::vector<i32> independent_set(const UndirectedGraph &g) {
     using bs = std::tr2::dynamic_bitset<>;
 
     const i32 n = static_cast<i32>(g.size());

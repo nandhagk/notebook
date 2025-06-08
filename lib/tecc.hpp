@@ -7,8 +7,8 @@
 #include <lib/dsu.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::pair<i32, std::vector<i32>> tecc(const Graph &g) {
+template <typename UndirectedGraph>
+inline std::pair<i32, std::vector<i32>> tecc(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     i32 dft = -1;

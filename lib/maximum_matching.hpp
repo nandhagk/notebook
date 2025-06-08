@@ -9,7 +9,7 @@
 
 class maximum_matching {
     /*
-     * Maximum Cardinality Matching in General Graphs.
+     * Maximum Cardinality Matching in General UndirectedGraphs.
      * - O(\sqrt{n} m \log_{\max\{2, 1 + m/n\}} n) time
      * - O(n + m) space
      *
@@ -107,8 +107,8 @@ private:
     };
 
 public:
-    template <typename Graph>
-    explicit maximum_matching(const Graph &g)
+    template <typename UndirectedGraph>
+    explicit maximum_matching(const UndirectedGraph &g)
         : N(static_cast<i32>(g.size())), NH(N >> 1), ofs(N + 2, 0) {
         for (i32 u = 0; u < N; ++u) ofs[u + 2] = static_cast<i32>(g[u].size());
         for (i32 i = 1; i <= N + 1; ++i) ofs[i] += ofs[i - 1];

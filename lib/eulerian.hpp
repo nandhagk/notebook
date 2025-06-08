@@ -8,8 +8,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_directed(const Graph &g) {
+template <typename DirectedGraph>
+inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_directed(const DirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> in(n), out(n);
@@ -60,8 +60,8 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
     return std::make_pair(std::move(us), std::move(es));
 }
 
-template <typename Graph>
-inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_undirected(const Graph &g) {
+template <typename UndirectedGraph>
+inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_undirected(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);

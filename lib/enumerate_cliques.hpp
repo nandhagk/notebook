@@ -5,8 +5,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph, typename F>
-void enumerate_cliques(const Graph &g, F f) {
+template <typename UndirectedGraph, typename F>
+void enumerate_cliques(const UndirectedGraph &g, F f) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);

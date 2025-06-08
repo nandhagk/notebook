@@ -7,8 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::vector<i32> konig(const Graph &g, const std::vector<i32> &color, const std::vector<i32> &mate) {
+template <typename UndirectedGraph>
+inline std::vector<i32> konig(const UndirectedGraph &g, const std::vector<i32> &color, const std::vector<i32> &mate) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<bool> z(n, false);

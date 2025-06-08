@@ -6,8 +6,8 @@
 #include <lib/csr_graph.hpp>
 #include <lib/prelude.hpp>
 
-template <typename Graph>
-inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Graph &g) {
+template <typename UndirectedGraph>
+inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> seen, tin(n, -1), low(n);
@@ -66,9 +66,9 @@ inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Gra
     return {std::move(c), std::move(ccs)};
 }
 
-template <typename Graph>
+template <typename UndirectedGraph>
 inline std::tuple<i32, std::vector<i32>, csr_graph<simple_edge>>
-block_cut_tree(const Graph &g, const std::vector<bool> &c, const std::vector<std::vector<i32>> &ccs) {
+block_cut_tree(const UndirectedGraph &g, const std::vector<bool> &c, const std::vector<std::vector<i32>> &ccs) {
     const i32 n = static_cast<i32>(g.size());
     std::vector<i32> ids(n, -1);
 
