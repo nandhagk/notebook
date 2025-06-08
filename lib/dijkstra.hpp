@@ -5,9 +5,9 @@
 #include <queue>
 #include <vector>
 
+#include <lib/graph_traits.hpp>
 #include <lib/limits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Graph>
 inline std::pair<std::vector<graph_weight_t<Graph>>, std::vector<i32>> dijkstra(const Graph &g, i32 s, i32 t = -1) {

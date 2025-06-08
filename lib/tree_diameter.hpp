@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <vector>
 
+#include <lib/graph_traits.hpp>
 #include <lib/limits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Tree>
 inline std::tuple<i32, i32, std::vector<graph_weight_t<Tree>>, std::vector<i32>> tree_diameter(const Tree &g) {

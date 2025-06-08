@@ -51,7 +51,7 @@ constexpr std::pair<T, T> inv_gcd(T a, T b) {
 
 template <typename T, is_signed_integral_t<T> * = nullptr>
 constexpr T inv(T a, T b) {
-    const auto &[f, s] = inv_gcd(a, b);
+    const auto [f, s] = inv_gcd(a, b);
     assert(f == 1);
 
     return s;
@@ -84,6 +84,11 @@ constexpr EuclideanRing gcd(EuclideanRing a, EuclideanRing b) {
     }
 
     return a;
+}
+
+template <typename EuclideanRing>
+constexpr EuclideanRing lcm(EuclideanRing a, EuclideanRing b) {
+    return (a / gcd(a, b)) * b;
 }
 
 #endif // LIB_MATH_HPP

@@ -1,5 +1,5 @@
-#ifndef LIB_TYPE_TRAITS_HPP
-#define LIB_TYPE_TRAITS_HPP 1
+#ifndef LIB_GRAPH_TRAITS_HPP
+#define LIB_GRAPH_TRAITS_HPP 1
 
 #include <utility>
 
@@ -14,4 +14,4 @@ constexpr auto graph_weight(const Graph &g) {
 template <typename Graph>
 using graph_weight_t = decltype(graph_weight(std::declval<Graph>()));
 
-#endif // LIB_TYPE_TRAITS_HPP
+#endif // LIB_GRAPH_TRAITS_HPP

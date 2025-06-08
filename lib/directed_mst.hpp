@@ -4,9 +4,9 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/graph_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/rollback_dsu.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename DirectedGraph>
 inline std::vector<i32> directed_mst(const DirectedGraph &g, const i32 root) {
