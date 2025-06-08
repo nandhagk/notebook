@@ -16,13 +16,13 @@ struct rerooting {
 
     rerooting() {}
 
-    template <typename Graph>
-    rerooting(const Graph &g, const std::vector<V> &x) {
+    template <typename Tree>
+    rerooting(const Tree &g, const std::vector<V> &x) {
         build(g, x);
     }
 
-    template <typename Graph>
-    void build(const Graph &g, const std::vector<V> &x) {
+    template <typename Tree>
+    void build(const Tree &g, const std::vector<V> &x) {
         const i32 n = static_cast<i32>(g.size());
 
         suml.resize(n);
@@ -40,8 +40,8 @@ struct rerooting {
         }
     }
 
-    template <typename Graph>
-    V dfs_up(const Graph &g, const std::vector<V> &x, i32 u, i32 t = -1) {
+    template <typename Tree>
+    V dfs_up(const Tree &g, const std::vector<V> &x, i32 u, i32 t = -1) {
         const i32 sz = static_cast<i32>(g[u].size());
         suml[u].resize(sz, RR::unit());
 
@@ -57,8 +57,8 @@ struct rerooting {
         return RR::parent(x[u], res);
     }
 
-    template <typename Graph>
-    void dfs_down(const Graph &g, const std::vector<V> &x, i32 u, i32 t = -1) {
+    template <typename Tree>
+    void dfs_down(const Tree &g, const std::vector<V> &x, i32 u, i32 t = -1) {
         const i32 sz = static_cast<i32>(g[u].size());
         sumr[u] = suml[u];
 

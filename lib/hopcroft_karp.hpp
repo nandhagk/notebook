@@ -10,8 +10,8 @@
 #include <lib/prelude.hpp>
 
 // Shuffle edges before invoking.
-template <typename UndirectedGraph>
-inline std::vector<i32> hopcroft_karp(const UndirectedGraph &g, const std::vector<i32> &color) {
+template <typename BipartiteGraph>
+inline std::vector<i32> hopcroft_karp(const BipartiteGraph &g, const std::vector<i32> &color) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> vs(n);

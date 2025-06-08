@@ -7,8 +7,8 @@
 
 #include <lib/prelude.hpp>
 
-template <typename UndirectedGraph>
-inline std::optional<std::vector<i32>> bipartition(const UndirectedGraph &g) {
+template <typename BipartiteGraph>
+inline std::optional<std::vector<i32>> bipartition(const BipartiteGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> color(n, -1);
