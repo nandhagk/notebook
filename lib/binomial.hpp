@@ -12,7 +12,6 @@ struct binomial {
     std::vector<Z> fs, gs;
 
     binomial() {}
-
     explicit binomial(i32 m) {
         build(m);
     }
@@ -30,8 +29,7 @@ struct binomial {
     }
 
     Z comb(i32 p, i32 q) const {
-        assert(0 <= p && p <= n);
-        assert(0 <= q && q <= p);
+        assert(0 <= q && q <= p && p <= n);
 
         return fs[p] * gs[q] * gs[p - q];
     }
