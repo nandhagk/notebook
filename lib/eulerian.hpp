@@ -61,7 +61,8 @@ inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_tra
 }
 
 template <typename UndirectedGraph>
-inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>> eulerian_trail_undirected(const UndirectedGraph &g) {
+inline std::optional<std::pair<std::vector<i32>, std::vector<i32>>>
+eulerian_trail_undirected(const UndirectedGraph &g) {
     const i32 n = static_cast<i32>(g.size());
 
     std::vector<i32> deg(n);

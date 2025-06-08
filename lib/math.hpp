@@ -8,25 +8,15 @@
 #include <lib/type_traits.hpp>
 
 template <typename T>
-constexpr T binpow(T a, u64 b) {
+constexpr T binpow(T a, u64 n) {
     T r = 1;
-    for (; b != 0; b >>= 1, a *= a)
-        if (b & 1) r *= a;
+    for (; n != 0; n >>= 1, a *= a)
+        if (n & 1) r *= a;
 
     return r;
 }
 
-template <u32 m>
-constexpr u32 mul(u32 a, u32 b) {
-    return static_cast<u32>((u64(a) * b) % m);
-}
-
-template <u64 m>
-constexpr u64 mul(u64 a, u64 b) {
-    return static_cast<u64>((u128(a) * b) % m);
-}
-
-template <typename T>
+template <typename T, is_integral_t<T> * = nullptr>
 constexpr T safe_mod(T x, T m) {
     x %= m;
     if (x < 0) x += m;
@@ -67,19 +57,33 @@ constexpr T inv(T a, T b) {
     return s;
 }
 
-template <typename T>
-constexpr T modpow(T a, i64 n, T p) {
-    using U = make_double<T>;
+template <typename T, is_integral_t<T> * = nullptr>
+constexpr T modmul(T a, T b, T m) {
+    return static_cast<T>((make_double<T>(a) * b) % m);
+}
 
-    a = safe_mod(a, p);
+template <typename T, T m, is_integral_t<T> * = nullptr>
+constexpr T modmul(T a, T b) {
+    return static_cast<T>((make_double<T>(a) * b) % m);
+}
+
+template <typename T, is_integral_t<T> * = nullptr>
+constexpr T modpow(T a, u64 n, T p) {
     T r = 1 % p;
-
-    for (; n != 0; n >>= 1) {
-        if (n & 1) r = T(U(r) * a % p);
-        a = T(U(a) * a % p);
-    }
+    for (a = safe_mod(a, p); n != 0; n >>= 1, a = modmul(a, a, p))
+        if (n & 1) r = modmul(r, a, p);
 
     return r;
+}
+
+template <typename EuclideanRing>
+constexpr EuclideanRing gcd(EuclideanRing a, EuclideanRing b) {
+    while (b != EuclideanRing()) {
+        a %= b;
+        std::swap(a, b);
+    }
+
+    return a;
 }
 
 #endif // LIB_MATH_HPP

@@ -12,14 +12,14 @@ constexpr bool miller_rabin(u32 n) {
     u32 d = n - 1;
     while (d % 2 == 0) d >>= 1;
 
-    u64 e = 1, r = n - 1;
+    u32 e = 1, r = n - 1;
     for (const u32 a : {2, 7, 61}) {
         if (a % n == 0) continue;
 
-        u64 t = d;
-        u64 y = modpow<u32>(a, t, n);
+        u32 t = d;
+        u32 y = modpow<u32>(a, t, n);
         while (t != n - 1 && y != e && y != r) {
-            y = u32(u64(y) * y % n);
+            y = modmul(y, y, n);
             t <<= 1;
         }
 
@@ -36,14 +36,14 @@ constexpr bool miller_rabin(u64 n) {
     u64 d = n - 1;
     while (d % 2 == 0) d >>= 1;
 
-    u128 e = 1, r = n - 1;
+    u64 e = 1, r = n - 1;
     for (const u64 a : {2, 325, 9375, 28178, 450775, 9780504, 1795265022}) {
         if (a % n == 0) continue;
 
         u64 t = d;
-        u128 y = modpow<u64>(a, t, n);
+        u64 y = modpow<u64>(a, t, n);
         while (t != n - 1 && y != e && y != r) {
-            y = u64(u128(y) * y % n);
+            y = modmul(y, y, n);
             t <<= 1;
         }
 

@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include <lib/arbitrary_montgomery_modint.hpp>
+#include <lib/math.hpp>
 #include <lib/miller_rabin.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
@@ -35,7 +36,7 @@ inline U pollard_rho(U n) {
             for (i32 k = 0; g == 1 && k < r; k += m) {
                 ys = y;
                 for (i32 i = 0; i < m && i < r - k; ++i) q *= x - (y = f(y));
-                g = std::gcd(q.val(), n);
+                g = gcd(q.val(), n);
             }
         }
 

@@ -60,7 +60,7 @@ struct static_modint_base {
     }
 
     constexpr mint &operator*=(const mint &rhs) & {
-        v = mul<mod()>(v, rhs.val());
+        v = modmul<U, mod()>(v, rhs.val());
         return *this;
     }
 

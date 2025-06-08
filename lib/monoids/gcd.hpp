@@ -1,7 +1,7 @@
 #ifndef LIB_MONOID_GCD_HPP
 #define LIB_MONOID_GCD_HPP 1
 
-#include <numeric>
+#include <lib/math.hpp>
 
 template <typename T>
 struct monoid_gcd {
@@ -9,7 +9,7 @@ struct monoid_gcd {
     using ValueT = T;
 
     static constexpr X op(X x, X y) {
-        return std::gcd(x, y);
+        return gcd(x, y);
     }
 
     static constexpr X unit() {

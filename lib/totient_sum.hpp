@@ -1,9 +1,9 @@
 #ifndef LIB_TOTIENT_SUM_HPP
 #define LIB_TOTIENT_SUM_HPP 1
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
-#include <algorithm>
 
 #include <lib/prelude.hpp>
 
