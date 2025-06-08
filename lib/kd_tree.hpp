@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename PT, typename Monoid, u32 K = std::tuple_size<PT>::value, is_monoid_t<Monoid> * = nullptr>
 struct kd_tree {

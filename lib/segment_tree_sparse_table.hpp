@@ -4,8 +4,8 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename SparseTable>
 struct segment_tree_sparse_table {
@@ -16,7 +16,6 @@ struct segment_tree_sparse_table {
     std::vector<SparseTable> d;
 
     segment_tree_sparse_table() {}
-
     segment_tree_sparse_table(i32 h, i32 w) {
         build(h, w);
     }

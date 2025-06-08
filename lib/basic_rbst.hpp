@@ -5,7 +5,6 @@
 
 #include <lib/prelude.hpp>
 #include <lib/rbst_base.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T>
 struct basic_rbst_node {

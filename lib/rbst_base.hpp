@@ -4,9 +4,9 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Node>
 struct rbst_base {

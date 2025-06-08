@@ -5,6 +5,7 @@
 #include <limits>
 
 #include <lib/math.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename U, i32 id, is_unsigned_integral_t<U> * = nullptr>

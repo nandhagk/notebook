@@ -3,9 +3,9 @@
 
 #include <cassert>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/splay_tree_base.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
 struct lazy_splay_tree_node {

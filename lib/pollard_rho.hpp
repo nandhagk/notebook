@@ -6,6 +6,7 @@
 #include <lib/arbitrary_montgomery_modint.hpp>
 #include <lib/math.hpp>
 #include <lib/miller_rabin.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 

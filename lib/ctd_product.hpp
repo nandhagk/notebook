@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/csr_graph.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename RangeProduct, is_commutative_monoid_t<typename RangeProduct::MX> * = nullptr>
 struct ctd_product {

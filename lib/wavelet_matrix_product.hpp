@@ -6,9 +6,9 @@
 #include <numeric>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/bit_vector.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T, typename RangeProduct, is_commutative_monoid_t<typename RangeProduct::MX> * = nullptr>
 struct wavelet_matrix_product {

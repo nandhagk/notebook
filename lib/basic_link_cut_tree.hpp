@@ -5,7 +5,6 @@
 
 #include <lib/link_cut_tree_base.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T>
 struct basic_link_cut_tree_node {

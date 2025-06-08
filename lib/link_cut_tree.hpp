@@ -3,9 +3,9 @@
 
 #include <cassert>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/link_cut_tree_base.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
 struct link_cut_tree_node {

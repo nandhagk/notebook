@@ -6,6 +6,7 @@
 
 #include <lib/math.hpp>
 #include <lib/miller_rabin.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename U, U m, is_unsigned_integral_t<U> * = nullptr>

@@ -3,8 +3,9 @@
 
 #include <algorithm>
 
+#include <lib/algebraic_traits.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T, typename Monoid, is_integral_t<T> * = nullptr, is_monoid_t<Monoid> * = nullptr>
 struct sparse_segment_tree {

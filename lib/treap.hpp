@@ -3,10 +3,10 @@
 
 #include <cassert>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 #include <lib/treap_base.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
 struct treap_node {

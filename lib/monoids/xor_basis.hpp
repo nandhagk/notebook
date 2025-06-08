@@ -4,8 +4,8 @@
 #include <array>
 #include <limits>
 
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T, i32 W = std::numeric_limits<T>::digits, is_integral_t<T> * = nullptr>
 struct monoid_xor_basis {

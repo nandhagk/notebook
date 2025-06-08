@@ -2,8 +2,8 @@
 #define LIB_MILLER_RABIN_HPP 1
 
 #include <lib/math.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 constexpr bool miller_rabin(u32 n) {
     if (n <= 2) return n == 2;

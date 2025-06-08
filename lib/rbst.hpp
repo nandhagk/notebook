@@ -3,9 +3,9 @@
 
 #include <algorithm>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/rbst_base.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
 struct rbst_node {

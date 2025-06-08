@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <lib/math.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
 struct barrett_32 {

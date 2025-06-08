@@ -4,8 +4,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 constexpr i32 bit_ceil_log(i32 n) {
     i32 x = 0;

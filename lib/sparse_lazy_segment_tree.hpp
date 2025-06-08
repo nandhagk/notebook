@@ -3,8 +3,9 @@
 
 #include <algorithm>
 
+#include <lib/algebraic_traits.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T, typename ActedMonoid, is_integral_t<T> * = nullptr>
 struct sparse_lazy_segment_tree {

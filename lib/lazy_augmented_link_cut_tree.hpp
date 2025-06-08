@@ -6,7 +6,6 @@
 
 #include <lib/augmented_link_cut_tree_base.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
 struct lazy_augmented_link_cut_tree_node {

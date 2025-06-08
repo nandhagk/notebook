@@ -4,8 +4,8 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename ActedMonoid>
 struct lazy_segment_tree {

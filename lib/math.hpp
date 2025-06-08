@@ -4,8 +4,8 @@
 #include <cassert>
 #include <utility>
 
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T>
 constexpr T binpow(T a, u64 n) {

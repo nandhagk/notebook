@@ -4,9 +4,9 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/sparse_table.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Monoid, is_commutative_monoid_t<Monoid> * = nullptr>
 struct sparse_table_2d {

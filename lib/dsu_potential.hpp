@@ -6,8 +6,8 @@
 #include <optional>
 #include <vector>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Monoid, is_group_t<Monoid> * = nullptr>
 struct dsu_potential {

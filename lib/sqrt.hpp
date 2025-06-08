@@ -4,9 +4,9 @@
 #include <optional>
 
 #include <lib/arbitrary_montgomery_modint.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Z>
 std::optional<Z> sqrt(Z a) {

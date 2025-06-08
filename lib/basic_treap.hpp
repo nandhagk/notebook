@@ -6,7 +6,6 @@
 #include <lib/prelude.hpp>
 #include <lib/random.hpp>
 #include <lib/treap_base.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T>
 struct basic_treap_node {

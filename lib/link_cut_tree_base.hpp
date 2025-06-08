@@ -3,8 +3,8 @@
 
 #include <cassert>
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename Node>
 struct link_cut_tree_base {
