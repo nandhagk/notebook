@@ -13,16 +13,6 @@ struct sparse_segment_tree {
     using X = typename MX::ValueT;
 
 private:
-    static constexpr X pow_monoid(const X &a, T k) {
-        if constexpr (has_pow_v<MX>) return MX::pow(a, static_cast<i64>(k));
-
-        X b = MX::unit();
-        for (X c = a; k; c = MX::op(c, c), k >>= 1)
-            if (k & 1) b = MX::op(b, c);
-
-        return b;
-    }
-
     struct node {
         i32 h;
         T lx, rx, Lx, Rx;
@@ -36,7 +26,7 @@ private:
               l(nullptr),
               r(nullptr),
               val(v),
-              sum(pow_monoid(v, rx - lx)),
+              sum(monoid_pow<MX>(v, rx - lx)),
               sum_subtree(sum) {}
 
         i32 factor() const {
@@ -129,7 +119,7 @@ private:
         if (r < v->rx) c = new node(r, v->rx, v->val);
 
         v->lx = l, v->rx = r;
-        v->sum = pow_monoid(v->val, r - l);
+        v->sum = monoid_pow<MX>(v->val, r - l);
 
         return {a, c};
     }
@@ -208,7 +198,7 @@ public:
                 if (l <= v->lx && v->rx <= r)
                     mid = v->sum;
                 else
-                    mid = pow_monoid(v->val, R - L);
+                    mid = monoid_pow<MX>(v->val, R - L);
             }
 
             return MX::op(self(self, v->l), MX::op(mid, self(self, v->r)));

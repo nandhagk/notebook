@@ -106,4 +106,18 @@ struct has_fail<T, std::enable_if_t<std::is_same_v<decltype(T::failed(std::declv
 template <typename T>
 constexpr bool has_fail_v = has_fail<T>::value;
 
+template <typename Monoid, is_monoid_t<Monoid> * = nullptr>
+constexpr typename Monoid::ValueT monoid_pow(const typename Monoid::ValueT &a, i64 n) {
+    using MX = Monoid;
+    using X = typename MX::ValueT;
+
+    if constexpr (has_pow_v<MX>) return MX::pow(a, n);
+
+    X b = MX::unit();
+    for (X c = a; n != 0; n >>= 1, c = MX::op(c, c))
+        if (n & 1) b = MX::op(b, c);
+
+    return b;
+}
+
 #endif // LIB_ALGEBRAIC_TRAITS_HPP

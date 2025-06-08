@@ -1,6 +1,7 @@
 #ifndef LIB_ACTED_MONOID_SUM_ASSIGN_HPP
 #define LIB_ACTED_MONOID_SUM_ASSIGN_HPP 1
 
+#include <lib/algebraic_traits.hpp>
 #include <lib/monoids/add.hpp>
 #include <lib/monoids/assign.hpp>
 
@@ -13,7 +14,7 @@ struct acted_monoid_sum_assign {
     using A = typename MA::ValueT;
 
     static constexpr X act(const X &x, const A &a, i32 sz) {
-        return a ? MX::pow(*a, sz) : x;
+        return a ? monoid_pow(*a, sz) : x;
     }
 };
 

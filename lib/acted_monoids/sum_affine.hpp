@@ -13,7 +13,8 @@ struct acted_monoid_sum_affine {
     using A = typename MA::ValueT;
 
     static constexpr X act(const X &x, const A &a, i32 sz) {
-        return x * a.first + a.second * sz;
+        const auto &[p, q] = a;
+        return x * p + q * sz;
     }
 };
 
