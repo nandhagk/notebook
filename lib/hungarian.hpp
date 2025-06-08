@@ -4,6 +4,7 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename T>

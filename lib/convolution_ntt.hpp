@@ -1,6 +1,7 @@
 #ifndef LIB_CONVOLUTION_NTT_HPP
 #define LIB_CONVOLUTION_NTT_HPP 1
 
+#include <lib/bits.hpp>
 #include <lib/ntt.hpp>
 
 template <typename Z>

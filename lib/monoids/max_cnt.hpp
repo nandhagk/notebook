@@ -1,8 +1,10 @@
 #ifndef LIB_MONOID_MAX_CNT_HPP
 #define LIB_MONOID_MAX_CNT_HPP 1
 
-#include <lib/prelude.hpp>
 #include <utility>
+
+#include <lib/limits.hpp>
+#include <lib/prelude.hpp>
 
 template <typename T, typename S>
 struct monoid_max_cnt {

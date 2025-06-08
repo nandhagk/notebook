@@ -3,8 +3,9 @@
 
 #include <vector>
 
+#include <lib/limits.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename T, T xmin, T xmax, is_integral_t<T> * = nullptr>
 struct sparse_lichao_tree {

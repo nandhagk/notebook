@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <lib/csr_graph.hpp>
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 class maximum_matching {

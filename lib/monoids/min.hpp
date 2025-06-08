@@ -2,6 +2,8 @@
 #define LIB_MONOID_MIN_HPP 1
 
 #include <algorithm>
+
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename T>

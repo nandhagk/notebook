@@ -5,6 +5,7 @@
 #include <queue>
 #include <vector>
 
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 #include <lib/type_traits.hpp>
 

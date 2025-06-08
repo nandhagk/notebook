@@ -3,7 +3,6 @@
 
 #include <lib/hld.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 #include <lib/wavelet_matrix_product.hpp>
 
 template <typename T, typename RangeProduct>

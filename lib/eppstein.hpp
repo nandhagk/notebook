@@ -6,6 +6,7 @@
 
 #include <lib/csr_graph.hpp>
 #include <lib/dijkstra.hpp>
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename Key, typename Value>

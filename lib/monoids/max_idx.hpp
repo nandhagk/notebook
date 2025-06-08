@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename T>
@@ -19,7 +20,7 @@ struct monoid_max_idx {
     }
 
     static constexpr X unit() {
-        return {-inf<T>, inf<T>};
+        return {-inf<T>, -1};
     }
 
     static constexpr X from_element(T t, i32 p) {

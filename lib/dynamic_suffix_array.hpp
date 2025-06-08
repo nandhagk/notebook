@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 struct dynamic_suffix_array {

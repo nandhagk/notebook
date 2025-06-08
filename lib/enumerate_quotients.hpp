@@ -4,8 +4,8 @@
 #include <cmath>
 #include <vector>
 
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
 template <typename U, is_unsigned_integral_t<U> * = nullptr>
 std::vector<U> enumerate_quotients(U n) {

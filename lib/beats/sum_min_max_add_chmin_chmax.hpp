@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include <lib/limits.hpp>
 #include <lib/monoids/add_chmin_chmax.hpp>
 #include <lib/prelude.hpp>
 

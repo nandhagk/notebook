@@ -5,10 +5,11 @@
 #include <limits>
 #include <vector>
 
+#include <lib/bits.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
-#include <lib/type_traits.hpp>
 
-template <typename U, i32 B = std::numeric_limits<U>::digits>
+template <typename U, i32 B = std::numeric_limits<U>::digits, is_unsigned_integral_t<U> * = nullptr>
 struct binary_trie {
     static constexpr i32 W = std::numeric_limits<U>::digits;
 

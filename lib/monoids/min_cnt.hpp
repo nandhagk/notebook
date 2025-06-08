@@ -3,6 +3,7 @@
 
 #include <utility>
 
+#include <lib/limits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename T, typename S>

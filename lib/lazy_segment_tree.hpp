@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <lib/algebraic_traits.hpp>
+#include <lib/bits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename ActedMonoid>

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include <lib/bits.hpp>
 #include <lib/prelude.hpp>
 
 struct wary_tree {

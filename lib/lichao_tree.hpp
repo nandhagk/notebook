@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 
+#include <lib/bits.hpp>
 #include <lib/prelude.hpp>
 
 template <typename T>

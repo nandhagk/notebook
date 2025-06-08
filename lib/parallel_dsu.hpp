@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include <lib/bits.hpp>
 #include <lib/dsu.hpp>
 #include <lib/prelude.hpp>
 
