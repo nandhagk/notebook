@@ -16,19 +16,6 @@ struct monoid_mul {
         return X(1) / x;
     }
 
-    static constexpr X pow(X x, i64 n) {
-        X z = 1;
-
-        X y = x;
-        while (n) {
-            if (n & 1) z *= y;
-            y *= y;
-            n >>= 1;
-        }
-
-        return z;
-    }
-
     static constexpr X unit() {
         return X(1);
     }

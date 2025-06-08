@@ -19,6 +19,10 @@ struct monoid_max {
         return -inf<X>;
     }
 
+    static constexpr X pow(X x, i64) {
+        return x;
+    }
+
     static constexpr bool commutative = true;
 };
 

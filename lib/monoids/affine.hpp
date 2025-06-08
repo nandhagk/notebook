@@ -1,8 +1,9 @@
 #ifndef LIB_MONOID_AFFINE_HPP
 #define LIB_MONOID_AFFINE_HPP 1
 
-#include <lib/prelude.hpp>
 #include <utility>
+
+#include <lib/prelude.hpp>
 
 template <typename T>
 struct monoid_affine {
@@ -25,14 +26,6 @@ struct monoid_affine {
 
     static constexpr X unit() {
         return {T(1), T(0)};
-    }
-
-    static constexpr X pow(const X &x, i64 n) {
-        X z = unit();
-        for (X y = x; n; n >>= 1, y = op(y, y))
-            if (n & 1) z = op(z, y);
-
-        return z;
     }
 
     static constexpr bool commutative = false;

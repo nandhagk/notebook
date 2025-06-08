@@ -26,14 +26,6 @@ struct monoid_affine_rev {
         return {T(1), T(0), T(0)};
     }
 
-    static constexpr X pow(const X &x, i64 n) {
-        X z = unit();
-        for (X y = x; n; n >>= 1, y = op(y, y))
-            if (n & 1) z = op(z, y);
-
-        return z;
-    }
-
     static constexpr X rev(const X &x) {
         const auto &[a, b, c] = x;
         return {a, c, b};

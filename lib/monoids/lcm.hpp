@@ -1,7 +1,7 @@
 #ifndef LIB_MONOID_LCM_HPP
 #define LIB_MONOID_LCM_HPP 1
 
-#include <numeric>
+#include <lib/math.hpp>
 
 template <typename T>
 struct monoid_lcm {
@@ -9,7 +9,7 @@ struct monoid_lcm {
     using ValueT = T;
 
     static constexpr X op(X x, X y) {
-        return std::lcm(x, y);
+        return lcm(x, y);
     }
 
     static constexpr X unit() {
