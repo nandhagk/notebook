@@ -2,7 +2,6 @@
 #include <contest/debug.hpp>
 
 #include <lib/prelude.hpp>
-#include <lib/sqrt.hpp>
 
 void solve() {
 }
