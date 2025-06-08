@@ -4,6 +4,7 @@
 #include <numeric>
 #include <vector>
 
+#include <lib/csr_array.hpp>
 #include <lib/prelude.hpp>
 
 struct simple_edge {
@@ -47,8 +48,13 @@ struct weighted_edge {
 };
 
 template <typename Edge>
-struct csr_graph {
-    using E = Edge;
+struct csr_graph : csr_array<Edge> {
+    using super = csr_array<Edge>;
+
+    using super::m;
+    using super::n;
+    using super::size;
+    using super::operator[];
 
     csr_graph() {}
     csr_graph(i32 p, const std::vector<std::pair<i32, Edge>> &es) {
@@ -56,72 +62,11 @@ struct csr_graph {
     }
 
     void build(i32 p, const std::vector<std::pair<i32, Edge>> &es) {
-        n = p;
-        m = static_cast<i32>(es.size());
-
-        deg.assign(n, 0);
-        indeg.assign(n, 0);
-        outdeg.assign(n, 0);
-
-        elist.resize(m);
-        start.resize(n);
-
-        for (const auto &[u, e] : es) {
-            const i32 v = e;
-
-            ++deg[u];
-            ++deg[v];
-
-            ++indeg[v];
-            ++outdeg[u];
-        }
-
-        std::partial_sum(outdeg.cbegin(), outdeg.cend(), start.begin());
-        for (const auto &[u, e] : es) elist[--start[u]] = e;
+        super::build(p, es);
     }
 
-    i32 size() const {
-        return n;
-    }
-
-    struct edge_range {
-        const E *es;
-        usize sz;
-
-        edge_range(const E *e, usize size)
-            : es{e}, sz{size} {}
-
-        const E *begin() {
-            return &es[0];
-        }
-
-        const E *end() {
-            return &es[sz];
-        }
-
-        const E *begin() const {
-            return &es[0];
-        }
-
-        const E *end() const {
-            return &es[sz];
-        }
-
-        const E &operator[](i32 i) const {
-            return es[i];
-        }
-
-        usize size() const {
-            return sz;
-        }
-    };
-
-    edge_range operator[](i32 u) const {
-        return edge_range(elist.data() + start[u], outdeg[u]);
-    }
-
-    csr_graph<E> reverse() const {
-        std::vector<std::pair<i32, E>> es;
+    csr_graph reverse() const {
+        std::vector<std::pair<i32, Edge>> es;
         es.reserve(m);
 
         for (i32 u = 0; u < n; ++u) {
@@ -135,10 +80,6 @@ struct csr_graph {
 
         return csr_graph(n, es);
     }
-
-    i32 n, m;
-    std::vector<i32> deg, indeg, outdeg, start;
-    std::vector<E> elist;
 };
 
 #endif // LIB_CSR_GRAPH_HPP

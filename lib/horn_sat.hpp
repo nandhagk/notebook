@@ -43,7 +43,9 @@ struct horn_sat {
         csr_graph g(n + m, es);
         std::queue<i32> confirmed;
 
-        auto neg = g.outdeg;
+        std::vector<i32> neg(n + m);
+        for (i32 u = 0; u < n + m; ++u) neg[u] = static_cast<i32>(g[u].size());
+
         for (i32 i = 0; i < m; ++i)
             if (neg[i + n] == 0 && ps[i] != -1) confirmed.push(i);
 

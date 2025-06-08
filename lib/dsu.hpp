@@ -5,6 +5,7 @@
 #include <cassert>
 #include <vector>
 
+#include <lib/csr_array.hpp>
 #include <lib/prelude.hpp>
 
 struct dsu {
@@ -59,8 +60,10 @@ struct dsu {
     }
 
     std::pair<i32, std::vector<i32>> ids() {
-        std::vector<std::vector<i32>> cc(n);
-        for (i32 u = 0; u < n; ++u) cc[find(u)].push_back(u);
+        std::vector<std::pair<i32, i32>> par(n);
+
+        for (i32 u = 0; u < n; ++u) par[u] = {find(u), u};
+        csr_array cc(n, par);
 
         std::vector<i32> ids(n);
 
