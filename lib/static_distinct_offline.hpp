@@ -2,9 +2,9 @@
 #define LIB_STATIC_DISTINCT_OFFLINE_HPP 1
 
 #include <algorithm>
-#include <numeric>
 #include <vector>
 
+#include <lib/compress.hpp>
 #include <lib/fenwick_tree.hpp>
 #include <lib/monoids/add.hpp>
 #include <lib/prelude.hpp>
@@ -24,18 +24,7 @@ struct static_distinct_offline {
         n = static_cast<i32>(v.size());
         qs.clear();
 
-        std::vector<i32> vi(n);
-        std::iota(vi.begin(), vi.end(), 0);
-        std::sort(vi.begin(), vi.end(), [&](const i32 i, const i32 j) { return v[i] == v[j] ? i < j : v[i] < v[j]; });
-
-        std::vector<T> rv;
-        rv.reserve(n);
-
-        std::vector<i32> b(n);
-        for (const i32 i : vi) {
-            if (rv.empty() || rv.back() != v[i]) rv.push_back(v[i]);
-            b[i] = static_cast<i32>(rv.size()) - 1;
-        }
+        const auto b = compress(v);
 
         nxt.assign(n, -1);
         first.assign(n, 0);
