@@ -17,7 +17,7 @@ struct csr_array {
         n = p;
         m = static_cast<i32>(d.size());
 
-        start.resize(n);
+        start.assign(n, 0);
         for (const auto &[u, _] : d) ++start[u];
 
         sz = start;
