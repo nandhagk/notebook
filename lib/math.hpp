@@ -8,6 +8,16 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
+constexpr T floor(T a, T b) {
+    return a / b - (a % b && (a ^ b) < 0);
+}
+
+template <typename T>
+constexpr T ceil(T a, T b) {
+    return floor(a + b - 1, a);
+}
+
+template <typename T>
 constexpr T binpow(T a, u64 n) {
     T r = 1;
     for (; n != 0; n >>= 1, a *= a)
