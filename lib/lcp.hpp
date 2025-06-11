@@ -43,17 +43,14 @@ struct lcp {
         st.build(lc);
     }
 
-    i32 prod(i32 l, i32 r) const {
-        assert(0 <= l && l <= n);
-        assert(0 <= r && r <= n);
+    i32 prod(i32 p, i32 q) const {
+        assert(0 <= p && p <= n);
+        assert(0 <= q && q <= n);
 
-        if (l == r) return n - l;
-        if (l == n || r == n) return 0;
+        if (p == q) return n - p;
+        if (p == n || q == n) return 0;
 
-        l = rnk[l];
-        r = rnk[r];
-
-        if (l > r) std::swap(l, r);
+        const auto &[l, r] = std::minmax(rnk[p], rnk[q]);
         return st.prod(l, r);
     }
 
