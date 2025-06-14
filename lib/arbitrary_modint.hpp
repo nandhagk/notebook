@@ -41,10 +41,6 @@ struct arbitrary_modint_base {
         return v;
     }
 
-    mint operator-() const {
-        return mint(0) - mint(*this);
-    }
-
     mint inv() const {
         using S = make_signed<U>;
         return ::inv(S(val()), S(mod()));
@@ -73,6 +69,14 @@ struct arbitrary_modint_base {
         return *this *= rhs.inv();
     }
 
+    mint &operator++() & {
+        return *this += 1;
+    }
+
+    mint &operator--() & {
+        return *this -= 1;
+    }
+
     friend mint operator+(mint lhs, const mint &rhs) {
         return lhs += rhs;
     }
@@ -87,6 +91,22 @@ struct arbitrary_modint_base {
 
     friend mint operator/(mint lhs, const mint &rhs) {
         return lhs /= rhs;
+    }
+
+    mint operator-() const {
+        return mint(0) - mint(*this);
+    }
+
+    mint operator++(int) const {
+        mint tmp = *this;
+        operator++();
+        return tmp;
+    }
+
+    mint operator--(int) const {
+        mint tmp = *this;
+        operator--();
+        return tmp;
     }
 
     friend bool operator==(const mint &lhs, const mint &rhs) {

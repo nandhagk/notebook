@@ -79,6 +79,14 @@ struct arbitrary_montgomery_modint_base {
         return *this *= rhs.inv();
     }
 
+    mint &operator++() & {
+        return *this += 1;
+    }
+
+    mint &operator--() & {
+        return *this -= 1;
+    }
+
     friend mint operator+(mint lhs, const mint &rhs) {
         return lhs += rhs;
     }
@@ -97,6 +105,18 @@ struct arbitrary_montgomery_modint_base {
 
     mint operator-() const {
         return mint(0) - mint(*this);
+    }
+
+    mint operator++(int) const {
+        mint tmp = *this;
+        operator++();
+        return tmp;
+    }
+
+    mint operator--(int) const {
+        mint tmp = *this;
+        operator--();
+        return tmp;
     }
 
     friend bool operator==(const mint &lhs, const mint &rhs) {
