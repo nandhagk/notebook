@@ -7,12 +7,15 @@
 #include <limits>
 
 #include <lib/bits.hpp>
+#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
-template <usize N, typename T = u128>
+template <usize N, typename T = u128, is_unsigned_integral_t<T> * = nullptr>
 class bitset {
 public:
     static constexpr usize W = std::numeric_limits<T>::digits;
+    static_assert((W & (W - 1)) == 0, "sizeof(T) must be a power of 2");
+
     static constexpr usize S = topbit(W);
     static constexpr usize M = W - 1;
     static constexpr usize B = (N + W - 1) >> S;
@@ -29,9 +32,11 @@ public:
         [[gnu::always_inline, nodiscard]] constexpr operator bool() const {
             return (*word_ >> pos_) != T(0);
         }
+
         [[gnu::always_inline, nodiscard]] constexpr bool operator~() const {
             return (*word_ >> pos_) == T(0);
         }
+
         [[gnu::always_inline]] constexpr void flip() {
             *word_ ^= T(1) << pos_;
         }
@@ -49,6 +54,7 @@ public:
     [[gnu::always_inline]] constexpr bool operator[](usize pos) const {
         return (buf_[pos >> S] >> (pos & M)) != T(0);
     }
+
     [[gnu::always_inline]] constexpr reference operator[](usize pos) {
         return reference(&buf_[pos >> S], pos & M);
     }
@@ -56,9 +62,11 @@ public:
     [[gnu::always_inline]] constexpr void set(usize pos) {
         buf_[pos >> S] |= T(1) << (pos & M);
     }
+
     [[gnu::always_inline]] constexpr void unset(usize pos) {
         buf_[pos >> S] &= ~(T(1) << (pos & M));
     }
+
     [[gnu::always_inline]] constexpr void flip(usize pos) {
         buf_[pos >> S] ^= T(1) << (pos & M);
     }
@@ -84,9 +92,11 @@ public:
     [[gnu::always_inline, nodiscard]] constexpr usize count_intersection(const bitset &rhs) const {
         return count_op(rhs, std::bit_and{});
     }
+
     [[gnu::always_inline, nodiscard]] constexpr usize count_union(const bitset &rhs) const {
         return count_op(rhs, std::bit_or{});
     }
+
     [[gnu::always_inline, nodiscard]] constexpr usize count_symmetric_difference(const bitset &rhs) const {
         return count_op(rhs, std::bit_xor{});
     }
@@ -95,10 +105,12 @@ public:
         do_op(rhs, std::bit_and{});
         return *this;
     }
+
     [[gnu::always_inline]] constexpr bitset &operator|=(const bitset &rhs) & {
         do_op(rhs, std::bit_or{});
         return *this;
     }
+
     [[gnu::always_inline]] constexpr bitset &operator^=(const bitset &rhs) & {
         do_op(rhs, std::bit_xor{});
         return *this;
@@ -119,9 +131,11 @@ public:
     [[gnu::always_inline, nodiscard]] friend constexpr bitset operator&(bitset lhs, const bitset &rhs) {
         return lhs &= rhs;
     }
+
     [[gnu::always_inline, nodiscard]] friend constexpr bitset operator|(bitset lhs, const bitset &rhs) {
         return lhs |= rhs;
     }
+
     [[gnu::always_inline, nodiscard]] friend constexpr bitset operator^(bitset lhs, const bitset &rhs) {
         return lhs ^= rhs;
     }

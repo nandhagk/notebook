@@ -6,21 +6,16 @@
 #include <lib/prelude.hpp>
 
 template <typename T>
-using is_integral_t = std::enable_if_t<std::is_integral_v<T>>;
+constexpr bool is_integral_v = std::is_integral_v<T> || std::is_same_v<T, i128> || std::is_same_v<T, u128>;
 
 template <typename T>
-using is_signed_integral =
-    std::conditional_t<std::is_integral_v<T> && std::is_signed_v<T>, std::true_type, std::false_type>;
+using is_integral_t = std::enable_if_t<is_integral_v<T>>;
 
 template <typename T>
-using is_unsigned_integral =
-    std::conditional_t<std::is_integral_v<T> && std::is_unsigned_v<T>, std::true_type, std::false_type>;
+constexpr bool is_signed_integral_v = is_integral_v<T> && std::is_signed_v<T>;
 
 template <typename T>
-constexpr bool is_signed_integral_v = is_signed_integral<T>::value;
-
-template <typename T>
-constexpr bool is_unsigned_integral_v = is_unsigned_integral<T>::value;
+constexpr bool is_unsigned_integral_v = is_integral_v<T> && std::is_unsigned_v<T>;
 
 template <typename T>
 using is_signed_integral_t = std::enable_if_t<is_signed_integral_v<T>>;
