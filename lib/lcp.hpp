@@ -50,7 +50,7 @@ struct lcp {
         if (p == q) return n - p;
         if (p == n || q == n) return 0;
 
-        const auto &[l, r] = std::minmax(rnk[p], rnk[q]);
+        const auto [l, r] = std::minmax(rnk[p], rnk[q]);
         return st.prod(l, r);
     }
 

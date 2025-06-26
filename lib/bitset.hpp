@@ -7,10 +7,9 @@
 #include <limits>
 
 #include <lib/bits.hpp>
-#include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
-template <usize N, typename T = u128, is_unsigned_integral_t<T> * = nullptr>
+template <usize N, typename T = u128>
 class bitset {
 public:
     static constexpr usize W = std::numeric_limits<T>::digits;
@@ -82,6 +81,10 @@ public:
         return !any();
     }
 
+    [[gnu::always_inline]] constexpr void reset() {
+        std::fill(buf_.begin(), buf_.end(), T(0));
+    }
+
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
         usize cnt = 0;
         for (usize i = 0; i < B; ++i) cnt += popcnt(buf_[i]);
@@ -116,6 +119,24 @@ public:
         return *this;
     }
 
+    [[gnu::always_inline]] constexpr bitset &operator<<=(usize shift) & {
+        if (shift >= N) [[unlikely]]
+            reset();
+        else
+            left_shift(shift);
+
+        return *this;
+    }
+
+    [[gnu::always_inline]] constexpr bitset &operator>>=(usize shift) & {
+        if (shift >= N) [[unlikely]]
+            reset();
+        else
+            right_shift(shift);
+
+        return *this;
+    }
+
     friend std::istream &operator>>(std::istream &is, bitset &b) {
         std::string s;
         s.reserve(N);
@@ -123,7 +144,7 @@ public:
         is >> s;
 
         const usize n = std::min(N, s.size());
-        for (usize i = 0; i < n; ++i) b.set(i, s[i] == '1');
+        for (usize i = 0, j = n - 1; i < n; ++i, --j) b.set(i, s[j] == '1');
 
         return is;
     }
@@ -140,6 +161,14 @@ public:
         return lhs ^= rhs;
     }
 
+    [[gnu::always_inline, nodiscard]] friend constexpr bitset operator<<(bitset lhs, usize shift) {
+        return lhs <<= shift;
+    }
+
+    [[gnu::always_inline, nodiscard]] friend constexpr bitset operator>>(bitset lhs, usize shift) {
+        return lhs >>= shift;
+    }
+
     [[gnu::always_inline, nodiscard]] friend constexpr bitset operator==(const bitset &lhs, const bitset &rhs) {
         return lhs.buf_ == rhs.buf_;
     }
@@ -149,6 +178,45 @@ private:
 
     [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
         buf_[pos >> S] |= (T(val) << (pos & M));
+    }
+
+    [[gnu::always_inline]] constexpr void left_shift(usize shift) {
+        if (shift == 0) [[unlikely]]
+            return;
+
+        const usize wshift = shift >> S;
+        const usize offset = shift & M;
+
+        if (offset == 0) {
+            for (usize i = B - 1; i >= wshift; --i) buf_[i] = buf_[i - wshift];
+        } else {
+            const usize sub_offset = W - offset;
+            for (usize i = B - 1; i > wshift; --i)
+                buf_[i] = (buf_[i - wshift] << offset) | (buf_[i - wshift - 1] >> sub_offset);
+            buf_[wshift] = buf_[0] << offset;
+        }
+
+        std::fill(buf_.begin(), buf_.begin() + wshift, T(0));
+    }
+
+    [[gnu::always_inline]] constexpr void right_shift(usize shift) {
+        if (shift == 0) [[unlikely]]
+            return;
+
+        const usize wshift = shift >> S;
+        const usize offset = shift & M;
+        const usize limit = B - shift - 1;
+
+        if (offset == 0) {
+            for (usize i = 0; i <= limit; ++i) buf_[i] = buf_[i + wshift];
+        } else {
+            const usize sub_offset = W - offset;
+            for (usize i = 0; i < limit; ++i)
+                buf_[i] = (buf_[i + wshift] >> offset) | (buf_[i + wshift + 1] << sub_offset);
+            buf_[limit] = buf_[B - 1] >> offset;
+        }
+
+        std::fill(buf_.begin() + limit + 1, buf_.end(), T(0));
     }
 
     template <typename Op>
