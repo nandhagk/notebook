@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import subprocess
-from logging import ERROR, basicConfig, getLogger
+from logging import basicConfig, getLogger, INFO
 from pathlib import Path
 from string import ascii_lowercase
+from time import perf_counter
 
 import click
 
@@ -72,25 +73,35 @@ def run(q: str, debug: bool, fast: bool) -> None:
     lib_paths = [Path.cwd()]
 
     expander = Expander(lib_paths)
+
+    t0 = perf_counter()
     dst_code = expander.expand(src_path, show_lineno=debug)
 
     dst_path = (Path().cwd() / "contest" / "out").with_suffix(".cpp")
     dst_path.write_text(dst_code)
 
-    logger.info("expanded: %s", q)
+    subprocess.run(["clang-format", dst_path, "-i"], check=False)
+
+    t1 = perf_counter()
+    logger.info("expanded %s in %dms", q, round((t1 - t0) * 1000))
 
     exec_path = Path().cwd() / "build" / q
     input_path = q_dir / "input.txt"
 
+    t0 = perf_counter()
     subprocess.run(
         ["g++", dst_path, *(CXX_FLAGS_FAST if fast else CXX_FLAGS), "-o", exec_path],
         check=False,
     )
 
-    logger.info("compiled: %s", q)
+    t1 = perf_counter()
+    logger.info("compiled %s in %dms", q, round((t1 - t0) * 1000))
 
+    t0 = perf_counter()
     with input_path.open("r") as f:
         subprocess.run([exec_path], stdin=f, check=False)
+    t1 = perf_counter()
+    logger.info("ran %s in %dms", q, round((t1 - t0) * 1000))
 
 
 @main.command()
@@ -110,7 +121,7 @@ def generate() -> None:
 basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    level=ERROR,
+    level=INFO,
 )
 
 main()

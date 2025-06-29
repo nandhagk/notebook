@@ -80,7 +80,7 @@ class Expander:
             return result
 
         self.included.add(src_path)
-        logger.info("include: %s", src_path)
+        logger.debug("include: %s", src_path)
 
         src_code = src_path.read_text()
 
@@ -89,7 +89,7 @@ class Expander:
 
         for lineno, line in enumerate(src_code.splitlines(), 1):
             if self.ignore(line):
-                logger.info("ignoring: %s", line)
+                logger.debug("ignoring: %s", line)
                 continue
 
             if line == '#include <contest/debug.hpp>':
