@@ -90,7 +90,7 @@ def run(q: str, debug: bool, fast: bool) -> None:
 
     t0 = perf_counter()
     subprocess.run(
-        ["g++", dst_path, *(CXX_FLAGS_FAST if fast else CXX_FLAGS), "-o", exec_path],
+        ["g++", dst_path, *(CXX_FLAGS_FAST if fast else CXX_FLAGS), "-Ipch", "-o", exec_path],
         check=False,
     )
 

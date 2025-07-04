@@ -76,7 +76,7 @@ struct dsu {
         }
 
         assert(group == ccs);
-        return {group, std::move(ids)};
+        return {group, ids};
     }
 };
 

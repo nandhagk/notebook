@@ -76,7 +76,7 @@ struct rollback_dsu {
             ++group;
         }
 
-        return {group, std::move(ids)};
+        return {group, ids};
     }
 
     void rollback() {

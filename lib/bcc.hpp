@@ -63,7 +63,7 @@ inline std::pair<std::vector<bool>, std::vector<std::vector<i32>>> bcc(const Und
         seen.clear();
     }
 
-    return {std::move(c), std::move(ccs)};
+    return {c, ccs};
 }
 
 template <typename UndirectedGraph>
@@ -93,7 +93,7 @@ block_cut_tree(const UndirectedGraph &g, const std::vector<bool> &c, const std::
         ++group;
     }
 
-    return {group, std::move(ids), csr_graph(group, es)};
+    return {group, ids, csr_graph(group, es)};
 }
 
 #endif // LIB_BCC_HPP

@@ -93,7 +93,7 @@ struct rollback_dsu_product {
             ++group;
         }
 
-        return {group, std::move(ids)};
+        return {group, ids};
     }
 
     X prod(i32 u) const {

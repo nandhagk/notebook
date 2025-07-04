@@ -38,7 +38,7 @@ inline std::tuple<i32, i32, std::vector<graph_weight_t<Tree>>, std::vector<i32>>
     dfs(dfs, s);
 
     const i32 t = static_cast<i32>(std::max_element(dst.begin(), dst.end()) - dst.begin());
-    return {s, t, std::move(dst), std::move(prv)};
+    return {s, t, dst, prv};
 }
 
 #endif // LIB_TREE_DIAMETER_HPP

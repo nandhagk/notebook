@@ -46,7 +46,7 @@ inline std::pair<i32, std::vector<i32>> ccc(const UndirectedGraph &g) {
         ++group;
     }
 
-    return {group, std::move(ids)};
+    return {group, ids};
 }
 
 #endif // LIB_CCC_HPP

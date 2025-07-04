@@ -6,7 +6,7 @@
 
 #include <lib/prelude.hpp>
 
-constexpr i32 bit_ceil_log(i32 n) {
+constexpr i32 bit_ceil_log_(i32 n) {
     i32 x = 0;
     while ((1 << x) < (i32)(n)) x++;
     return x;
@@ -24,7 +24,7 @@ struct persistent_lazy_segment_tree {
 
     using self_t = persistent_lazy_segment_tree<AM, MAXIDX>;
 
-    static constexpr u32 log = bit_ceil_log(MAXIDX);
+    static constexpr u32 log = bit_ceil_log_(MAXIDX);
     static constexpr i32 nullid = -1;
 
     template <u32 dep, typename = void>
