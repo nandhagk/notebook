@@ -205,7 +205,7 @@ private:
 
         const usize wshift = shift >> S;
         const usize offset = shift & M;
-        const usize limit = B - shift - 1;
+        const usize limit = B - wshift - 1;
 
         if (offset == 0) {
             for (usize i = 0; i <= limit; ++i) buf_[i] = buf_[i + wshift];
