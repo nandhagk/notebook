@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <functional>
 #include <iostream>
 #include <iterator>
@@ -10,8 +11,8 @@
 #include <numeric>
 
 #include <lib/bits.hpp>
-#include <lib/prelude.hpp>
 #include <lib/numeric_traits.hpp>
+#include <lib/prelude.hpp>
 
 template <usize N, typename W, bool D, typename E>
 class expr {
@@ -24,7 +25,7 @@ public:
 
     static constexpr usize word_size = std::numeric_limits<word_type>::digits;
     static constexpr usize block_count = (size + word_size - 1) / word_size;
-    static constexpr W mask = (static_cast<W>(1) << (size % word_size)) - 1;
+    static constexpr W mask = (static_cast<word_type>(1) << (size % word_size)) - 1;
 
     static constexpr bool dir = D;
 
@@ -101,7 +102,7 @@ public:
         return *static_cast<const E *>(this);
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         return self().word(pos);
     }
 
@@ -115,10 +116,11 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
         if constexpr (size % word_size == 0)
-            return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, W w) { return cnt + popcnt(w); });
+            return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
 
         const auto last = std::prev(cwend());
-        return std::accumulate(cwbegin(), last, popcnt(*last & mask), [](usize cnt, W w) { return cnt + popcnt(w); });
+        return std::accumulate(cwbegin(), last, popcnt(*last & mask),
+                               [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -128,6 +130,9 @@ public:
 
 template <usize N, typename W, typename Op, typename L, typename R>
 class binary_expr : public expr<N, W, R::dir, binary_expr<N, W, Op, L, R>> {
+    using base_type = expr<N, W, R::dir, binary_expr<N, W, Op, L, R>>;
+    using word_type = typename base_type::word_type;
+
     const L &lhs;
     const R &rhs;
     [[no_unique_address]] Op op;
@@ -136,20 +141,23 @@ public:
     constexpr binary_expr(const L &l, const R &r)
         : lhs(l), rhs(r) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         return op(lhs.word(pos), rhs.word(pos));
     }
 };
 
 template <usize N, typename W, typename E>
 class not_expr : public expr<N, W, E::dir, not_expr<N, W, E>> {
+    using base_type = expr<N, W, E::dir, not_expr<N, W, E>>;
+    using word_type = typename base_type::word_type;
+
     const E &lhs;
 
 public:
     constexpr not_expr(const E &e)
         : lhs(e) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         return ~lhs.word(pos);
     }
 };
@@ -157,6 +165,7 @@ public:
 template <usize N, typename W, typename E>
 class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     using base_type = expr<N, W, false, shl_expr<N, W, E>>;
+    using word_type = typename base_type::word_type;
 
     using base_type::block_count;
     using base_type::word_size;
@@ -168,7 +177,7 @@ public:
     constexpr shl_expr(const E &e, usize shift)
         : lhs(e), wshift(shift / word_size), offset(shift % word_size), sub_offset(word_size - offset) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         if (pos < wshift) return 0;
         if (offset == 0) return lhs.word(pos - wshift);
 
@@ -180,6 +189,7 @@ public:
 template <usize N, typename W, typename E>
 struct shr_expr : public expr<N, W, true, shl_expr<N, W, E>> {
     using base_type = expr<N, W, true, shl_expr<N, W, E>>;
+    using word_type = typename base_type::word_type;
 
     using base_type::block_count;
     using base_type::word_size;
@@ -195,7 +205,7 @@ public:
           sub_offset(word_size - offset),
           limit(block_count - wshift - 1) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         if (pos > limit) return 0;
         if (offset == 0) return lhs.word(pos + wshift);
 
@@ -237,6 +247,7 @@ template <usize N, typename W, typename E, bool D>
 template <usize N, typename W = u128>
 class bitset : public expr<N, W, true, bitset<N, W>> {
     using base_type = expr<N, W, true, bitset<N, W>>;
+    using word_type = typename base_type::word_type;
 
     using base_type::block_count;
     using base_type::mask;
@@ -253,6 +264,21 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
             std::copy(expr.cwbegin(), expr.cwend(), wbegin());
         else
             std::copy_backward(expr.cwbegin(), expr.cwend(), wbegin());
+    }
+
+    // WARNING: Assumes that bitset is zeroed beforehand
+    template <typename CharT, typename Traits>
+    [[gnu::always_inline]] constexpr void from_string(std::basic_string_view<CharT, Traits> str,
+                                                      CharT zero = CharT('0'), CharT one = CharT('1')) {
+        const usize n = std::min(size, str.size());
+        for (usize i = 0, j = n; i < n; ++i) {
+            const CharT c = str[--j];
+
+            // Really slow to check!!
+            // assert(Traits::eq(c, zero) || Traits::eq(c, one));
+
+            set(i, Traits::eq(c, one));
+        }
     }
 
 public:
@@ -280,15 +306,15 @@ public:
         }
 
         [[gnu::always_inline]] constexpr void set() {
-            *word_ptr |= static_cast<W>(1) << pos;
+            *word_ptr |= static_cast<word_type>(1) << pos;
         }
 
         [[gnu::always_inline]] constexpr void unset() {
-            *word_ptr &= ~(static_cast<W>(1) << pos);
+            *word_ptr &= ~(static_cast<word_type>(1) << pos);
         }
 
         [[gnu::always_inline]] constexpr void flip() {
-            *word_ptr ^= static_cast<W>(1) << pos;
+            *word_ptr ^= static_cast<word_type>(1) << pos;
         }
 
     private:
@@ -318,6 +344,12 @@ public:
     template <typename E, bool D>
     [[gnu::always_inline]] explicit constexpr bitset(const expr<N, W, D, E> &expr) {
         materialize(expr);
+    }
+
+    template <typename CharT, typename Traits>
+    [[gnu::always_inline]] explicit constexpr bitset(std::basic_string_view<CharT, Traits> str, CharT zero = CharT('0'),
+                                                     CharT one = CharT('1')) {
+        from_string(str, zero, one);
     }
 
     template <typename E, bool D>
@@ -357,7 +389,7 @@ public:
         return *this = *this >> shift;
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
         return d[pos];
     }
 
@@ -365,24 +397,28 @@ public:
         return d[pos];
     }
 
+    [[gnu::always_inline, nodiscard]] constexpr bool test(usize pos) const {
+        return base_type::operator[](pos);
+    }
+
     [[gnu::always_inline]] constexpr void set(usize pos) {
-        set(pos, true);
+        d[pos / word_size] |= static_cast<word_type>(1) << (pos % word_size);
     }
 
     [[gnu::always_inline]] constexpr void unset(usize pos) {
-        d[pos / word_size] &= ~(static_cast<W>(1) << (pos % word_size));
+        d[pos / word_size] &= ~(static_cast<word_type>(1) << (pos % word_size));
     }
 
     [[gnu::always_inline]] constexpr void flip(usize pos) {
-        d[pos / word_size] ^= static_cast<W>(1) << (pos % word_size);
+        d[pos / word_size] ^= static_cast<word_type>(1) << (pos % word_size);
     }
 
     [[gnu::always_inline]] constexpr void set() {
-        std::fill(d.begin(), d.end(), static_cast<W>(-1));
+        std::fill(d.begin(), d.end(), static_cast<word_type>(-1));
     }
 
     [[gnu::always_inline]] constexpr void unset() {
-        std::fill(d.begin(), d.end(), static_cast<W>(0));
+        std::fill(d.begin(), d.end(), static_cast<word_type>(0));
     }
 
     [[gnu::always_inline]] constexpr void flip() {
@@ -391,21 +427,32 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr bool all() const {
         if constexpr (size % word_size == 0)
-            return std::all_of(d.begin(), d.end(), [](W w) { return w == static_cast<W>(-1); });
+            return std::all_of(d.begin(), d.end(), [](word_type w) { return w == static_cast<word_type>(-1); });
 
         const auto last = std::prev(d.end());
-        return ((*last & mask) == mask) && std::all_of(d.begin(), last, [](W w) { return w == static_cast<W>(-1); });
+        return ((*last & mask) == mask) &&
+               std::all_of(d.begin(), last, [](word_type w) { return w == static_cast<word_type>(-1); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
+        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](word_type w) { return w != 0; });
 
         const auto last = std::prev(d.end());
-        return ((*last & mask) != 0) || std::any_of(d.begin(), last, [](W w) { return w != 0; });
+        return ((*last & mask) != 0) || std::any_of(d.begin(), last, [](word_type w) { return w != 0; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
         return !any();
+    }
+
+    template <typename CharT = char, typename Traits = std::char_traits<CharT>,
+              typename Allocator = std::allocator<CharT>>
+    [[gnu::always_inline, nodiscard]] std::basic_string<CharT, Traits, Allocator>
+    to_string(CharT zero = CharT('0'), CharT one = CharT('1')) const {
+        std::basic_string<CharT, Traits, Allocator> s(size, zero);
+        for (usize i = 0, j = size; i < size; ++i) s[--j] = test(i) ? one : zero;
+
+        return s;
     }
 
     [[gnu::always_inline]] friend std::istream &operator>>(std::istream &is, bitset &b) {
@@ -413,16 +460,19 @@ public:
         s.reserve(size);
 
         is >> s;
-
-        const usize n = s.size();
-        for (usize i = 0, j = n; i < n; ++i) b.set(i, s[--j] == '1');
+        b.from_string(std::string_view(s));
 
         return is;
     }
 
+    [[gnu::always_inline]] friend std::ostream &operator<<(std::ostream &os, const bitset &b) {
+        os << b.to_string();
+        return os;
+    }
+
 private:
     [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
-        d[pos / word_size] |= static_cast<W>(val) << (pos % word_size);
+        d[pos / word_size] |= static_cast<word_type>(val) << (pos % word_size);
     }
 };
 
