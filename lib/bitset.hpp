@@ -103,10 +103,10 @@ public:
 
 template <usize N, typename W, typename E>
 class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
-    using base_t = expr<N, W, false, shl_expr<N, W, E>>;
+    using base_type = expr<N, W, false, shl_expr<N, W, E>>;
 
-    using base_t::M;
-    using base_t::S;
+    using base_type::M;
+    using base_type::S;
 
     const E &lhs;
     const usize wshift, offset, sub_offset;
@@ -126,10 +126,10 @@ public:
 
 template <usize N, typename W, typename E>
 struct shr_expr : public expr<N, W, true, shl_expr<N, W, E>> {
-    using base_t = expr<N, W, true, shl_expr<N, W, E>>;
+    using base_type = expr<N, W, true, shl_expr<N, W, E>>;
 
-    using base_t::M;
-    using base_t::S;
+    using base_type::M;
+    using base_type::S;
 
     const E &lhs;
     const usize wshift, offset, sub_offset, limit;
@@ -174,12 +174,14 @@ template <usize N, typename W, typename E, bool D>
 
 template <usize N, typename W = u128>
 class bitset : public expr<N, W, true, bitset<N, W>> {
-    using base_t = expr<N, W, true, bitset<N, W>>;
+    using base_type = expr<N, W, true, bitset<N, W>>;
 
-    using base_t::M;
-    using base_t::S;
+    using base_type::M;
+    using base_type::S;
 
-    std::array<W, M> d{};
+    using storage_type = std::array<W, M>;
+
+    storage_type d{};
 
     template <typename E, bool D>
     [[gnu::always_inline]] constexpr void materialize(const expr<N, W, D, E> &expr) {
@@ -188,7 +190,6 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
         else
             std::copy_backward(expr.cwbegin(), expr.cwend(), wbegin());
     }
-
 
 public:
     constexpr bitset() = default;
@@ -240,53 +241,14 @@ public:
         return reference(&d[pos / S], pos % S);
     }
 
-    class word_iterator {
-    public:
-        using self_type = word_iterator;
+    using word_iterator = typename storage_type::iterator;
 
-        using difference_type = isize;
-        using value_type = W;
-        using reference = value_type&;
-
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
-            ++pos;
-            return *this;
-        }
-
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator--() & {
-            --pos;
-            return *this;
-        }
-
-        [[gnu::always_inline, nodiscard]] constexpr reference operator*() const {
-            return b.word(pos);
-        }
-
-        // WARNING: Comparison of underlying expression is not performed
-        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
-            return pos == other.pos;
-        }
-
-        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
-            return pos < other.pos;
-        }
-
-    private:
-        word_iterator(const bitset &c, usize p)
-            : b(c), pos(p) {}
-
-        const bitset &b;
-        usize pos;
-
-        friend class bitset;
-    };
-
-    [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() const {
-        return word_iterator(*this, 0);
+    [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() {
+        return d.begin();
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr word_iterator wend() const {
-        return word_iterator(*this, M);
+    [[gnu::always_inline, nodiscard]] constexpr word_iterator wend() {
+        return d.end();
     }
 
     template <typename E, bool D>
@@ -330,8 +292,8 @@ public:
     [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
         return d[pos];
     }
-    
-    [[gnu::always_inline, nodiscard]] constexpr W& word(usize pos) {
+
+    [[gnu::always_inline, nodiscard]] constexpr W &word(usize pos) {
         return d[pos];
     }
 
