@@ -42,6 +42,14 @@ public:
 
     static constexpr W mask = maskbit(size) - 1;
 
+    [[gnu::always_inline, nodiscard]] constexpr const E &self() const {
+        return *static_cast<const E *>(this);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        return self().word(wpos);
+    }
+
     class const_word_iterator {
     public:
         using self_type = const_word_iterator;
@@ -111,14 +119,6 @@ public:
         friend class expr;
     };
 
-    [[gnu::always_inline, nodiscard]] constexpr const E &self() const {
-        return *static_cast<const E *>(this);
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
-        return self().word(wpos);
-    }
-
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
         return const_word_iterator(*this, 0);
     }
@@ -134,6 +134,85 @@ public:
         const auto last = std::prev(cwend());
         return std::accumulate(cwbegin(), last, popcnt(*last & mask),
                                [](usize cnt, word_type w) { return cnt + popcnt(w); });
+    }
+
+    [[gnu::always_inline]] constexpr usize find_first() const {
+        for (usize i = 0; i < block_count; ++i) {
+            const word_type w = word(i);
+            if (w == 0) continue;
+
+            return lowbit(w) + i * word_size;
+        }
+
+        return size;
+    }
+
+    [[gnu::always_inline]] constexpr usize find_next(usize prev) const {
+        const usize prev_word = whichword(prev);
+        const word_type prev_mask = maskbit(whichbit(prev));
+
+        if (const word_type w = word(prev_word) & ~prev_mask & ~(prev_mask - 1); w != 0)
+            return lowbit(w) + prev_word * word_size;
+
+        for (usize i = prev_word + 1; i < block_count; ++i) {
+            const word_type w = word(i);
+            if (w == 0) continue;
+
+            return lowbit(w) + i * word_size;
+        }
+
+        return size;
+    }
+
+    class const_ones_iterator {
+    public:
+        using self_type = const_ones_iterator;
+
+        using difference_type = isize;
+        using value_type = usize;
+        using reference = void;
+        using iterator_category = std::forward_iterator_tag;
+
+        [[gnu::always_inline]] constexpr self_type &operator++() & {
+            pos = e.find_next(pos);
+            return *this;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+            self_type tmp = *this;
+            operator++();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
+            return pos;
+        }
+
+        // WARNING: Comparison of underlying expression is not performed
+        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
+            return pos == other.pos;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
+            return pos < other.pos;
+        }
+
+    private:
+        const_ones_iterator(const expr &f, usize p)
+            : e(f), pos(p) {}
+
+        const expr &e;
+        usize pos;
+
+        friend class expr;
+    };
+
+    [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator cobegin() const {
+        return const_ones_iterator(*this, find_first());
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator coend() const {
+        return const_ones_iterator(*this, size);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -489,6 +568,7 @@ public:
         return s;
     }
 
+    // WARNING: Assumes that bitset is zeroed beforehand
     [[gnu::always_inline]] friend std::istream &operator>>(std::istream &is, bitset &b) {
         std::string s;
         s.reserve(size);
