@@ -21,7 +21,7 @@ public:
     static_assert(size > 0, "size must be positive");
 
     using word_type = W;
-    static_assert(is_unsigned_integral_v<W>, "word_type must be unsigned integral");
+    static_assert(is_unsigned_integral_v<word_type>, "word_type must be unsigned integral");
 
     static constexpr usize word_size = std::numeric_limits<word_type>::digits;
     static constexpr usize block_count = (size + word_size - 1) / word_size;
@@ -47,7 +47,7 @@ public:
         using self_type = const_word_iterator;
 
         using difference_type = isize;
-        using value_type = W;
+        using value_type = word_type;
         using reference = void;
         using iterator_category = std::random_access_iterator_tag;
 
@@ -271,7 +271,7 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     using base_type::whichbit;
     using base_type::whichword;
 
-    using storage_type = std::array<W, block_count>;
+    using storage_type = std::array<word_type, block_count>;
 
     storage_type d{};
 
@@ -341,14 +341,14 @@ public:
         }
 
     private:
-        constexpr reference(W *w_ptr, usize p)
+        constexpr reference(word_type *w_ptr, usize p)
             : word_ptr(w_ptr), pos(p) {}
 
         [[gnu::always_inline, nodiscard]] static constexpr word_type maskbit(usize pos) {
             return static_cast<word_type>(1) << pos;
         }
 
-        W *const word_ptr;
+        word_type *const word_ptr;
         const usize pos;
 
         friend class bitset;
@@ -429,7 +429,7 @@ public:
         return d[pos];
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr W &word(usize pos) {
+    [[gnu::always_inline, nodiscard]] constexpr word_type &word(usize pos) {
         return d[pos];
     }
 
