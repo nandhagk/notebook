@@ -25,9 +25,22 @@ public:
 
     static constexpr usize word_size = std::numeric_limits<word_type>::digits;
     static constexpr usize block_count = (size + word_size - 1) / word_size;
-    static constexpr W mask = (static_cast<word_type>(1) << (size % word_size)) - 1;
 
     static constexpr bool dir = D;
+
+    [[gnu::always_inline, nodiscard]] static constexpr usize whichword(usize pos) {
+        return pos / word_size;
+    }
+
+    [[gnu::always_inline, nodiscard]] static constexpr usize whichbit(usize pos) {
+        return pos % word_size;
+    }
+
+    [[gnu::always_inline, nodiscard]] static constexpr word_type maskbit(usize pos) {
+        return static_cast<word_type>(1) << whichbit(pos);
+    }
+
+    static constexpr W mask = maskbit(size) - 1;
 
     class const_word_iterator {
     public:
@@ -124,7 +137,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
-        return (word(pos / word_size) >> (pos % word_size)) & 1;
+        return (word(whichword(pos)) >> (whichbit(pos))) & 1;
     }
 };
 
@@ -254,6 +267,10 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     using base_type::size;
     using base_type::word_size;
 
+    using base_type::maskbit;
+    using base_type::whichbit;
+    using base_type::whichword;
+
     using storage_type = std::array<W, block_count>;
 
     storage_type d{};
@@ -264,6 +281,10 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
             std::copy(expr.cwbegin(), expr.cwend(), wbegin());
         else
             std::copy_backward(expr.cwbegin(), expr.cwend(), wbegin());
+    }
+
+    [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
+        d[whichword(pos)] |= static_cast<word_type>(val) << whichbit(pos);
     }
 
     // WARNING: Assumes that bitset is zeroed beforehand
@@ -282,6 +303,8 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     }
 
 public:
+    using base_type::operator[];
+
     constexpr bitset() = default;
     constexpr bitset(const bitset &other) = default;
     constexpr bitset(bitset &&other) = default;
@@ -306,20 +329,24 @@ public:
         }
 
         [[gnu::always_inline]] constexpr void set() {
-            *word_ptr |= static_cast<word_type>(1) << pos;
+            *word_ptr |= maskbit(pos);
         }
 
         [[gnu::always_inline]] constexpr void unset() {
-            *word_ptr &= ~(static_cast<word_type>(1) << pos);
+            *word_ptr &= ~maskbit(pos);
         }
 
         [[gnu::always_inline]] constexpr void flip() {
-            *word_ptr ^= static_cast<word_type>(1) << pos;
+            *word_ptr ^= maskbit(pos);
         }
 
     private:
         constexpr reference(W *w_ptr, usize p)
             : word_ptr(w_ptr), pos(p) {}
+
+        [[gnu::always_inline, nodiscard]] static constexpr word_type maskbit(usize pos) {
+            return static_cast<word_type>(1) << pos;
+        }
 
         W *const word_ptr;
         const usize pos;
@@ -328,10 +355,11 @@ public:
     };
 
     [[gnu::always_inline, nodiscard]] constexpr reference operator[](usize pos) {
-        return reference(&d[pos / word_size], pos % word_size);
+        return reference(&d[whichword(pos)], whichbit(pos));
     }
 
     using word_iterator = typename storage_type::iterator;
+    using const_word_iterator = typename storage_type::const_iterator;
 
     [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() {
         return d.begin();
@@ -339,6 +367,14 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr word_iterator wend() {
         return d.end();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
+        return d.cbegin();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
+        return d.cend();
     }
 
     template <typename E, bool D>
@@ -398,19 +434,19 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool test(usize pos) const {
-        return base_type::operator[](pos);
+        return operator[](pos);
     }
 
     [[gnu::always_inline]] constexpr void set(usize pos) {
-        d[pos / word_size] |= static_cast<word_type>(1) << (pos % word_size);
+        d[whichword(pos)] |= maskbit(pos);
     }
 
     [[gnu::always_inline]] constexpr void unset(usize pos) {
-        d[pos / word_size] &= ~(static_cast<word_type>(1) << (pos % word_size));
+        d[whichword(pos)] &= ~maskbit(pos);
     }
 
     [[gnu::always_inline]] constexpr void flip(usize pos) {
-        d[pos / word_size] ^= static_cast<word_type>(1) << (pos % word_size);
+        d[whichword(pos)] ^= maskbit(pos);
     }
 
     [[gnu::always_inline]] constexpr void set() {
@@ -426,19 +462,17 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool all() const {
-        if constexpr (size % word_size == 0)
-            return std::all_of(d.begin(), d.end(), [](word_type w) { return w == static_cast<word_type>(-1); });
+        if constexpr (size % word_size == 0) return std::all_of(d.begin(), d.end(), [](word_type w) { return !(~w); });
 
         const auto last = std::prev(d.end());
-        return ((*last & mask) == mask) &&
-               std::all_of(d.begin(), last, [](word_type w) { return w == static_cast<word_type>(-1); });
+        return ((*last & mask) == mask) && std::all_of(d.begin(), last, [](word_type w) { return !(~w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](word_type w) { return w != 0; });
+        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](word_type w) { return w; });
 
         const auto last = std::prev(d.end());
-        return ((*last & mask) != 0) || std::any_of(d.begin(), last, [](word_type w) { return w != 0; });
+        return (*last & mask) || std::any_of(d.begin(), last, [](word_type w) { return w; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
@@ -468,11 +502,6 @@ public:
     [[gnu::always_inline]] friend std::ostream &operator<<(std::ostream &os, const bitset &b) {
         os << b.to_string();
         return os;
-    }
-
-private:
-    [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
-        d[pos / word_size] |= static_cast<word_type>(val) << (pos % word_size);
     }
 };
 
