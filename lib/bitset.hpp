@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 #include <limits>
+#include <numeric>
 #include <string>
 
 #include <lib/bits.hpp>
@@ -18,6 +19,46 @@ protected:
     static constexpr usize M = (N + S - 1) / S;
 
 public:
+    class const_word_iterator {
+    public:
+        using self_type = const_word_iterator;
+
+        using difference_type = isize;
+        using value_type = W;
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
+            ++pos;
+            return *this;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator--() & {
+            --pos;
+            return *this;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
+            return e.word(pos);
+        }
+
+        // WARNING: Comparison of underlying expression is not performed
+        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
+            return pos == other.pos;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
+            return pos < other.pos;
+        }
+
+    private:
+        const_word_iterator(const expr &f, usize p)
+            : e(f), pos(p) {}
+
+        const expr &e;
+        usize pos;
+
+        friend class expr;
+    };
+
     static constexpr bool dir = D;
 
     [[gnu::always_inline, nodiscard]] constexpr const E &self() const {
@@ -28,11 +69,16 @@ public:
         return self().word(pos);
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        usize result = 0;
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
+        return const_word_iterator(*this, 0);
+    }
 
-        for (usize i = 0; i < M; ++i) result += popcnt(word(i));
-        return result;
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
+        return const_word_iterator(*this, M);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr usize count() const {
+        return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, W w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -135,6 +181,15 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
 
     std::array<W, M> d{};
 
+    template <typename E, bool D>
+    [[gnu::always_inline]] constexpr void materialize(const expr<N, W, D, E> &expr) {
+        if constexpr (D)
+            std::copy(expr.cwbegin(), expr.cwend(), wbegin());
+        else
+            std::copy_backward(expr.cwbegin(), expr.cwend(), wbegin());
+    }
+
+
 public:
     constexpr bitset() = default;
     constexpr bitset(const bitset &other) = default;
@@ -144,9 +199,9 @@ public:
     public:
         [[gnu::always_inline]] constexpr reference &operator=(bool val) {
             if (val)
-                *word_ptr |= static_cast<W>(1) << pos;
+                set();
             else
-                *word_ptr &= ~(static_cast<W>(1) << pos);
+                unset();
 
             return *this;
         }
@@ -157,6 +212,14 @@ public:
 
         [[gnu::always_inline, nodiscard]] constexpr bool operator~() const {
             return !operator bool();
+        }
+
+        [[gnu::always_inline]] constexpr void set() {
+            *word_ptr |= static_cast<W>(1) << pos;
+        }
+
+        [[gnu::always_inline]] constexpr void unset() {
+            *word_ptr &= ~(static_cast<W>(1) << pos);
         }
 
         [[gnu::always_inline]] constexpr void flip() {
@@ -177,21 +240,63 @@ public:
         return reference(&d[pos / S], pos % S);
     }
 
+    class word_iterator {
+    public:
+        using self_type = word_iterator;
+
+        using difference_type = isize;
+        using value_type = W;
+        using reference = value_type&;
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
+            ++pos;
+            return *this;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator--() & {
+            --pos;
+            return *this;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr reference operator*() const {
+            return b.word(pos);
+        }
+
+        // WARNING: Comparison of underlying expression is not performed
+        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
+            return pos == other.pos;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
+            return pos < other.pos;
+        }
+
+    private:
+        word_iterator(const bitset &c, usize p)
+            : b(c), pos(p) {}
+
+        const bitset &b;
+        usize pos;
+
+        friend class bitset;
+    };
+
+    [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() const {
+        return word_iterator(*this, 0);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr word_iterator wend() const {
+        return word_iterator(*this, M);
+    }
+
     template <typename E, bool D>
     [[gnu::always_inline]] explicit constexpr bitset(const expr<N, W, D, E> &expr) {
-        if constexpr (D)
-            for (usize i = 0; i < M; ++i) d[i] = expr.word(i);
-        else
-            for (usize i = M; i > 0; --i) d[i - 1] = expr.word(i - 1);
+        materialize(expr);
     }
 
     template <typename E, bool D>
     [[gnu::always_inline]] constexpr bitset &operator=(const expr<N, W, D, E> &expr) {
-        if constexpr (D)
-            for (usize i = 0; i < M; ++i) d[i] = expr.word(i);
-        else
-            for (usize i = M; i > 0; --i) d[i - 1] = expr.word(i - 1);
-
+        materialize(expr);
         return *this;
     }
 
@@ -214,15 +319,19 @@ public:
         return *this = *this ^ expr;
     }
 
-    [[gnu::always_inline]] constexpr bitset &operator<<=(const usize shift) & {
+    [[gnu::always_inline]] constexpr bitset &operator<<=(usize shift) & {
         return *this = *this << shift;
     }
 
-    [[gnu::always_inline]] constexpr bitset &operator>>=(const usize shift) & {
+    [[gnu::always_inline]] constexpr bitset &operator>>=(usize shift) & {
         return *this = *this >> shift;
     }
 
     [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+        return d[pos];
+    }
+    
+    [[gnu::always_inline, nodiscard]] constexpr W& word(usize pos) {
         return d[pos];
     }
 
@@ -243,7 +352,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        return std::any_of(d.begin(), d.end(), [](const W w) { return w != 0; });
+        return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
