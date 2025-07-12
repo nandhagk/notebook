@@ -164,7 +164,7 @@ public:
         }
 
     private:
-        [[gnu::always_inline]] constexpr reference(W *w_ptr, usize p)
+        constexpr reference(W *w_ptr, usize p)
             : word_ptr(w_ptr), pos(p) {}
 
         W *const word_ptr;
@@ -250,7 +250,7 @@ public:
         return !any();
     }
 
-    [[gnu::always_inline]] friend constexpr std::istream &operator>>(std::istream &is, bitset &b) {
+    [[gnu::always_inline]] friend std::istream &operator>>(std::istream &is, bitset &b) {
         std::string s;
         s.reserve(N);
 
