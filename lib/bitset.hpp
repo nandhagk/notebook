@@ -8,7 +8,6 @@
 #include <iterator>
 #include <limits>
 #include <numeric>
-#include <string>
 
 #include <lib/bits.hpp>
 #include <lib/prelude.hpp>
@@ -67,6 +66,14 @@ public:
             return e.word(pos);
         }
 
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
+            return lhs += offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
+            return lhs -= offset;
+        }
+
         // WARNING: Comparison of underlying expression is not performed
         [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
             return pos == other.pos;
@@ -74,14 +81,6 @@ public:
 
         [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
             return pos < other.pos;
-        }
-
-        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
-            return lhs += offset;
-        }
-
-        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
-            return lhs -= offset;
         }
 
     private:
@@ -345,6 +344,10 @@ public:
         return *this = *this ^ expr;
     }
 
+    [[gnu::always_inline]] constexpr bitset &operator~() & {
+        return *this = ~(*this);
+    }
+
     [[gnu::always_inline]] constexpr bitset &operator<<=(usize shift) & {
         return *this = *this << shift;
     }
@@ -382,7 +385,7 @@ public:
     }
 
     [[gnu::always_inline]] constexpr void flip() {
-        *this = ~(*this);
+        operator~();
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool all() const {
@@ -397,7 +400,7 @@ public:
         if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
 
         const auto last = std::prev(d.end());
-        return std::any_of(d.begin(), d.end() - 1, [](W w) { return w != 0; }) || ((*last & mask) != 0);
+        return std::any_of(d.begin(), last, [](W w) { return w != 0; }) || ((*last & mask) != 0);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
