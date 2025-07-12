@@ -105,10 +105,6 @@ public:
             return wpos == other.wpos;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
-            return wpos < other.wpos;
-        }
-
     private:
         const_word_iterator(const expr &f, usize p)
             : e(f), wpos(p) {}
@@ -136,14 +132,14 @@ public:
                                [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
 
-    [[gnu::always_inline]] constexpr usize find_first() const {
+    [[gnu::always_inline, nodiscard]] constexpr usize find_first() const {
         for (usize i = 0; i < block_count; ++i)
             if (const word_type w = word(i); w != 0) return lowbit(w) + i * word_size;
 
         return size;
     }
 
-    [[gnu::always_inline]] constexpr usize find_next(usize prev) const {
+    [[gnu::always_inline, nodiscard]] constexpr usize find_next(usize prev) const {
         const usize prev_word = whichword(prev);
 
         const word_type prev_mask = maskbit(whichbit(prev));
@@ -156,6 +152,27 @@ public:
         return size;
     }
 
+    [[gnu::always_inline, nodiscard]] constexpr usize find_last() const {
+        for (usize i = block_count; i-- > 0;)
+            if (const word_type w = word(i); w != 0) return topbit(w) + i * word_size;
+
+        return -1;
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr usize find_prev(usize prev) const {
+        if (prev == size) return find_last();
+
+        const usize prev_word = whichword(prev);
+
+        const word_type prev_mask = maskbit(whichbit(prev));
+        if (const word_type w = word(prev_word) & (prev_mask - 1); w != 0) return topbit(w) + prev_word * word_size;
+
+        for (usize i = prev_word; i-- > 0;)
+            if (const word_type w = word(i); w != 0) return topbit(w) + i * word_size;
+
+        return -1;
+    }
+
     class const_ones_iterator {
     public:
         using self_type = const_ones_iterator;
@@ -163,16 +180,27 @@ public:
         using difference_type = isize;
         using value_type = usize;
         using reference = void;
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = std::bidirectional_iterator_tag;
 
         [[gnu::always_inline]] constexpr self_type &operator++() & {
             pos = e.find_next(pos);
             return *this;
         }
 
+        [[gnu::always_inline]] constexpr self_type &operator--() & {
+            pos = e.find_prev(pos);
+            return *this;
+        }
+
         [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
             self_type tmp = *this;
             operator++();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+            self_type tmp = *this;
+            operator--();
             return tmp;
         }
 
@@ -185,10 +213,6 @@ public:
             return pos == other.pos;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
-            return pos < other.pos;
-        }
-
     private:
         const_ones_iterator(const expr &f, usize p)
             : e(f), pos(p) {}
@@ -199,12 +223,22 @@ public:
         friend class expr;
     };
 
+    using const_reverse_ones_iterator = std::reverse_iterator<const_ones_iterator>;
+
     [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator cobegin() const {
         return const_ones_iterator(*this, find_first());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator coend() const {
         return const_ones_iterator(*this, size);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_ones_iterator crobegin() const {
+        return const_reverse_ones_iterator(coend());
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_ones_iterator croend() const {
+        return const_reverse_ones_iterator(cobegin());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {

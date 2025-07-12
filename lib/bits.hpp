@@ -43,6 +43,14 @@
     return topbit(static_cast<u64>(x));
 }
 
+[[gnu::always_inline, nodiscard]] inline constexpr usize topbit(u128 x) {
+    return static_cast<u64>(x >> 64) ? (topbit(static_cast<u64>(x >> 64)) + 64) : topbit(static_cast<u64>(x));
+}
+
+[[gnu::always_inline, nodiscard]] inline constexpr usize topbit(i128 x) {
+    return topbit(static_cast<u128>(x));
+}
+
 [[gnu::always_inline, nodiscard]] inline constexpr usize lowbit(u32 x) {
     return __builtin_ctz(x);
 }
@@ -60,7 +68,11 @@
 }
 
 [[gnu::always_inline, nodiscard]] inline constexpr usize lowbit(u128 x) {
-    return static_cast<u64>(x) ? lowbit(static_cast<u64>(x)) : lowbit(static_cast<u64>(x >> 64)) + 64;
+    return static_cast<u64>(x) ? lowbit(static_cast<u64>(x)) : (lowbit(static_cast<u64>(x >> 64)) + 64);
+}
+
+[[gnu::always_inline, nodiscard]] inline constexpr usize lowbit(i128 x) {
+    return lowbit(static_cast<u128>(x));
 }
 
 #endif // LIB_BITS_HPP
