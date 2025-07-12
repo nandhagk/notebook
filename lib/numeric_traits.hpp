@@ -12,10 +12,10 @@ template <typename T>
 using is_integral_t = std::enable_if_t<is_integral_v<T>>;
 
 template <typename T>
-constexpr bool is_signed_integral_v = is_integral_v<T> && std::is_signed_v<T>;
+constexpr bool is_signed_integral_v = std::is_signed_v<T> || std::is_same_v<T, i128>;
 
 template <typename T>
-constexpr bool is_unsigned_integral_v = is_integral_v<T> && std::is_unsigned_v<T>;
+constexpr bool is_unsigned_integral_v = std::is_unsigned_v<T> || std::is_same_v<T, u128>;
 
 template <typename T>
 using is_signed_integral_t = std::enable_if_t<is_signed_integral_v<T>>;

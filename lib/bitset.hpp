@@ -11,13 +11,17 @@
 
 #include <lib/bits.hpp>
 #include <lib/prelude.hpp>
+#include <lib/numeric_traits.hpp>
 
 template <usize N, typename W, bool D, typename E>
 class expr {
 public:
     static constexpr usize size = N;
+    static_assert(size > 0, "size must be positive");
 
     using word_type = W;
+    static_assert(is_unsigned_integral_v<W>, "word_type must be unsigned integral");
+
     static constexpr usize word_size = std::numeric_limits<word_type>::digits;
     static constexpr usize block_count = (size + word_size - 1) / word_size;
     static constexpr W mask = (static_cast<W>(1) << (size % word_size)) - 1;
@@ -114,8 +118,7 @@ public:
             return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, W w) { return cnt + popcnt(w); });
 
         const auto last = std::prev(cwend());
-        return std::accumulate(cwbegin(), last, 0, [](usize cnt, W w) { return cnt + popcnt(w); }) +
-               popcnt(*last & mask);
+        return std::accumulate(cwbegin(), last, popcnt(*last & mask), [](usize cnt, W w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -233,8 +236,6 @@ template <usize N, typename W, typename E, bool D>
 
 template <usize N, typename W = u128>
 class bitset : public expr<N, W, true, bitset<N, W>> {
-    static_assert(N > 0, "Can't create empty bitset");
-
     using base_type = expr<N, W, true, bitset<N, W>>;
 
     using base_type::block_count;
@@ -393,14 +394,14 @@ public:
             return std::all_of(d.begin(), d.end(), [](W w) { return w == static_cast<W>(-1); });
 
         const auto last = std::prev(d.end());
-        return std::all_of(d.begin(), last, [](W w) { return w == static_cast<W>(-1); }) && ((*last & mask) == mask);
+        return ((*last & mask) == mask) && std::all_of(d.begin(), last, [](W w) { return w == static_cast<W>(-1); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
         if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
 
         const auto last = std::prev(d.end());
-        return std::any_of(d.begin(), last, [](W w) { return w != 0; }) || ((*last & mask) != 0);
+        return ((*last & mask) != 0) || std::any_of(d.begin(), last, [](W w) { return w != 0; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
