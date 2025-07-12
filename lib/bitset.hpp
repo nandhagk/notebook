@@ -137,29 +137,21 @@ public:
     }
 
     [[gnu::always_inline]] constexpr usize find_first() const {
-        for (usize i = 0; i < block_count; ++i) {
-            const word_type w = word(i);
-            if (w == 0) continue;
-
-            return lowbit(w) + i * word_size;
-        }
+        for (usize i = 0; i < block_count; ++i)
+            if (const word_type w = word(i); w != 0) return lowbit(w) + i * word_size;
 
         return size;
     }
 
     [[gnu::always_inline]] constexpr usize find_next(usize prev) const {
         const usize prev_word = whichword(prev);
-        const word_type prev_mask = maskbit(whichbit(prev));
 
+        const word_type prev_mask = maskbit(whichbit(prev));
         if (const word_type w = word(prev_word) & ~prev_mask & ~(prev_mask - 1); w != 0)
             return lowbit(w) + prev_word * word_size;
 
-        for (usize i = prev_word + 1; i < block_count; ++i) {
-            const word_type w = word(i);
-            if (w == 0) continue;
-
-            return lowbit(w) + i * word_size;
-        }
+        for (usize i = prev_word + 1; i < block_count; ++i)
+            if (const word_type w = word(i); w != 0) return lowbit(w) + i * word_size;
 
         return size;
     }
