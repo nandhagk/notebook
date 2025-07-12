@@ -14,6 +14,7 @@
 #include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
 
+// CONTRACT: Overflow bits will always be zero
 template <usize N, typename W, bool D, typename E>
 class expr {
 public:
@@ -124,12 +125,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        if constexpr (size % word_size == 0)
-            return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
-
-        const auto last = std::prev(cwend());
-        return std::accumulate(cwbegin(), last, popcnt(*last & mask),
-                               [](usize cnt, word_type w) { return cnt + popcnt(w); });
+        return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize find_first() const {
@@ -286,10 +282,16 @@ class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
+    using base_type::mask;
     using base_type::word_size;
 
     const E &lhs;
     const usize wshift, offset, sub_offset;
+
+    [[gnu::always_inline, nodiscard]] constexpr word_type unmasked_word(usize wpos) const {
+        if (wpos == wshift) return lhs.word(0) << offset;
+        return (lhs.word(wpos - wshift) << offset) | (lhs.word(wpos - wshift - 1) >> sub_offset);
+    }
 
 public:
     constexpr shl_expr(const E &e, usize shift)
@@ -299,14 +301,14 @@ public:
         if (wpos < wshift) return 0;
         if (offset == 0) return lhs.word(wpos - wshift);
 
-        if (wpos == wshift) return lhs.word(0) << offset;
-        return (lhs.word(wpos - wshift) << offset) | (lhs.word(wpos - wshift - 1) >> sub_offset);
+        const word_type w = unmasked_word(wpos);
+        return wpos == block_count - 1 ? w & mask : w;
     }
 };
 
 template <usize N, typename W, typename E>
-struct shr_expr : public expr<N, W, true, shl_expr<N, W, E>> {
-    using base_type = expr<N, W, true, shl_expr<N, W, E>>;
+struct shr_expr : public expr<N, W, true, shr_expr<N, W, E>> {
+    using base_type = expr<N, W, true, shr_expr<N, W, E>>;
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
@@ -385,7 +387,7 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
         if constexpr (D)
             std::copy(expr.cwbegin(), expr.cwend(), wbegin());
         else
-            std::copy_backward(expr.cwbegin(), expr.cwend(), wbegin());
+            std::copy_backward(expr.cwbegin(), expr.cwend(), wend());
     }
 
     [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
@@ -574,10 +576,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](word_type w) { return w; });
-
-        const auto last = std::prev(d.end());
-        return (*last & mask) || std::any_of(d.begin(), last, [](word_type w) { return w; });
+        return std::any_of(d.begin(), d.end(), [](word_type w) { return w; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
