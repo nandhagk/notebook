@@ -5,6 +5,7 @@
 #include <array>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <numeric>
 #include <string>
@@ -14,26 +15,52 @@
 
 template <usize N, typename W, bool D, typename E>
 class expr {
-protected:
-    static constexpr usize S = std::numeric_limits<W>::digits;
-    static constexpr usize M = (N + S - 1) / S;
-
 public:
+    static constexpr usize size = N;
+
+    using word_type = W;
+    static constexpr usize word_size = std::numeric_limits<word_type>::digits;
+    static constexpr usize block_count = (size + word_size - 1) / word_size;
+    static constexpr W mask = (static_cast<W>(1) << (size % word_size)) - 1;
+
+    static constexpr bool dir = D;
+
     class const_word_iterator {
     public:
         using self_type = const_word_iterator;
 
         using difference_type = isize;
         using value_type = W;
+        using reference = void;
+        using iterator_category = std::random_access_iterator_tag;
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
-            ++pos;
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator+=(difference_type offset) & {
+            pos += offset;
             return *this;
         }
 
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator-=(difference_type offset) & {
+            return *this += -offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
+            return *this += 1;
+        }
+
         [[gnu::always_inline, nodiscard]] constexpr self_type &operator--() & {
-            --pos;
-            return *this;
+            return *this -= 1;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+            self_type tmp = *this;
+            operator++();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+            self_type tmp = *this;
+            operator--();
+            return tmp;
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
@@ -49,6 +76,14 @@ public:
             return pos < other.pos;
         }
 
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
+            return lhs += offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
+            return lhs -= offset;
+        }
+
     private:
         const_word_iterator(const expr &f, usize p)
             : e(f), pos(p) {}
@@ -58,8 +93,6 @@ public:
 
         friend class expr;
     };
-
-    static constexpr bool dir = D;
 
     [[gnu::always_inline, nodiscard]] constexpr const E &self() const {
         return *static_cast<const E *>(this);
@@ -74,15 +107,20 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
-        return const_word_iterator(*this, M);
+        return const_word_iterator(*this, block_count);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, W w) { return cnt + popcnt(w); });
+        if constexpr (size % word_size == 0)
+            return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, W w) { return cnt + popcnt(w); });
+
+        const auto last = std::prev(cwend());
+        return std::accumulate(cwbegin(), last, 0, [](usize cnt, W w) { return cnt + popcnt(w); }) +
+               popcnt(*last & mask);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
-        return (word(pos / S) >> (pos % S)) & 1;
+        return (word(pos / word_size) >> (pos % word_size)) & 1;
     }
 };
 
@@ -102,18 +140,31 @@ public:
 };
 
 template <usize N, typename W, typename E>
+class not_expr : public expr<N, W, E::dir, not_expr<N, W, E>> {
+    const E &lhs;
+
+public:
+    constexpr not_expr(const E &e)
+        : lhs(e) {}
+
+    [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
+        return ~lhs.word(pos);
+    }
+};
+
+template <usize N, typename W, typename E>
 class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     using base_type = expr<N, W, false, shl_expr<N, W, E>>;
 
-    using base_type::M;
-    using base_type::S;
+    using base_type::block_count;
+    using base_type::word_size;
 
     const E &lhs;
     const usize wshift, offset, sub_offset;
 
 public:
     constexpr shl_expr(const E &e, usize shift)
-        : lhs(e), wshift(shift / S), offset(shift % S), sub_offset(S - offset) {}
+        : lhs(e), wshift(shift / word_size), offset(shift % word_size), sub_offset(word_size - offset) {}
 
     [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
         if (pos < wshift) return 0;
@@ -128,21 +179,25 @@ template <usize N, typename W, typename E>
 struct shr_expr : public expr<N, W, true, shl_expr<N, W, E>> {
     using base_type = expr<N, W, true, shl_expr<N, W, E>>;
 
-    using base_type::M;
-    using base_type::S;
+    using base_type::block_count;
+    using base_type::word_size;
 
     const E &lhs;
     const usize wshift, offset, sub_offset, limit;
 
 public:
     constexpr shr_expr(const E &e, usize shift)
-        : lhs(e), wshift(shift / S), offset(shift % S), sub_offset(S - offset), limit(M - wshift - 1) {}
+        : lhs(e),
+          wshift(shift / word_size),
+          offset(shift % word_size),
+          sub_offset(word_size - offset),
+          limit(block_count - wshift - 1) {}
 
     [[gnu::always_inline, nodiscard]] constexpr W word(usize pos) const {
         if (pos > limit) return 0;
         if (offset == 0) return lhs.word(pos + wshift);
 
-        if (pos == limit) return lhs.word(M - 1) >> offset;
+        if (pos == limit) return lhs.word(block_count - 1) >> offset;
         return (lhs.word(pos + wshift) >> offset) | (lhs.word(pos + wshift + 1) << (sub_offset));
     }
 };
@@ -163,6 +218,11 @@ template <usize N, typename W, typename L, typename R, bool D1, bool D2>
 }
 
 template <usize N, typename W, typename E, bool D>
+[[gnu::always_inline, nodiscard]] constexpr auto operator~(const expr<N, W, D, E> &lhs) {
+    return not_expr<N, W, E>(lhs.self());
+}
+
+template <usize N, typename W, typename E, bool D>
 [[gnu::always_inline, nodiscard]] constexpr auto operator<<(const expr<N, W, D, E> &lhs, usize shift) {
     return shl_expr<N, W, E>(lhs.self(), shift);
 }
@@ -174,12 +234,16 @@ template <usize N, typename W, typename E, bool D>
 
 template <usize N, typename W = u128>
 class bitset : public expr<N, W, true, bitset<N, W>> {
+    static_assert(N > 0, "Can't create empty bitset");
+
     using base_type = expr<N, W, true, bitset<N, W>>;
 
-    using base_type::M;
-    using base_type::S;
+    using base_type::block_count;
+    using base_type::mask;
+    using base_type::size;
+    using base_type::word_size;
 
-    using storage_type = std::array<W, M>;
+    using storage_type = std::array<W, block_count>;
 
     storage_type d{};
 
@@ -238,7 +302,7 @@ public:
     };
 
     [[gnu::always_inline, nodiscard]] constexpr reference operator[](usize pos) {
-        return reference(&d[pos / S], pos % S);
+        return reference(&d[pos / word_size], pos % word_size);
     }
 
     using word_iterator = typename storage_type::iterator;
@@ -302,19 +366,38 @@ public:
     }
 
     [[gnu::always_inline]] constexpr void unset(usize pos) {
-        d[pos / S] &= ~(static_cast<W>(1) << (pos % S));
+        d[pos / word_size] &= ~(static_cast<W>(1) << (pos % word_size));
     }
 
     [[gnu::always_inline]] constexpr void flip(usize pos) {
-        d[pos / S] ^= static_cast<W>(1) << (pos % S);
+        d[pos / word_size] ^= static_cast<W>(1) << (pos % word_size);
     }
 
-    [[gnu::always_inline]] constexpr void reset() {
+    [[gnu::always_inline]] constexpr void set() {
+        std::fill(d.begin(), d.end(), static_cast<W>(-1));
+    }
+
+    [[gnu::always_inline]] constexpr void unset() {
         std::fill(d.begin(), d.end(), static_cast<W>(0));
     }
 
+    [[gnu::always_inline]] constexpr void flip() {
+        *this = ~(*this);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr bool all() const {
+        if constexpr (size % word_size == 0)
+            return std::all_of(d.begin(), d.end(), [](W w) { return w == static_cast<W>(-1); });
+
+        const auto last = std::prev(d.end());
+        return std::all_of(d.begin(), last, [](W w) { return w == static_cast<W>(-1); }) && ((*last & mask) == mask);
+    }
+
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
+        if constexpr (size % word_size == 0) return std::any_of(d.begin(), d.end(), [](W w) { return w != 0; });
+
+        const auto last = std::prev(d.end());
+        return std::any_of(d.begin(), d.end() - 1, [](W w) { return w != 0; }) || ((*last & mask) != 0);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool none() const {
@@ -323,7 +406,7 @@ public:
 
     [[gnu::always_inline]] friend std::istream &operator>>(std::istream &is, bitset &b) {
         std::string s;
-        s.reserve(N);
+        s.reserve(size);
 
         is >> s;
 
@@ -335,7 +418,7 @@ public:
 
 private:
     [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
-        d[pos / S] |= static_cast<W>(val) << (pos % S);
+        d[pos / word_size] |= static_cast<W>(val) << (pos % word_size);
     }
 };
 
