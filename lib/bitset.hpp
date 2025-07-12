@@ -52,7 +52,7 @@ public:
         using iterator_category = std::random_access_iterator_tag;
 
         [[gnu::always_inline, nodiscard]] constexpr self_type &operator+=(difference_type offset) & {
-            pos += offset;
+            wpos += offset;
             return *this;
         }
 
@@ -81,7 +81,7 @@ public:
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
-            return e.word(pos);
+            return e.word(wpos);
         }
 
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
@@ -94,19 +94,19 @@ public:
 
         // WARNING: Comparison of underlying expression is not performed
         [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
-            return pos == other.pos;
+            return wpos == other.wpos;
         }
 
         [[gnu::always_inline, nodiscard]] constexpr bool operator<(const self_type &other) const {
-            return pos < other.pos;
+            return wpos < other.wpos;
         }
 
     private:
         const_word_iterator(const expr &f, usize p)
-            : e(f), pos(p) {}
+            : e(f), wpos(p) {}
 
         const expr &e;
-        usize pos;
+        usize wpos;
 
         friend class expr;
     };
@@ -115,8 +115,8 @@ public:
         return *static_cast<const E *>(this);
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        return self().word(pos);
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        return self().word(wpos);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
@@ -154,8 +154,8 @@ public:
     constexpr binary_expr(const L &l, const R &r)
         : lhs(l), rhs(r) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        return op(lhs.word(pos), rhs.word(pos));
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        return op(lhs.word(wpos), rhs.word(wpos));
     }
 };
 
@@ -170,8 +170,8 @@ public:
     constexpr not_expr(const E &e)
         : lhs(e) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        return ~lhs.word(pos);
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        return ~lhs.word(wpos);
     }
 };
 
@@ -190,12 +190,12 @@ public:
     constexpr shl_expr(const E &e, usize shift)
         : lhs(e), wshift(shift / word_size), offset(shift % word_size), sub_offset(word_size - offset) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        if (pos < wshift) return 0;
-        if (offset == 0) return lhs.word(pos - wshift);
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        if (wpos < wshift) return 0;
+        if (offset == 0) return lhs.word(wpos - wshift);
 
-        if (pos == wshift) return lhs.word(0) << offset;
-        return (lhs.word(pos - wshift) << offset) | (lhs.word(pos - wshift - 1) >> sub_offset);
+        if (wpos == wshift) return lhs.word(0) << offset;
+        return (lhs.word(wpos - wshift) << offset) | (lhs.word(wpos - wshift - 1) >> sub_offset);
     }
 };
 
@@ -218,12 +218,12 @@ public:
           sub_offset(word_size - offset),
           limit(block_count - wshift - 1) {}
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        if (pos > limit) return 0;
-        if (offset == 0) return lhs.word(pos + wshift);
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        if (wpos > limit) return 0;
+        if (offset == 0) return lhs.word(wpos + wshift);
 
-        if (pos == limit) return lhs.word(block_count - 1) >> offset;
-        return (lhs.word(pos + wshift) >> offset) | (lhs.word(pos + wshift + 1) << (sub_offset));
+        if (wpos == limit) return lhs.word(block_count - 1) >> offset;
+        return (lhs.word(wpos + wshift) >> offset) | (lhs.word(wpos + wshift + 1) << (sub_offset));
     }
 };
 
@@ -483,7 +483,7 @@ public:
               typename Allocator = std::allocator<CharT>>
     [[gnu::always_inline, nodiscard]] std::basic_string<CharT, Traits, Allocator>
     to_string(CharT zero = CharT('0'), CharT one = CharT('1')) const {
-        std::basic_string<CharT, Traits, Allocator> s(size, zero);
+        std::basic_string<CharT, Traits, Allocator> s(size, 0);
         for (usize i = 0, j = size; i < size; ++i) s[--j] = test(i) ? one : zero;
 
         return s;
