@@ -411,10 +411,6 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
             std::copy_backward(expr.cwbegin(), expr.cwend(), wend());
     }
 
-    [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
-        d[whichword(pos)] |= static_cast<word_type>(val) << whichbit(pos);
-    }
-
     // WARNING: Assumes that bitset is zeroed beforehand
     template <typename CharT, typename Traits>
     [[gnu::always_inline]] constexpr void from_string(std::basic_string_view<CharT, Traits> str,
@@ -576,6 +572,11 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr word_type &word(usize pos) {
         return d[pos];
+    }
+
+    // WARNING: Assumes that bitset is zeroed beforehand
+    [[gnu::always_inline]] constexpr void set(usize pos, bool val) {
+        d[whichword(pos)] |= static_cast<word_type>(val) << whichbit(pos);
     }
 
     [[gnu::always_inline]] constexpr void set(usize pos) {
