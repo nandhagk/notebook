@@ -280,6 +280,9 @@ class not_expr : public expr<N, W, E::dir, not_expr<N, W, E>> {
     using base_type = expr<N, W, E::dir, not_expr<N, W, E>>;
     using word_type = typename base_type::word_type;
 
+    using base_type::block_count;
+    using base_type::mask;
+
     const E &lhs;
 
 public:
@@ -287,7 +290,8 @@ public:
         : lhs(e) {}
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
-        return ~lhs.word(wpos);
+        const word_type w = ~lhs.word(wpos);
+        return wpos == block_count - 1 ? w & mask : w;
     }
 };
 
