@@ -569,10 +569,10 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool all() const {
-        if constexpr (size % word_size == 0) return std::all_of(d.begin(), d.end(), [](word_type w) { return !(~w); });
+        if constexpr (size % word_size == 0) return std::none_of(d.begin(), d.end(), [](word_type w) { return ~w; });
 
         const auto last = std::prev(d.end());
-        return ((*last & mask) == mask) && std::all_of(d.begin(), last, [](word_type w) { return !(~w); });
+        return ((*last & mask) == mask) && std::none_of(d.begin(), last, [](word_type w) { return ~w; });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool any() const {
