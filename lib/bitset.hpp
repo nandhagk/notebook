@@ -282,6 +282,8 @@ class not_expr : public expr<N, W, E::dir, not_expr<N, W, E>> {
 
     using base_type::block_count;
     using base_type::mask;
+    using base_type::size;
+    using base_type::word_size;
 
     const E &lhs;
 
@@ -291,6 +293,8 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
         const word_type w = ~lhs.word(wpos);
+
+        if constexpr (size % word_size == 0) return w;
         return wpos == block_count - 1 ? w & mask : w;
     }
 };
@@ -302,6 +306,7 @@ class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
 
     using base_type::block_count;
     using base_type::mask;
+    using base_type::size;
     using base_type::word_size;
 
     const E &lhs;
@@ -322,6 +327,8 @@ public:
         if (wpos < wshift) return 0;
 
         const word_type w = unmasked_word(wpos);
+
+        if constexpr (size % word_size == 0) return w;
         return wpos == block_count - 1 ? w & mask : w;
     }
 };
