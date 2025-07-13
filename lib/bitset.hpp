@@ -591,7 +591,12 @@ public:
     }
 
     [[gnu::always_inline]] constexpr void set() {
-        std::fill(d.begin(), d.end(), static_cast<word_type>(-1));
+        if constexpr (size % word_size == 0) return std::fill(d.begin(), d.end(), static_cast<word_type>(-1));
+
+        auto last = std::prev(d.end());
+        std::fill(d.begin(), last, static_cast<word_type>(-1));
+
+        *last = mask;
     }
 
     [[gnu::always_inline]] constexpr void unset() {
