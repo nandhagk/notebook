@@ -28,6 +28,7 @@ public:
     static constexpr usize block_count = (size + word_size - 1) / word_size;
 
     static constexpr bool dir = D;
+    using expr_type = E;
 
     [[gnu::always_inline, nodiscard]] static constexpr usize whichword(usize pos) {
         return pos / word_size;
@@ -41,10 +42,10 @@ public:
         return static_cast<word_type>(1) << whichbit(pos);
     }
 
-    static constexpr W mask = maskbit(size) - 1;
+    static constexpr word_type mask = maskbit(size) - 1;
 
-    [[gnu::always_inline, nodiscard]] constexpr const E &self() const {
-        return *static_cast<const E *>(this);
+    [[gnu::always_inline, nodiscard]] constexpr const expr_type &self() const {
+        return *static_cast<const expr_type *>(this);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
@@ -116,12 +117,22 @@ public:
         friend class expr;
     };
 
+    using const_reverse_word_iterator = std::reverse_iterator<const_word_iterator>;
+
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
         return const_word_iterator(*this, 0);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
         return const_word_iterator(*this, block_count);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator crwbegin() const {
+        return const_reverse_word_iterator(cwend());
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator crwend() const {
+        return const_reverse_word_iterator(cwbegin());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
@@ -239,6 +250,10 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
         return (word(whichword(pos)) >> (whichbit(pos))) & 1;
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr bool test(usize pos) const {
+        return operator[](pos);
     }
 };
 
@@ -375,6 +390,7 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     using base_type::word_size;
 
     using base_type::maskbit;
+    using base_type::test;
     using base_type::whichbit;
     using base_type::whichword;
 
@@ -410,8 +426,6 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     }
 
 public:
-    using base_type::operator[];
-
     constexpr bitset() = default;
     constexpr bitset(const bitset &other) = default;
     constexpr bitset(bitset &&other) = default;
@@ -468,6 +482,9 @@ public:
     using word_iterator = typename storage_type::iterator;
     using const_word_iterator = typename storage_type::const_iterator;
 
+    using reverse_word_iterator = typename storage_type::reverse_iterator;
+    using const_reverse_word_iterator = typename storage_type::const_reverse_iterator;
+
     [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() {
         return d.begin();
     }
@@ -482,6 +499,22 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
         return d.cend();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr reverse_word_iterator rwbegin() {
+        return d.rbegin();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr reverse_word_iterator rwend() {
+        return d.rend();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_word_iterator crwbegin() const {
+        return d.crbegin();
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_word_iterator crwend() const {
+        return d.crend();
     }
 
     template <typename E, bool D>
@@ -538,10 +571,6 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr word_type &word(usize pos) {
         return d[pos];
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool test(usize pos) const {
-        return operator[](pos);
     }
 
     [[gnu::always_inline]] constexpr void set(usize pos) {
@@ -609,5 +638,12 @@ public:
         return os;
     }
 };
+
+namespace std {
+template <usize N, typename W>
+constexpr void swap(::bitset<N, W> &a, ::bitset<N, W> &b) noexcept {
+    a.swap(b);
+}
+} // namespace std
 
 #endif // LIB_BITSET_HPP
