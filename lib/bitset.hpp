@@ -308,6 +308,8 @@ class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     const usize wshift, offset, sub_offset;
 
     [[gnu::always_inline, nodiscard]] constexpr word_type unmasked_word(usize wpos) const {
+        if (offset == 0) return lhs.word(wpos - wshift);
+
         if (wpos == wshift) return lhs.word(0) << offset;
         return (lhs.word(wpos - wshift) << offset) | (lhs.word(wpos - wshift - 1) >> sub_offset);
     }
@@ -318,7 +320,6 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
         if (wpos < wshift) return 0;
-        if (offset == 0) return lhs.word(wpos - wshift);
 
         const word_type w = unmasked_word(wpos);
         return wpos == block_count - 1 ? w & mask : w;
