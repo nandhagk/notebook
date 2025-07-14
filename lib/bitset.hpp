@@ -61,20 +61,20 @@ public:
         using reference = void;
         using iterator_category = std::random_access_iterator_tag;
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator+=(difference_type offset) & {
+        [[gnu::always_inline]] constexpr self_type &operator+=(difference_type offset) & {
             wpos += offset;
             return *this;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator-=(difference_type offset) & {
+        [[gnu::always_inline]] constexpr self_type &operator-=(difference_type offset) & {
             return *this += -offset;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator++() & {
+        [[gnu::always_inline]] constexpr self_type &operator++() & {
             return *this += 1;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type &operator--() & {
+        [[gnu::always_inline]] constexpr self_type &operator--() & {
             return *this -= 1;
         }
 
@@ -91,7 +91,7 @@ public:
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
-            return e.word(wpos);
+            return expr_ptr->word(wpos);
         }
 
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
@@ -108,10 +108,10 @@ public:
         }
 
     private:
-        const_word_iterator(const expr &f, usize p)
-            : e(f), wpos(p) {}
+        const_word_iterator(expr *const e_ptr, usize p)
+            : expr_ptr(e_ptr), wpos(p) {}
 
-        const expr &e;
+        expr *const expr_ptr;
         usize wpos;
 
         friend class expr;
@@ -120,23 +120,110 @@ public:
     using const_reverse_word_iterator = std::reverse_iterator<const_word_iterator>;
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwbegin() const {
-        return const_word_iterator(*this, 0);
+        return const_word_iterator(this, 0);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
-        return const_word_iterator(*this, block_count);
+        return const_word_iterator(this, block_count);
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator crwbegin() const {
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_word_iterator crwbegin() const {
         return const_reverse_word_iterator(cwend());
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr const_word_iterator crwend() const {
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_word_iterator crwend() const {
         return const_reverse_word_iterator(cwbegin());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
+        return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w); });
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
+        return (word(whichword(pos)) >> (whichbit(pos))) & 1;
+    }
+
+    class const_iterator {
+    public:
+        using self_type = const_iterator;
+
+        using difference_type = isize;
+        using value_type = bool;
+        using reference = void;
+        using iterator_category = std::random_access_iterator_tag;
+
+        [[gnu::always_inline]] constexpr self_type &operator+=(difference_type offset) & {
+            pos += offset;
+            return *this;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator-=(difference_type offset) & {
+            return *this += -offset;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator++() & {
+            return *this += 1;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator--() & {
+            return *this -= 1;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+            self_type tmp = *this;
+            operator++();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+            self_type tmp = *this;
+            operator--();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
+            return expr_ptr->operator[](pos);
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
+            return lhs += offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
+            return lhs -= offset;
+        }
+
+        // WARNING: Comparison of underlying expression is not performed
+        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
+            return pos == other.pos;
+        }
+
+    private:
+        const_iterator(expr *const e_ptr, usize p)
+            : expr_ptr(e_ptr), pos(p) {}
+
+        expr *const expr_ptr;
+        usize pos;
+
+        friend class expr;
+    };
+
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+    [[gnu::always_inline, nodiscard]] constexpr const_iterator cbegin() const {
+        return const_iterator(this, 0);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_iterator cend() const {
+        return const_iterator(this, size);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_iterator crbegin() const {
+        return const_reverse_iterator(cend());
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr const_reverse_iterator crend() const {
+        return const_word_iterator(cbegin());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize find_first() const {
@@ -190,12 +277,12 @@ public:
         using iterator_category = std::bidirectional_iterator_tag;
 
         [[gnu::always_inline]] constexpr self_type &operator++() & {
-            pos = e.find_next(pos);
+            pos = expr_ptr->find_next(pos);
             return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator--() & {
-            pos = e.find_prev(pos);
+            pos = expr_ptr->find_prev(pos);
             return *this;
         }
 
@@ -221,10 +308,10 @@ public:
         }
 
     private:
-        const_ones_iterator(const expr &f, usize p)
-            : e(f), pos(p) {}
+        const_ones_iterator(expr *const e_ptr, usize p)
+            : expr_ptr(e_ptr), pos(p) {}
 
-        const expr &e;
+        expr *const expr_ptr;
         usize pos;
 
         friend class expr;
@@ -233,11 +320,11 @@ public:
     using const_reverse_ones_iterator = std::reverse_iterator<const_ones_iterator>;
 
     [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator cobegin() const {
-        return const_ones_iterator(*this, find_first());
+        return const_ones_iterator(this, find_first());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_ones_iterator coend() const {
-        return const_ones_iterator(*this, size);
+        return const_ones_iterator(this, size);
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_reverse_ones_iterator crobegin() const {
@@ -246,14 +333,6 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr const_reverse_ones_iterator croend() const {
         return const_reverse_ones_iterator(cobegin());
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
-        return (word(whichword(pos)) >> (whichbit(pos))) & 1;
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool test(usize pos) const {
-        return operator[](pos);
     }
 };
 
@@ -402,7 +481,6 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     using base_type::word_size;
 
     using base_type::maskbit;
-    using base_type::test;
     using base_type::whichbit;
     using base_type::whichword;
 
@@ -483,15 +561,100 @@ public:
         friend class bitset;
     };
 
+    using base_type::operator[];
+
     [[gnu::always_inline, nodiscard]] constexpr reference operator[](usize pos) {
         return reference(&d[whichword(pos)], whichbit(pos));
     }
+
+    class iterator {
+    public:
+        using self_type = iterator;
+
+        using difference_type = isize;
+        using value_type = bitset<N, W>::reference;
+        using reference = void;
+        using iterator_category = std::random_access_iterator_tag;
+
+        [[gnu::always_inline]] constexpr self_type &operator+=(difference_type offset) & {
+            pos += offset;
+            return *this;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator-=(difference_type offset) & {
+            return *this += -offset;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator++() & {
+            return *this += 1;
+        }
+
+        [[gnu::always_inline]] constexpr self_type &operator--() & {
+            return *this -= 1;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+            self_type tmp = *this;
+            operator++();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+            self_type tmp = *this;
+            operator--();
+            return tmp;
+        }
+
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
+            return bitset_ptr->operator[](pos);
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
+            return lhs += offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
+            return lhs -= offset;
+        }
+
+        // WARNING: Comparison of underlying expression is not performed
+        [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
+            return pos == other.pos;
+        }
+
+    private:
+        iterator(bitset *const b_ptr, usize p)
+            : bitset_ptr(b_ptr), pos(p) {}
+
+        bitset *const bitset_ptr;
+        usize pos;
+
+        friend class bitset;
+    };
+
+    using reverse_iterator = std::reverse_iterator<iterator>;
 
     using word_iterator = typename storage_type::iterator;
     using const_word_iterator = typename storage_type::const_iterator;
 
     using reverse_word_iterator = typename storage_type::reverse_iterator;
     using const_reverse_word_iterator = typename storage_type::const_reverse_iterator;
+
+    [[gnu::always_inline, nodiscard]] constexpr iterator begin() {
+        return iterator(this, 0);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr iterator end() {
+        return iterator(this, size);
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr reverse_iterator rbegin() {
+        return reverse_iterator(end());
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr reverse_iterator rend() {
+        return reverse_iterator(begin());
+    }
 
     [[gnu::always_inline, nodiscard]] constexpr word_iterator wbegin() {
         return d.begin();
@@ -635,7 +798,7 @@ public:
     [[gnu::always_inline, nodiscard]] std::basic_string<CharT, Traits, Allocator>
     to_string(CharT zero = CharT('0'), CharT one = CharT('1')) const {
         std::basic_string<CharT, Traits, Allocator> s(size, 0);
-        for (usize i = 0, j = size; i < size; ++i) s[--j] = test(i) ? one : zero;
+        for (usize i = 0, j = size; i < size; ++i) s[--j] = operator[](i) ? one : zero;
 
         return s;
     }
