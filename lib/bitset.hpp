@@ -146,8 +146,7 @@ public:
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
         // Slower ?!
-        // return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w);
-        // });
+        // std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w); });
 
         return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
