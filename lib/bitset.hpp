@@ -94,6 +94,10 @@ public:
             return expr_ptr->word(wpos);
         }
 
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
+            return expr_ptr->word(wpos + n);
+        }
+
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
             return lhs += offset;
         }
@@ -102,16 +106,21 @@ public:
             return lhs -= offset;
         }
 
+        [[gnu::always_inline, nodiscard]] friend constexpr difference_type operator-(const self_type &lhs,
+                                                                                     const self_type &rhs) {
+            return static_cast<difference_type>(lhs.wpos) - rhs.wpos;
+        }
+
         // WARNING: Comparison of underlying expression is not performed
         [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
             return wpos == other.wpos;
         }
 
     private:
-        const_word_iterator(expr *const e_ptr, usize p)
+        const_word_iterator(const expr *const e_ptr, usize p)
             : expr_ptr(e_ptr), wpos(p) {}
 
-        expr *const expr_ptr;
+        const expr *const expr_ptr;
         usize wpos;
 
         friend class expr;
@@ -136,7 +145,11 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w); });
+        // Slower ?!
+        // return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w);
+        // });
+
+        return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -185,6 +198,10 @@ public:
             return expr_ptr->operator[](pos);
         }
 
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
+            return expr_ptr->operator[](pos + n);
+        }
+
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
             return lhs += offset;
         }
@@ -193,16 +210,21 @@ public:
             return lhs -= offset;
         }
 
+        [[gnu::always_inline, nodiscard]] friend constexpr difference_type operator-(const self_type &lhs,
+                                                                                     const self_type &rhs) {
+            return static_cast<difference_type>(lhs.pos) - rhs.pos;
+        }
+
         // WARNING: Comparison of underlying expression is not performed
         [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
             return pos == other.pos;
         }
 
     private:
-        const_iterator(expr *const e_ptr, usize p)
+        const_iterator(const expr *const e_ptr, usize p)
             : expr_ptr(e_ptr), pos(p) {}
 
-        expr *const expr_ptr;
+        const expr *const expr_ptr;
         usize pos;
 
         friend class expr;
@@ -308,10 +330,10 @@ public:
         }
 
     private:
-        const_ones_iterator(expr *const e_ptr, usize p)
+        const_ones_iterator(const expr *const e_ptr, usize p)
             : expr_ptr(e_ptr), pos(p) {}
 
-        expr *const expr_ptr;
+        const expr *const expr_ptr;
         usize pos;
 
         friend class expr;
@@ -609,12 +631,21 @@ public:
             return bitset_ptr->operator[](pos);
         }
 
+        [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
+            return bitset_ptr->operator[](pos + n);
+        }
+
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator+(self_type lhs, difference_type offset) {
             return lhs += offset;
         }
 
         [[gnu::always_inline, nodiscard]] friend constexpr self_type operator-(self_type lhs, difference_type offset) {
             return lhs -= offset;
+        }
+
+        [[gnu::always_inline, nodiscard]] friend constexpr difference_type operator-(const self_type &lhs,
+                                                                                     const self_type &rhs) {
+            return static_cast<difference_type>(lhs.pos) - rhs.pos;
         }
 
         // WARNING: Comparison of underlying bitset is not performed
