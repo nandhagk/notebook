@@ -78,13 +78,13 @@ public:
             return *this -= 1;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
             self_type tmp = *this;
             operator++();
             return tmp;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(i32) & {
             self_type tmp = *this;
             operator--();
             return tmp;
@@ -169,13 +169,13 @@ public:
             return *this -= 1;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
             self_type tmp = *this;
             operator++();
             return tmp;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(i32) & {
             self_type tmp = *this;
             operator--();
             return tmp;
@@ -286,13 +286,13 @@ public:
             return *this;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
             self_type tmp = *this;
             operator++();
             return tmp;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(i32) & {
             self_type tmp = *this;
             operator--();
             return tmp;
@@ -593,13 +593,13 @@ public:
             return *this -= 1;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
             self_type tmp = *this;
             operator++();
             return tmp;
         }
 
-        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(int) & {
+        [[gnu::always_inline, nodiscard]] constexpr self_type operator--(i32) & {
             self_type tmp = *this;
             operator--();
             return tmp;
@@ -617,7 +617,7 @@ public:
             return lhs -= offset;
         }
 
-        // WARNING: Comparison of underlying expression is not performed
+        // WARNING: Comparison of underlying bitset is not performed
         [[gnu::always_inline, nodiscard]] constexpr bool operator==(const self_type &other) const {
             return pos == other.pos;
         }
