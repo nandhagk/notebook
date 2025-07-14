@@ -223,7 +223,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_reverse_iterator crend() const {
-        return const_word_iterator(cbegin());
+        return const_reverse_iterator(cbegin());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize find_first() const {
