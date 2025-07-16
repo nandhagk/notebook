@@ -15,11 +15,11 @@
 #include <lib/prelude.hpp>
 
 // CONTRACT: Overflow bits will always be zero
-template <usize N, typename W, bool D, typename E>
+template <usize N, typename WordT, bool D, typename ExprT>
 class expr {
 public:
-    using word_type = W;
-    using expr_type = E;
+    using word_type = WordT;
+    using expr_type = ExprT;
 
     [[gnu::always_inline, nodiscard]] static constexpr usize size() {
         return N;
@@ -53,6 +53,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] static constexpr word_type mask() {
+        static_assert(size() % word_size());
         return maskbit(size()) - 1;
     }
 
@@ -157,10 +158,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize count() const {
-        // Slower ?!
         return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w); });
-
-        // return std::accumulate(cwbegin(), cwend(), 0, [](usize cnt, word_type w) { return cnt + popcnt(w); });
     }
 
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
@@ -369,9 +367,9 @@ public:
     }
 };
 
-template <usize N, typename W, typename Op, typename L, typename R>
-class binary_expr : public expr<N, W, R::dir(), binary_expr<N, W, Op, L, R>> {
-    using base_type = expr<N, W, R::dir(), binary_expr<N, W, Op, L, R>>;
+template <usize N, typename WordT, typename Op, typename L, typename R>
+class binary_expr : public expr<N, WordT, R::dir(), binary_expr<N, WordT, Op, L, R>> {
+    using base_type = expr<N, WordT, R::dir(), binary_expr<N, WordT, Op, L, R>>;
     using word_type = typename base_type::word_type;
 
     const L &lhs;
@@ -387,9 +385,9 @@ public:
     }
 };
 
-template <usize N, typename W, typename E>
-class not_expr : public expr<N, W, E::dir(), not_expr<N, W, E>> {
-    using base_type = expr<N, W, E::dir(), not_expr<N, W, E>>;
+template <usize N, typename WordT, typename ExprT>
+class not_expr : public expr<N, WordT, ExprT::dir(), not_expr<N, WordT, ExprT>> {
+    using base_type = expr<N, WordT, ExprT::dir(), not_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
@@ -397,10 +395,10 @@ class not_expr : public expr<N, W, E::dir(), not_expr<N, W, E>> {
     using base_type::size;
     using base_type::word_size;
 
-    const E &lhs;
+    const ExprT &lhs;
 
 public:
-    constexpr not_expr(const E &e)
+    constexpr not_expr(const ExprT &e)
         : lhs(e) {}
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
@@ -411,9 +409,9 @@ public:
     }
 };
 
-template <usize N, typename W, typename E>
-class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
-    using base_type = expr<N, W, false, shl_expr<N, W, E>>;
+template <usize N, typename WordT, typename ExprT>
+class shl_expr : public expr<N, WordT, false, shl_expr<N, WordT, ExprT>> {
+    using base_type = expr<N, WordT, false, shl_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
@@ -421,7 +419,7 @@ class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     using base_type::size;
     using base_type::word_size;
 
-    const E &lhs;
+    const ExprT &lhs;
     const usize wshift, offset, sub_offset;
 
     [[gnu::always_inline, nodiscard]] constexpr word_type unmasked_word(usize wpos) const {
@@ -432,7 +430,7 @@ class shl_expr : public expr<N, W, false, shl_expr<N, W, E>> {
     }
 
 public:
-    constexpr shl_expr(const E &e, usize shift)
+    constexpr shl_expr(const ExprT &e, usize shift)
         : lhs(e), wshift(shift / word_size()), offset(shift % word_size()), sub_offset(word_size() - offset) {}
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
@@ -445,19 +443,19 @@ public:
     }
 };
 
-template <usize N, typename W, typename E>
-struct shr_expr : public expr<N, W, true, shr_expr<N, W, E>> {
-    using base_type = expr<N, W, true, shr_expr<N, W, E>>;
+template <usize N, typename WordT, typename ExprT>
+struct shr_expr : public expr<N, WordT, true, shr_expr<N, WordT, ExprT>> {
+    using base_type = expr<N, WordT, true, shr_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
     using base_type::word_size;
 
-    const E &lhs;
+    const ExprT &lhs;
     const usize wshift, offset, sub_offset, limit;
 
 public:
-    constexpr shr_expr(const E &e, usize shift)
+    constexpr shr_expr(const ExprT &e, usize shift)
         : lhs(e),
           wshift(shift / word_size()),
           offset(shift % word_size()),
@@ -473,39 +471,42 @@ public:
     }
 };
 
-template <usize N, typename W, typename L, typename R, bool D1, bool D2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator|(const expr<N, W, D1, L> &lhs, const expr<N, W, D2, R> &rhs) {
-    return binary_expr<N, W, std::bit_or<W>, L, R>(lhs.self(), rhs.self());
+template <usize N, typename WordT, typename L, typename R, bool D1, bool D2>
+[[gnu::always_inline, nodiscard]] constexpr auto operator|(const expr<N, WordT, D1, L> &lhs,
+                                                           const expr<N, WordT, D2, R> &rhs) {
+    return binary_expr<N, WordT, std::bit_or<WordT>, L, R>(lhs.self(), rhs.self());
 }
 
-template <usize N, typename W, typename L, typename R, bool D1, bool D2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator&(const expr<N, W, D1, L> &lhs, const expr<N, W, D2, R> &rhs) {
-    return binary_expr<N, W, std::bit_and<W>, L, R>(lhs.self(), rhs.self());
+template <usize N, typename WordT, typename L, typename R, bool D1, bool D2>
+[[gnu::always_inline, nodiscard]] constexpr auto operator&(const expr<N, WordT, D1, L> &lhs,
+                                                           const expr<N, WordT, D2, R> &rhs) {
+    return binary_expr<N, WordT, std::bit_and<WordT>, L, R>(lhs.self(), rhs.self());
 }
 
-template <usize N, typename W, typename L, typename R, bool D1, bool D2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator^(const expr<N, W, D1, L> &lhs, const expr<N, W, D2, R> &rhs) {
-    return binary_expr<N, W, std::bit_xor<W>, L, R>(lhs.self(), rhs.self());
+template <usize N, typename WordT, typename L, typename R, bool D1, bool D2>
+[[gnu::always_inline, nodiscard]] constexpr auto operator^(const expr<N, WordT, D1, L> &lhs,
+                                                           const expr<N, WordT, D2, R> &rhs) {
+    return binary_expr<N, WordT, std::bit_xor<WordT>, L, R>(lhs.self(), rhs.self());
 }
 
-template <usize N, typename W, typename E, bool D>
-[[gnu::always_inline, nodiscard]] constexpr auto operator~(const expr<N, W, D, E> &lhs) {
-    return not_expr<N, W, E>(lhs.self());
+template <usize N, typename WordT, typename ExprT, bool D>
+[[gnu::always_inline, nodiscard]] constexpr auto operator~(const expr<N, WordT, D, ExprT> &lhs) {
+    return not_expr<N, WordT, ExprT>(lhs.self());
 }
 
-template <usize N, typename W, typename E, bool D>
-[[gnu::always_inline, nodiscard]] constexpr auto operator<<(const expr<N, W, D, E> &lhs, usize shift) {
-    return shl_expr<N, W, E>(lhs.self(), shift);
+template <usize N, typename WordT, typename ExprT, bool D>
+[[gnu::always_inline, nodiscard]] constexpr auto operator<<(const expr<N, WordT, D, ExprT> &lhs, usize shift) {
+    return shl_expr<N, WordT, ExprT>(lhs.self(), shift);
 }
 
-template <usize N, typename W, typename E, bool D>
-[[gnu::always_inline, nodiscard]] constexpr auto operator>>(const expr<N, W, D, E> &lhs, usize shift) {
-    return shr_expr<N, W, E>(lhs.self(), shift);
+template <usize N, typename WordT, typename ExprT, bool D>
+[[gnu::always_inline, nodiscard]] constexpr auto operator>>(const expr<N, WordT, D, ExprT> &lhs, usize shift) {
+    return shr_expr<N, WordT, ExprT>(lhs.self(), shift);
 }
 
-template <usize N, typename W = u128>
-class bitset : public expr<N, W, true, bitset<N, W>> {
-    using base_type = expr<N, W, true, bitset<N, W>>;
+template <usize N, typename WordT = u64>
+class bitset : public expr<N, WordT, true, bitset<N, WordT>> {
+    using base_type = expr<N, WordT, true, bitset<N, WordT>>;
     using word_type = typename base_type::word_type;
 
     using base_type::block_count;
@@ -520,8 +521,8 @@ class bitset : public expr<N, W, true, bitset<N, W>> {
     using storage_type = std::array<word_type, block_count()>;
     storage_type d{};
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] constexpr void materialize(const expr<N, W, D, E> &expr) {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] constexpr void materialize(const expr<N, WordT, D, ExprT> &expr) {
         if constexpr (D)
             std::copy(expr.cwbegin(), expr.cwend(), wbegin());
         else
@@ -604,7 +605,7 @@ public:
         using self_type = iterator;
 
         using difference_type = isize;
-        using value_type = bitset<N, W>::reference;
+        using value_type = bitset<N, WordT>::reference;
         using reference = void;
         using iterator_category = std::random_access_iterator_tag;
 
@@ -729,8 +730,8 @@ public:
         return d.crend();
     }
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] explicit constexpr bitset(const expr<N, W, D, E> &expr) {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] explicit constexpr bitset(const expr<N, WordT, D, ExprT> &expr) {
         materialize(expr);
     }
 
@@ -740,8 +741,8 @@ public:
         from_string(str, zero, one);
     }
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] constexpr bitset &operator=(const expr<N, W, D, E> &expr) {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] constexpr bitset &operator=(const expr<N, WordT, D, ExprT> &expr) {
         materialize(expr);
         return *this;
     }
@@ -750,18 +751,18 @@ public:
         std::swap(d, other.d);
     }
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] constexpr bitset &operator|=(const expr<N, W, D, E> &expr) & {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] constexpr bitset &operator|=(const expr<N, WordT, D, ExprT> &expr) & {
         return *this = *this | expr;
     }
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] constexpr bitset &operator&=(const expr<N, W, D, E> &expr) & {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] constexpr bitset &operator&=(const expr<N, WordT, D, ExprT> &expr) & {
         return *this = *this & expr;
     }
 
-    template <typename E, bool D>
-    [[gnu::always_inline]] constexpr bitset &operator^=(const expr<N, W, D, E> &expr) & {
+    template <typename ExprT, bool D>
+    [[gnu::always_inline]] constexpr bitset &operator^=(const expr<N, WordT, D, ExprT> &expr) & {
         return *this = *this ^ expr;
     }
 
@@ -777,12 +778,8 @@ public:
         return *this = *this >> shift;
     }
 
-    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize pos) const {
-        return d[pos];
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr word_type &word(usize pos) {
-        return d[pos];
+    [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
+        return d[wpos];
     }
 
     // WARNING: Assumes that bitset is zeroed beforehand
@@ -863,8 +860,8 @@ public:
 };
 
 namespace std {
-template <usize N, typename W>
-constexpr void swap(::bitset<N, W> &a, ::bitset<N, W> &b) noexcept {
+template <usize N, typename WordT>
+constexpr void swap(::bitset<N, WordT> &a, ::bitset<N, WordT> &b) noexcept {
     a.swap(b);
 }
 } // namespace std
