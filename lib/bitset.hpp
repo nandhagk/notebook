@@ -29,7 +29,7 @@ public:
         return std::numeric_limits<word_type>::digits;
     }
 
-    [[gnu::always_inline, nodiscard]] static constexpr usize block_count() {
+    [[gnu::always_inline, nodiscard]] static constexpr usize word_count() {
         return (size() + word_size() - 1) / word_size();
     }
 
@@ -146,7 +146,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_word_iterator cwend() const {
-        return const_word_iterator(this, block_count());
+        return const_word_iterator(this, word_count());
     }
 
     [[gnu::always_inline, nodiscard]] constexpr const_reverse_word_iterator crwbegin() const {
@@ -258,7 +258,7 @@ public:
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize find_first() const {
-        for (usize wpos = 0; wpos < block_count(); ++wpos)
+        for (usize wpos = 0; wpos < word_count(); ++wpos)
             if (const word_type w = word(wpos); w != 0) return lowbit(w) + wpos * word_size();
 
         return size();
@@ -271,14 +271,14 @@ public:
         if (const word_type w = word(prev_word) & ~prev_mask & ~(prev_mask - 1); w != 0)
             return lowbit(w) + prev_word * word_size();
 
-        for (usize wpos = prev_word + 1; wpos < block_count(); ++wpos)
+        for (usize wpos = prev_word + 1; wpos < word_count(); ++wpos)
             if (const word_type w = word(wpos); w != 0) return lowbit(w) + wpos * word_size();
 
         return size();
     }
 
     [[gnu::always_inline, nodiscard]] constexpr usize find_last() const {
-        for (usize wpos = block_count(); wpos-- > 0;)
+        for (usize wpos = word_count(); wpos-- > 0;)
             if (const word_type w = word(wpos); w != 0) return topbit(w) + wpos * word_size();
 
         return -1;
@@ -390,9 +390,9 @@ class not_expr : public expr<N, WordT, ExprT::dir(), not_expr<N, WordT, ExprT>> 
     using base_type = expr<N, WordT, ExprT::dir(), not_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
-    using base_type::block_count;
     using base_type::mask;
     using base_type::size;
+    using base_type::word_count;
     using base_type::word_size;
 
     const ExprT &lhs;
@@ -405,7 +405,7 @@ public:
         const word_type w = ~lhs.word(wpos);
 
         if constexpr (size() % word_size() == 0) return w;
-        return wpos == block_count() - 1 ? w & mask() : w;
+        return wpos == word_count() - 1 ? w & mask() : w;
     }
 };
 
@@ -414,9 +414,9 @@ class shl_expr : public expr<N, WordT, false, shl_expr<N, WordT, ExprT>> {
     using base_type = expr<N, WordT, false, shl_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
-    using base_type::block_count;
     using base_type::mask;
     using base_type::size;
+    using base_type::word_count;
     using base_type::word_size;
 
     const ExprT &lhs;
@@ -439,7 +439,7 @@ public:
         const word_type w = unmasked_word(wpos);
 
         if constexpr (size() % word_size() == 0) return w;
-        return wpos == block_count() - 1 ? w & mask() : w;
+        return wpos == word_count() - 1 ? w & mask() : w;
     }
 };
 
@@ -448,7 +448,7 @@ struct shr_expr : public expr<N, WordT, true, shr_expr<N, WordT, ExprT>> {
     using base_type = expr<N, WordT, true, shr_expr<N, WordT, ExprT>>;
     using word_type = typename base_type::word_type;
 
-    using base_type::block_count;
+    using base_type::word_count;
     using base_type::word_size;
 
     const ExprT &lhs;
@@ -460,13 +460,13 @@ public:
           wshift(shift / word_size()),
           offset(shift % word_size()),
           sub_offset(word_size() - offset),
-          limit(block_count() - wshift - 1) {}
+          limit(word_count() - wshift - 1) {}
 
     [[gnu::always_inline, nodiscard]] constexpr word_type word(usize wpos) const {
         if (wpos > limit) return 0;
         if (offset == 0) return lhs.word(wpos + wshift);
 
-        if (wpos == limit) return lhs.word(block_count - 1) >> offset;
+        if (wpos == limit) return lhs.word(word_count - 1) >> offset;
         return (lhs.word(wpos + wshift) >> offset) | (lhs.word(wpos + wshift + 1) << (sub_offset));
     }
 };
@@ -509,16 +509,16 @@ class bitset : public expr<N, WordT, true, bitset<N, WordT>> {
     using base_type = expr<N, WordT, true, bitset<N, WordT>>;
     using word_type = typename base_type::word_type;
 
-    using base_type::block_count;
     using base_type::mask;
     using base_type::size;
+    using base_type::word_count;
     using base_type::word_size;
 
     using base_type::maskbit;
     using base_type::whichbit;
     using base_type::whichword;
 
-    using storage_type = std::array<word_type, block_count()>;
+    using storage_type = std::array<word_type, word_count()>;
     storage_type d{};
 
     template <typename ExprT, bool D>
