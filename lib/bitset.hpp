@@ -80,15 +80,18 @@ public:
         }
 
         [[gnu::always_inline]] constexpr self_type &operator-=(difference_type n) & {
-            return *this += -n;
+            wpos -= n;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator++() & {
-            return *this += 1;
+            ++wpos;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator--() & {
-            return *this -= 1;
+            --wpos;
+            return *this;
         }
 
         [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
@@ -104,7 +107,7 @@ public:
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
-            return expr_ptr->word(wpos);
+            return operator[](0);
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
@@ -180,15 +183,18 @@ public:
         }
 
         [[gnu::always_inline]] constexpr self_type &operator-=(difference_type n) & {
-            return *this += -n;
+            pos -= n;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator++() & {
-            return *this += 1;
+            ++pos;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator--() & {
-            return *this -= 1;
+            --pos;
+            return *this;
         }
 
         [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
@@ -204,7 +210,7 @@ public:
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
-            return expr_ptr->operator[](pos);
+            return operator[](0);
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
@@ -615,15 +621,18 @@ public:
         }
 
         [[gnu::always_inline]] constexpr self_type &operator-=(difference_type n) & {
-            return *this += -n;
+            pos -= n;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator++() & {
-            return *this += 1;
+            ++pos;
+            return *this;
         }
 
         [[gnu::always_inline]] constexpr self_type &operator--() & {
-            return *this -= 1;
+            --pos;
+            return *this;
         }
 
         [[gnu::always_inline, nodiscard]] constexpr self_type operator++(i32) & {
@@ -639,7 +648,7 @@ public:
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator*() const {
-            return bitset_ptr->operator[](pos);
+            return operator[](0);
         }
 
         [[gnu::always_inline, nodiscard]] constexpr value_type operator[](difference_type n) const {
