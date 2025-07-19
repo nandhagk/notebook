@@ -1,10 +1,10 @@
-#include <cstdint>
 #ifndef LIB_BITSET_HPP
 #define LIB_BITSET_HPP 1
 
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <iterator>
