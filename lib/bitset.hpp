@@ -171,6 +171,21 @@ public:
         return std::transform_reduce(cwbegin(), cwend(), 0, std::plus<usize>{}, [](word_type w) { return popcnt(w); });
     }
 
+    [[gnu::always_inline, nodiscard]] constexpr bool all() const {
+        if constexpr (!has_excess_bits()) return std::none_of(cwbegin(), cwend(), [](word_type w) { return ~w; });
+
+        const auto last = std::prev(cwend());
+        return ((*last & mask()) == mask()) && std::none_of(cwbegin(), last, [](word_type w) { return ~w; });
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr bool any() const {
+        return std::any_of(cwbegin(), cwend(), [](word_type w) { return w; });
+    }
+
+    [[gnu::always_inline, nodiscard]] constexpr bool none() const {
+        return !any();
+    }
+
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
         return (word(whichword(pos)) >> (whichbit(pos))) & 1;
     }
@@ -486,6 +501,13 @@ public:
     }
 };
 
+template <typename T>
+struct bit_diff {
+    [[gnu::always_inline, nodiscard]] constexpr T operator()(const T &lhs, const T &rhs) const {
+        return lhs & ~rhs;
+    }
+};
+
 template <usize N, typename WordT, typename LExprT, typename RExprT, ord Ord1, ord Ord2>
 [[gnu::always_inline, nodiscard]] constexpr auto operator|(const expr<N, WordT, LExprT, Ord1> &lhs,
                                                            const expr<N, WordT, RExprT, Ord2> &rhs) {
@@ -502,6 +524,12 @@ template <usize N, typename WordT, typename LExprT, typename RExprT, ord Ord1, o
 [[gnu::always_inline, nodiscard]] constexpr auto operator^(const expr<N, WordT, LExprT, Ord1> &lhs,
                                                            const expr<N, WordT, RExprT, Ord2> &rhs) {
     return binary_expr<N, WordT, LExprT, RExprT, std::bit_xor<WordT>>(lhs.self(), rhs.self());
+}
+
+template <usize N, typename WordT, typename LExprT, typename RExprT, ord Ord1, ord Ord2>
+[[gnu::always_inline, nodiscard]] constexpr auto operator-(const expr<N, WordT, LExprT, Ord1> &lhs,
+                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+    return binary_expr<N, WordT, LExprT, RExprT, bit_diff<WordT>>(lhs.self(), rhs.self());
 }
 
 template <usize N, typename WordT, typename ExprT, ord Ord>
@@ -785,6 +813,11 @@ public:
         return *this = *this ^ expr;
     }
 
+    template <typename ExprT, ord Ord>
+    [[gnu::always_inline]] constexpr bitset &operator-=(const expr<N, WordT, ExprT, Ord> &expr) & {
+        return *this = *this - expr;
+    }
+
     [[gnu::always_inline]] constexpr bitset &operator~() & {
         return *this = ~(*this);
     }
@@ -833,21 +866,6 @@ public:
 
     [[gnu::always_inline]] constexpr void flip() {
         operator~();
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool all() const {
-        if constexpr (!has_excess_bits()) return std::none_of(d.begin(), d.end(), [](word_type w) { return ~w; });
-
-        const auto last = std::prev(d.end());
-        return ((*last & mask()) == mask()) && std::none_of(d.begin(), last, [](word_type w) { return ~w; });
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool any() const {
-        return std::any_of(d.begin(), d.end(), [](word_type w) { return w; });
-    }
-
-    [[gnu::always_inline, nodiscard]] constexpr bool none() const {
-        return !any();
     }
 
     template <typename CharT = char, typename Traits = std::char_traits<CharT>,
