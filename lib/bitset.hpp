@@ -186,6 +186,16 @@ public:
         return !any();
     }
 
+    template <typename RExprT, ord RD>
+    [[gnu::always_inline, nodiscard]] constexpr bool is_subset_of(const expr<N, WordT, RExprT, RD> &rhs) const {
+        return (*this & rhs) == *this;
+    }
+
+    template <typename RExprT, ord RD>
+    [[gnu::always_inline, nodiscard]] constexpr bool is_superset_of(const expr<N, WordT, RExprT, RD> &rhs) const {
+        return rhs.is_subset_of(*this);
+    }
+
     [[gnu::always_inline, nodiscard]] constexpr bool operator[](usize pos) const {
         return (word(whichword(pos)) >> (whichbit(pos))) & 1;
     }
@@ -394,6 +404,18 @@ public:
         return const_reverse_ones_iterator(cobegin());
     }
 };
+
+template <usize N, typename WordT, typename LExprT, typename RExprT, ord Ord1, ord Ord2>
+[[gnu::always_inline, nodiscard]] constexpr bool operator==(const expr<N, WordT, LExprT, Ord1> &lhs,
+                                                            const expr<N, WordT, RExprT, Ord2> &rhs) {
+    return std::equal(lhs.cwbegin(), lhs.cwend(), rhs.cwbegin());
+}
+
+template <usize N, typename WordT, typename LExprT, typename RExprT, ord Ord1, ord Ord2>
+[[gnu::always_inline, nodiscard]] constexpr bool operator<(const expr<N, WordT, LExprT, Ord1> &lhs,
+                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+    return std::lexicographical_compare(lhs.cwbegin(), lhs.cwend(), rhs.cwbegin(), rhs.cwend());
+}
 
 template <usize N, typename WordT, typename LExprT, typename RExprT, typename Op>
 class binary_expr : public expr<N, WordT, binary_expr<N, WordT, LExprT, RExprT, Op>, RExprT::order()> {
