@@ -186,13 +186,13 @@ public:
         return !any();
     }
 
-    template <typename RExprT, order RD>
-    [[gnu::always_inline, nodiscard]] constexpr bool is_subset_of(const expr<N, WordT, RExprT, RD> &rhs) const {
+    template <typename RExprT, order ROrd>
+    [[gnu::always_inline, nodiscard]] constexpr bool is_subset_of(const expr<N, WordT, RExprT, ROrd> &rhs) const {
         return (*this & rhs) == *this;
     }
 
-    template <typename RExprT, order RD>
-    [[gnu::always_inline, nodiscard]] constexpr bool is_superset_of(const expr<N, WordT, RExprT, RD> &rhs) const {
+    template <typename RExprT, order ROrd>
+    [[gnu::always_inline, nodiscard]] constexpr bool is_superset_of(const expr<N, WordT, RExprT, ROrd> &rhs) const {
         return rhs.is_subset_of(*this);
     }
 
@@ -405,15 +405,15 @@ public:
     }
 };
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr bool operator==(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                            const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr bool operator==(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                            const expr<N, WordT, RExprT, ROrd> &rhs) {
     return std::equal(lhs.cwbegin(), lhs.cwend(), rhs.cwbegin());
 }
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr bool operator<(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr bool operator<(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                           const expr<N, WordT, RExprT, ROrd> &rhs) {
     return std::lexicographical_compare(lhs.cwbegin(), lhs.cwend(), rhs.cwbegin(), rhs.cwend());
 }
 
@@ -523,21 +523,21 @@ public:
     }
 };
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator|(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr auto operator|(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                           const expr<N, WordT, RExprT, ROrd> &rhs) {
     return binary_expr<N, WordT, LExprT, RExprT, std::bit_or<WordT>>(lhs.self(), rhs.self());
 }
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator&(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr auto operator&(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                           const expr<N, WordT, RExprT, ROrd> &rhs) {
     return binary_expr<N, WordT, LExprT, RExprT, std::bit_and<WordT>>(lhs.self(), rhs.self());
 }
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator^(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr auto operator^(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                           const expr<N, WordT, RExprT, ROrd> &rhs) {
     return binary_expr<N, WordT, LExprT, RExprT, std::bit_xor<WordT>>(lhs.self(), rhs.self());
 }
 
@@ -546,9 +546,9 @@ template <usize N, typename WordT, typename ExprT, order Ord>
     return not_expr<N, WordT, ExprT>(lhs.self());
 }
 
-template <usize N, typename WordT, typename LExprT, typename RExprT, order Ord1, order Ord2>
-[[gnu::always_inline, nodiscard]] constexpr auto operator-(const expr<N, WordT, LExprT, Ord1> &lhs,
-                                                           const expr<N, WordT, RExprT, Ord2> &rhs) {
+template <usize N, typename WordT, typename LExprT, typename RExprT, order LOrd, order ROrd>
+[[gnu::always_inline, nodiscard]] constexpr auto operator-(const expr<N, WordT, LExprT, LOrd> &lhs,
+                                                           const expr<N, WordT, RExprT, ROrd> &rhs) {
     return lhs & ~rhs;
 }
 
