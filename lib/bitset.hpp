@@ -518,7 +518,7 @@ public:
         if (wpos > limit) return 0;
         if (offset == 0) return lhs.word(wpos + wshift);
 
-        if (wpos == limit) return lhs.word(word_count - 1) >> offset;
+        if (wpos == limit) return lhs.word(word_count() - 1) >> offset;
         return (lhs.word(wpos + wshift) >> offset) | (lhs.word(wpos + wshift + 1) << (sub_offset));
     }
 };
