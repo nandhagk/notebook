@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 120
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+RemoveBracesLLVM: true
+AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: Yes
+PackConstructorInitializers: NextLineOnly
+InsertBraces: true
+QualifierAlignment: Left
