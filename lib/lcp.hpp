@@ -54,6 +54,21 @@ struct lcp {
         return st.prod(l, r);
     }
 
+    // [l1, r1) [l2, r2)
+    i32 cmp(i32 l1, i32 r1, i32 l2, i32 r2) const {
+        assert(0 <= l1 && l1 < r1 && r1 <= n);
+        assert(0 <= l2 && l2 < r2 && r2 <= n);
+
+        const auto [l, r] = std::minmax(rnk[l1], rnk[l2]);
+
+        const i32 u = r1 - l1;
+        const i32 v = r2 - l2;
+        if (const i32 p = st.prod(l, r); p < std::min(u, v)) return rnk[l1] < rnk[l2] ? 1 : -1;
+
+        if (u != v) return u < v ? 1 : -1;
+        return 0;
+    }
+
     i32 n;
     std::vector<i32> rnk;
     sparse_table<monoid_min<i32>> st;
