@@ -25,6 +25,10 @@ struct monoid_max_cnt {
         return {-inf<T>, S(0)};
     }
 
+	static constexpr X from_element(const T &t) {
+		return {t, S(1)};
+	}
+
     static constexpr bool commutative = true;
 };
 

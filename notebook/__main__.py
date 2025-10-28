@@ -80,7 +80,7 @@ def run(q: str, debug: bool, fast: bool) -> None:
     dst_path = (Path().cwd() / "contest" / "out").with_suffix(".cpp")
     dst_path.write_text(dst_code)
 
-    subprocess.run(["clang-format", dst_path, "-i"], check=False)
+    # subprocess.run(["clang-format", dst_path, "-i"], check=False)
 
     t1 = perf_counter()
     logger.info("expanded %s in %dms", q, round((t1 - t0) * 1000))

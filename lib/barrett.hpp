@@ -1,8 +1,6 @@
 #ifndef LIB_BARRETT_HPP
 #define LIB_BARRETT_HPP 1
 
-#include <iostream>
-
 #include <lib/math.hpp>
 #include <lib/numeric_traits.hpp>
 #include <lib/prelude.hpp>
