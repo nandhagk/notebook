@@ -100,6 +100,7 @@ def run(q: str, debug: bool, fast: bool) -> None:
     t0 = perf_counter()
     with input_path.open("r") as f:
         subprocess.run([exec_path], stdin=f, check=False)
+
     t1 = perf_counter()
     logger.info("ran %s in %dms", q, round((t1 - t0) * 1000))
 
