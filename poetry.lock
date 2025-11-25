@@ -481,14 +481,14 @@ files = [
 
 [[package]]
 name = "shed"
-version = "2024.10.1"
+version = "2025.6.1"
 description = "`shed` canonicalises Python code."
 optional = false
 python-versions = ">=3.9"
 groups = ["lint"]
 files = [
-    {file = "shed-2024.10.1-py3-none-any.whl", hash = "sha256:fb8a76de5661f3aa33fca620660d8bc2cb16c6a83cc355a3e4eb2c138df01d96"},
-    {file = "shed-2024.10.1.tar.gz", hash = "sha256:094aa2f78fd5e307ba7ac31ee65caf501e552dca3ec70632234f8af62ca0c761"},
+    {file = "shed-2025.6.1-py3-none-any.whl", hash = "sha256:a238f34be0f040bdd705e4cbdaf3f98cdd30db832c34ca542037c8462556eb2a"},
+    {file = "shed-2025.6.1.tar.gz", hash = "sha256:43d056a2495172194ed23ee7738c49cde9cc3a54abbfa6178d5b70fd32b1a3b2"},
 ]
 
 [package.dependencies]
@@ -594,4 +594,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "7e99b0503ad531e9e39fa4f828cba4228e21e14279ad78c4086e6312d3810b85"
+content-hash = "4d94aa49b39100adc795c6c7f8178d25557fc42f26945c2ad29ef20edc5f5e91"
